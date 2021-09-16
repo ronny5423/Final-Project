@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="../uml_editor_resources/css/style.css"/> 
+</head>
+
+<body>
+  <nav id="navTop" class="w-full z-30 top-0 text-white bg-nwoods-primary">
+    <div class="w-full container max-w-screen-lg mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between mt-0 py-2">
+      <div class="md:pl-4">
+        <a class="text-white hover:text-white no-underline hover:no-underline
+        font-bold text-2xl lg:text-4xl rounded-lg hover:bg-nwoods-secondary " href="../">
+          <h1 class="mb-0 p-1 ">DB-Selection UML-Editor</h1>
+        </a>
+      </div>
+      <button id="topnavButton" class="rounded-lg sm:hidden focus:outline-none focus:ring" aria-label="Navigation">
+        <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+          <path id="topnavOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+          <path id="topnavClosed" class="hidden" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
+    <hr class="border-b border-gray-600 opacity-50 my-0 py-0" />
+  </nav>
+  <div class="md:flex flex-col md:flex-row md:min-h-screen w-full max-w-screen-xl mx-auto">
+    <div id="navSide" class="flex flex-col w-full md:w-48 text-gray-700 bg-white flex-shrink-0"></div>
+    <!-- * * * * * * * * * * * * * -->
+    <!-- Start of GoJS sample code -->
+    
+    <script src="../uml_editor_resources/release/go.js"></script>
+    <div class="p-4 w-full">
+  <script src="../uml_editor_resources/extensions/Figures.js"></script>
+  <link rel='stylesheet' href='../uml_editor_resources/extensions/DataInspector.css' />
+  <script src="../uml_editor_resources/extensions/DataInspector.js"></script>
+    <script id="code">
+    function init() {
+
+      var $ = go.GraphObject.make;
+
+      // initialize main Diagram
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            "undoManager.isEnabled": true
+          });
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          { locationSpot: go.Spot.Center },
+          new go.Binding("location", "location", go.Point.parse).makeTwoWay(go.Point.stringify),
+          $(go.Shape, "Circle",
+            {
+              fill: "white", stroke: "gray", strokeWidth: 2,
+              portId: "", fromLinkable: true, toLinkable: true,
+
+              fromLinkableDuplicates: true, toLinkableDuplicates: true,
+              fromLinkableSelfNode: true, toLinkableSelfNode: true
+            },
+            new go.Binding("stroke", "color"),
+            new go.Binding("figure")),
+          $(go.TextBlock,
+            {
+              margin: new go.Margin(5, 5, 3, 5), font: "10pt sans-serif",
+              minSize: new go.Size(16, 16), maxSize: new go.Size(120, NaN),
+              textAlign: "center", editable: true
+            },
+            new go.Binding("text").makeTwoWay())
+        );
+
+      // show visibility or access as a single character at the beginning of each property or method
+      function convertVisibility(v) {
+        switch (v) {
+          case "public": return "+";
+          case "private": return "-";
+          case "protected": return "#";
+          case "package": return "~";
+          default: return v;
+        }
+      }
+      
+      // the item template for properties
+      var propertyTemplate =
+        $(go.Panel, "Horizontal",
+          // property visibility/access
+          $(go.TextBlock,
+            { isMultiline: false, editable: false, width: 12 },
+            new go.Binding("text", "visibility", convertVisibility)),
+          // property name, underlined if scope=="class" to indicate static property
+          $(go.TextBlock,
+            { isMultiline: false, editable: true },
+            new go.Binding("text", "name").makeTwoWay(),
+            new go.Binding("isUnderline", "scope", function (s) { return s[0] === 'c' })),
+          // property type, if known
+          $(go.TextBlock, "",
+            new go.Binding("text", "type", function (t) { return (t ? ": " : ""); })),
+          $(go.TextBlock,
+            { isMultiline: false, editable: true },
+            new go.Binding("text", "type").makeTwoWay()),
+          // property default value, if any
+          $(go.TextBlock,
+            { isMultiline: false, editable: false },
+            new go.Binding("text", "default", function (s) { return s ? " = " + s : ""; }))
+        );
+        
+      var methodTemplate =
+      $(go.Panel, "Horizontal",
+        // method visibility/access
+        $(go.TextBlock,
+          { isMultiline: false, editable: false, width: 12 },
+          new go.Binding("text", "visibility", convertVisibility)),
+        // method name, underlined if scope=="class" to indicate static method
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "name").makeTwoWay(),
+          new go.Binding("isUnderline", "scope", function (s) { return s[0] === 'c' })),
+        // method parameters
+        $(go.TextBlock, "()",
+          // this does not permit adding/editing/removing of parameters via inplace edits
+          new go.Binding("text", "parameters", function (parr) {
+            var s = "(";
+            for (var i = 0; i < parr.length; i++) {
+              var param = parr[i];
+              if (i > 0) s += ", ";
+              s += param.name + ": " + param.type;
+            }
+            return s + ")";
+          })),
+        // method return type, if any
+        $(go.TextBlock, "",
+          new go.Binding("text", "type", function (t) { return (t ? ": " : ""); })),
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "type").makeTwoWay())
+      );
+
+      myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        {
+          locationSpot: go.Spot.Center,
+          fromSpot: go.Spot.AllSides,
+          toSpot: go.Spot.AllSides
+        },
+        $(go.Shape, { fill: "lightyellow" }),
+        $(go.Panel, "Table",
+          { defaultRowSeparatorStroke: "black" },
+          // header
+          $(go.TextBlock,
+            {
+              row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
+              font: "bold 12pt sans-serif",
+              isMultiline: false, editable: true
+            },
+            new go.Binding("text", "name").makeTwoWay()),
+          // properties
+          $(go.TextBlock, "Properties",
+            { row: 1, font: "italic 10pt sans-serif" },
+            new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("PROPERTIES")),
+          $(go.Panel, "Vertical", { name: "PROPERTIES" },
+            new go.Binding("itemArray", "properties"),
+            {
+              row: 1, margin: 3, stretch: go.GraphObject.Fill,
+              defaultAlignment: go.Spot.Left, background: "lightyellow",
+              itemTemplate: propertyTemplate
+            }
+          ),
+          $("PanelExpanderButton", "PROPERTIES",
+            { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
+            new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })),
+          // methods
+          $(go.TextBlock, "Methods",
+            { row: 2, font: "italic 10pt sans-serif" },
+            new go.Binding("visible", "visible", function (v) { return !v; }).ofObject("METHODS")),
+          $(go.Panel, "Vertical", { name: "METHODS" },
+            new go.Binding("itemArray", "methods"),
+            {
+              row: 2, margin: 3, stretch: go.GraphObject.Fill,
+              defaultAlignment: go.Spot.Left, background: "lightyellow",
+              itemTemplate: methodTemplate
+            }
+          ),
+          $("PanelExpanderButton", "METHODS",
+            { row: 2, column: 1, alignment: go.Spot.TopRight, visible: false },
+            new go.Binding("visible", "methods", function (arr) { return arr.length > 0; }))
+        )
+      );  
+
+      // initialize Palette
+      myPalette =
+        $(go.Palette, "myPaletteDiv",
+          {
+            nodeTemplate: myDiagram.nodeTemplate,
+            contentAlignment: go.Spot.Center,
+            layout:
+              $(go.GridLayout,
+                { wrappingColumn: 1, cellSize: new go.Size(2, 2) }),
+            "ModelChanged": function(e) {     // just for demonstration purposes,
+              if (e.isTransactionFinished) {  // show the model data in the page's TextArea
+                document.getElementById("mySavedPaletteModel").textContent = e.model.toJson();
+              }
+            }
+          });
+
+      // now add the initial contents of the Palette
+      myPalette.model.nodeDataArray = [
+        {
+          key: 12,
+          name: "Student",
+          properties: [
+            { name: "classes", type: "List<Course>", visibility: "public" }
+          ],
+          methods: []
+        }
+      ];
+
+      // initialize Overview
+      myOverview =
+        $(go.Overview, "myOverviewDiv",
+          {
+            observed: myDiagram,
+            contentAlignment: go.Spot.Center
+          });
+
+      var inspector = new Inspector('myInspectorDiv', myDiagram,
+        {
+          // uncomment this line to only inspect the named properties below instead of all properties on each object:
+          // includesOwnProperties: false,
+          properties: {
+            "text": {},
+            // key would be automatically added for nodes, but we want to declare it read-only also:
+            "key": { readOnly: true, show: Inspector.showIfPresent },
+            // color would be automatically added for nodes, but we want to declare it a color also:
+            "color": { type: 'color' },
+            "figure": {}
+          }
+        });
+
+      load();
+    }
+
+    // Show the diagram's model in JSON format
+    function save() {
+      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+      myDiagram.isModified = false;
+    }
+    function load() {
+      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    }
+
+    function addToPalette() {
+      var node = myDiagram.selection.filter(function(p) { return p instanceof go.Node; }).first();
+      if (node !== null) {
+        myPalette.startTransaction();
+        var item = myPalette.model.copyNodeData(node.data);
+        myPalette.model.addNodeData(item);
+        myPalette.commitTransaction("added item to palette");
+      }
+    }
+
+    // The user cannot delete selected nodes in the Palette with the Delete key or Control-X,
+    // but they can if they do so programmatically.
+    function removeFromPalette() {
+      myPalette.commandHandler.deleteSelection();
+    }
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+<div id="sample">
+  <div style="width:100%; white-space:nowrap;">
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:140px">
+      <div id="myPaletteDiv" style="background-color: whitesmoke; border: solid 1px black; height: 400px"></div>
+      <div id="myOverviewDiv" style="border: solid 1px black; height: 100px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:500px">
+      <div id="myDiagramDiv" style="border: solid 1px black; height: 500px"></div>
+    </span>
+    <span style="display: inline-block; vertical-align: top; padding: 2px; width:200px">
+      <div id="myInspectorDiv" class="inspector"></div>
+    </span>
+  </div>
+  <div>
+    <button onclick="addToPalette()">Add To Palette</button>
+    <button onclick="removeFromPalette()">Delete From Palette</button>
+    Palette model:
+  </div>
+  <textarea id="mySavedPaletteModel" style="width:100%;height:200px"></textarea>
+  <div>
+    <button id="loadModel" onclick="load()">Load</button>
+    <button id="saveModel" onclick="save()">Save</button>
+    Diagram model:
+  </div>
+  <textarea id="mySavedModel" style="width:100%;height:200px">
+{ "class": "go.GraphLinksModel",
+  "nodeDataArray": [
+    { "key": 1, "text": "hello", "figure":"Circle", "color":"green", "location":"0 0" },
+    { "key": 2, "text": "world", "figure":"Rectangle", "color":"red", "location":"100 0" }
+ ],
+  "linkDataArray": [
+    { "from":1, "to":2 }
+ ]}
+  </textarea>
+</div>
+    </div>
+  </div>
+</body>
+</html>
