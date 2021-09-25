@@ -1,10 +1,11 @@
 import './App.css';
-import { GoJSDiagram } from './components/GoJS';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import SignUp from './components/sharedComponents/SignUp'
 
 function App() {
   return (
     <div className="App">
-      <GoJSDiagram></GoJSDiagram>
+      <SignUp></SignUp>
     </div>
   );
 }
