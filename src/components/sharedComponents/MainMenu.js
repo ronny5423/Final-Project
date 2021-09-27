@@ -30,22 +30,54 @@
 //   )
 // }
 
-import React, { useState, useCallback } from 'react'
-import Hamburger from 'hamburger-react'
+// import React, { useState, useCallback } from 'react'
+// import Hamburger from 'hamburger-react'
 
-export function MainMenu() {
-  const [isOpen, setOpen] = useState(false)
+// export function MainMenu() {
+//   const [isOpen, setOpen] = useState(false)
+
+//   return (
+//     <div>
+//       <Hamburger onToggle={toggled => {
+//         if (toggled) {
+          
+//         } else {
+
+//         }
+//       }} toggle={setOpen} />
+//     </div>
+    
+//   )
+// }
+
+import React from 'react'
+import { scaleRotate as Menu } from 'react-burger-menu'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHome, faInfo, faEnvelope } from '@fortawesome/fontawesome-free-solid'
+import SignUp from '../pageComponents/SignUp';
+
+import '../cssComponents/MainMenu.css'
+
+
+export default function MainMenu() {
+  function showSettings (event) {
+    event.preventDefault();
+  }
 
   return (
-    <div>
-      <Hamburger onToggle={toggled => {
-        if (toggled) {
-          
-        } else {
-
-        }
-      }} toggle={setOpen} />
-    </div>
-    
+    <Menu>
+      <a id="home" class="bm-item" href="/">
+        <FontAwesomeIcon icon={faHome}></FontAwesomeIcon>
+        <span>Home</span>
+      </a>
+      <a id="about" class="bm-item" href="/about">
+        <FontAwesomeIcon icon={faInfo}></FontAwesomeIcon>
+        <span>About</span>
+      </a>
+      <a id="contact" class="bm-item" href="/contact">
+        <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
+        <span>Contact Us</span>
+      </a>
+    </Menu>
   )
 }
