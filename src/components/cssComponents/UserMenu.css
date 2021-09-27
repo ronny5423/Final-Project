@@ -1,0 +1,18 @@
+.button1 {
+    border: none;
+    font: bold;
+}
+
+.UserDiv {
+    float: right;
+    margin-right: 1%;
+}
+
+.LoggedInDisplay {
+    display: flex;
+    flex-direction: row;
+}
+
+.UsernameDisplay {
+    padding-right: 10px;
+}
