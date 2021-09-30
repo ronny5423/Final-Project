@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import "../cssComponents/Login.css";
+import {Link} from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -42,7 +43,7 @@ export default function Login() {
         </Button>
       </Form>
       <p>Don't have an account ?</p>
-      <a href="google.com">Sign Up</a>
+      <Link to={"/Register"}>Sign Up</Link>
     </div>
   );
 }
