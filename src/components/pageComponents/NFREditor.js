@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from "react"
 import axios from "axios"
-import {Button, DropdownButton, Table} from "react-bootstrap";
-import DropdownItem from "react-bootstrap/DropdownItem";
+import {Button,Form, Table} from "react-bootstrap";
+
 
 const umlJson={
     nodeDataArray:[{
@@ -20,27 +20,65 @@ const valueOfWeightAndClass=new Map();
 valueOfWeightAndClass["class name"]=new Map();
 valueOfWeightAndClass["class name"]["weight name"]=5;
 
-export default function NFREditor(){
+
+////tests
+    const weightsTemp=new Map();
+    weightsTemp["aa"]={
+        type:"Range",
+        values:[0,1,0.5]
+    }
+    weightsTemp["bb"]={type:"select box",values:["a","b","c","d"]}
+    const uml={nodeDataArray:[{type:"Class",name:"A"},{type:"Class",name: "B"}]}
+
+    const weightsAndClassesTemp=new Map();
+    weightsAndClassesTemp["A"]=new Map();
+    weightsAndClassesTemp["A"]["aa"]=0.65
+    weightsAndClassesTemp["A"]["bb"]="c"
+    weightsAndClassesTemp["B"]=new Map()
+    weightsAndClassesTemp["B"]["aa"]=0.9
+    weightsAndClassesTemp["B"]["bb"]="a"
+
+    let response={data:{weightsArr:weightsAndClassesTemp,uml:uml}}
+
+export default function NFREditor(props){
     const [weights,updateWeights]=useState(new Map());
     const [weightsValues,updateWeightsValues]=useState(new Map());
-
+    const [editibale,updateEditibale]=useState(props.editibale)
 
     useEffect(()=>{
         async function getDataFromServer(){
             // get data from server, to fix!!!
-            let response= await axios.get("get from server data");
+            //let response= await axios.get("get from server data");
+            let weightsTemp=new Map();
+            weightsTemp.set("aa",{
+                type:"range",
+                values:[0,1,0.5]
+            })
+            weightsTemp.set("bb",{type:"select box",values:["a","b","c","d"]})
+            let umlTemp={nodeDataArray:[{type:"Class",name:"A"},{type:"Class",name: "B"}]}
+
+            const weightsAndClassesTemp=new Map();
+            weightsAndClassesTemp.set("A",new Map())
+            weightsAndClassesTemp.set("B",new Map())
+
+            weightsAndClassesTemp.get("A").set("aa",0.65)
+            weightsAndClassesTemp.get("A").set("bb","c")
+            weightsAndClassesTemp.get("B").set("aa",0.9)
+            weightsAndClassesTemp.get("B").set("bb","a")
+
+            let response={data:{weightsArr:weightsTemp,uml:umlTemp,valueOfWeightAndClass:weightsAndClassesTemp}}
             updateWeights(response.data.weightsArr);
             if(!response.data.valueOfWeightAndClass){//create a map of class and weight as keys and their value
                 let classesArray=response.data.uml.nodeDataArray.map(classObj=> classObj.name);
                 let weightClassMap=new Map();
                 for(let i=0;i<classesArray.length;i++){
-                    weightClassMap[classesArray[i]]=new Map();
-                    weights.forEach(key=>{
+                    weightClassMap.set(classesArray[i],new Map())
+                    response.data.weightsArr.forEach((val,key) =>{
                         let value="";
-                        if(weights[key].type==="Range"){
-                            value=weights[key].values[2];
+                        if(response.data.weightsArr.get(key).type==="range"){
+                            value=response.data.weightsArr.get(key).values[2];
                         }
-                        weightClassMap[classesArray[i]][key]=value;
+                        weightClassMap.get(classesArray[i]).set(key,value)
                     })
                 }
                 updateWeightsValues(weightClassMap);
@@ -52,30 +90,33 @@ export default function NFREditor(){
         getDataFromServer();
     },[])
 
+    function onChange(value,className,weight){
+        let newClassWeights=new Map(weightsValues);
+        newClassWeights.get(className).set(weight,value)
+        updateWeightsValues(newClassWeights);
+        fix problem with edit button
+    }
+
     function createWeightsRow(){
         let weightsNamesArr=[];
         weights.forEach((value,key)=> weightsNamesArr.push(<th>{key}</th>))
         return weightsNamesArr;
     }
 
-    function createRow(key){
+    function createInputRow(key){
         let rowArr=[];
-        weightsValues[key].forEach(weightName=>{
-            if(weights[weightName].type==="Range"){//create range input
-                rowArr.push(<input type={"number"} min={weights[weightName].values[0]} max={weights[weightName].values[1]}
-                                   defaultValue={weightsValues[key][weightName]}/>)
+        weightsValues.get(key).forEach((value,weightName)=>{
+            if(weights.get(weightName).type==="range"){//create range input
+                rowArr.push(<td><input readOnly={!editibale} type={"number"} min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}
+                           step={0.01} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}/></td>)
             }
             else{
-                rowArr.push(<DropdownButton title={weightsValues[key][weightName]} onSelect={e=>{
-                    let newClassWeights=new Map(weightsValues);
-                    newClassWeights[key][weightName]=e;
-                    updateWeightsValues(newClassWeights);
-                }
-                }>
-               {//create drop down items for each value
-                    weights[weightName].values.map(value=><DropdownItem eventKey={value}>{value}</DropdownItem>)
+                rowArr.push(<td><select disabled={!editibale} required value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}>
+                    <option value={""}/>
+                    {//create select for each value
+                   weights.get(weightName).values.map(value=><option value={value}>{value}</option>)
                }
-                </DropdownButton>
+                    </select></td>
 
                     )
             }
@@ -89,7 +130,7 @@ export default function NFREditor(){
             restOfTable.push(<tr>
                 <td>{key}</td>
                 {
-                    createRow(key)
+                    createInputRow(key)
                 }
             </tr>)
         })
@@ -101,7 +142,7 @@ export default function NFREditor(){
     }
 
     return(
-        <div>
+        <Form>
             <Table responsive>
                 <thead>
                     <tr>
@@ -114,11 +155,12 @@ export default function NFREditor(){
                 <tbody>
                 {
                     createRestOfTable()
-                    finish drop down check for empty values
-                }
+                    }
                 </tbody>
             </Table>
-            <Button onClick={sendNFRToServer}>Save</Button>
-        </div>
+            {editibale ? <Button type={"submit"} onClick={sendNFRToServer}>Save</Button> :
+            <Button onClick={_=>updateEditibale(true)}>Edit</Button>
+            }
+        </Form>
     )
 }
