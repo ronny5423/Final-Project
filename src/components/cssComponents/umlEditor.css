@@ -1,0 +1,18 @@
+.App {
+    font-family: sans-serif;
+    text-align: center;
+  }
+  
+  .diagram-component {
+    width: 400px;
+    border: solid 1px black;
+    background-color: white;
+    flex-grow: 1;
+  }
+  
+  .paletteComponent {
+    width: 300px;
+    margin-right: 2px;
+    background-color: whitesmoke; 
+    border: solid 1px black
+  }
