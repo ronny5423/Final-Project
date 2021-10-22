@@ -1,18 +1,39 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, request
+from flask_mongoengine import MongoEngine
 import time
 
 app = Flask(__name__, static_url_path='')
 
 
-# app.config['SERVER_NAME'] = ''
+# app.config['SERVER_NAME'] = 'https://rps.ise.bgu.ac.il/njsw27'
+
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'your_database',
+    'host': 'localhost',
+    'port': 27017
+}
+
+db = MongoEngine()
+
+db.init_app(app)
+
+class User(db.Document):
+    Username = db.StringField()
+    password = db.StringField()
 
 @app.route("/")
 def default():
     return app.send_static_file('index.html')
 
-@app.route("/home")
+@app.route("/Login", methods = ['POST'])
 def home():
-    return {'time': time.time()}
+    UsernameForm = request.form['Username']
+    passwordForm = request.form['password']
+    UserMongoDB = User.objects(name=UsernameForm).first()
+    if UserMongoDB and UserMongoDB['password'] == passwordForm:
+        return True
+    else:
+        return False
 
 
 @app.route("/testArea")

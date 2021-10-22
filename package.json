@@ -34,7 +34,6 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-server": "cd Server && python app.py",
     "build": "react-scripts build",
     "postbuild": "node postbuild.js",
     "test": "react-scripts test",
