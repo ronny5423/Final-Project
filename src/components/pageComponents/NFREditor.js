@@ -12,7 +12,8 @@ const umlJson={
 const weightsArray=new Map();
 weightsArray["name"]={
     type:" Range or select box",
-    values:[]// if range so it is going to be [min, max, default] and if select box, the array is going to include the different values
+    values:[],// if range so it is going to be [min, max] and if select box, the array is going to include the different values
+    defaultValue:null
 };
 
 const valueOfWeightAndClass=new Map();
@@ -53,9 +54,10 @@ export default function NFREditor(props){
             let weightsTemp=new Map();
             weightsTemp.set("aa",{
                 type:"range",
-                values:[0,1,0.5]
+                values:[0,1],
+                defaultValue:0.5
             })
-            weightsTemp.set("bb",{type:"select box",values:["a","b","c","d"]})
+            weightsTemp.set("bb",{type:"select box",values:["a","b","c","d"],defaultValue:"a"})
             let umlTemp={nodeDataArray:[{type:"Class",name:"A"},{type:"Class",name: "B"}]}
 
             const weightsAndClassesTemp=new Map();
@@ -68,6 +70,7 @@ export default function NFREditor(props){
             weightsAndClassesTemp.get("B").set("bb","a")
 
             let response={data:{weightsArr:weightsTemp,uml:umlTemp}}
+
             updateWeights(response.data.weightsArr);
 
             if(!response.data.valueOfWeightAndClass){//create a map of class and weight as keys and their value
@@ -76,10 +79,7 @@ export default function NFREditor(props){
                 for(let i=0;i<classesArray.length;i++){
                     weightClassMap.set(classesArray[i],new Map())
                     response.data.weightsArr.forEach((val,key) =>{
-                        let value="";
-                        if(response.data.weightsArr.get(key).type==="range"){
-                            value=response.data.weightsArr.get(key).values[2];
-                        }
+                        let value=response.data.weightsArr.get(key).defaultValue;
                         weightClassMap.get(classesArray[i]).set(key,value)
                     })
                 }
@@ -87,12 +87,21 @@ export default function NFREditor(props){
                 }
             else{
                 createNfr.current=false
-                oldWeightsBeforeEdit.current=response.data.valueOfWeightAndClass
+                createPreviousState(response.data.valueOfWeightAndClass)
                 updateWeightsValues(response.data.valueOfWeightAndClass);
             }
         }
         getDataFromServer();
     },[])
+
+    function createPreviousState(map){
+        for(const [className,value] of map.entries()){
+            oldWeightsBeforeEdit.current.set(className,new Map())
+            for(const [weightName,weightValue] of value.entries()){
+                oldWeightsBeforeEdit.current.get(className).set(weightName,weightValue)
+            }
+        }
+    }
 
     function onChange(value,className,weight){//change value
         let newClassWeights=new Map(weightsValues);
@@ -110,12 +119,13 @@ export default function NFREditor(props){
         let rowArr=[];
         weightsValues.get(key).forEach((value,weightName)=>{
             if(weights.get(weightName).type==="range"){//create range input
-                rowArr.push(<td key={key+weightName}><input readOnly={!editibale} type={"number"} min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}
-                           step={0.01} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}/></td>)
+                rowArr.push(<td key={key+weightName}><div><input readOnly={!editibale} type={"number"} min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}
+                           step={0.01} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}/>
+                <Form.Text> min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}</Form.Text></div>
+                </td>)
             }
             else{
-                rowArr.push(<td key={key+weightName}><select disabled={!editibale} required value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}>
-                    <option value={""}/>
+                rowArr.push(<td key={key+weightName}><select disabled={!editibale} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}>
                     {//create select for each value
                    weights.get(weightName).values.map((value,index)=><option key={index} value={value}>{value}</option>)
                }
@@ -144,7 +154,7 @@ export default function NFREditor(props){
         e.preventDefault()
         if(createNfr.current){
             createNfr.current=false
-            oldWeightsBeforeEdit.current=weightsValues
+            createPreviousState(weightsValues)
         }
         updateEditibale(false)
         axios.post(weightsValues);
