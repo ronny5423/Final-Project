@@ -1,34 +1,59 @@
-import React from "react";
-import {Button, Form} from "react-bootstrap";
+import React, {useState} from "react";
+import {Button, Form, Modal} from "react-bootstrap";
 import {useRef} from "react";
 import {useForm} from "react-hook-form";
 import axios from "axios";
+import {useHistory} from "react-router-dom";
 
-function submit(userDetails){
-
+ async function submit(userDetails,updateModal){
+    let response= await axios.post(`https://localhost:5000`,userDetails)
+    return response
 }
 
 function SignUp(){
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register,getValues, handleSubmit, watch, formState: { errors } } = useForm();
     const password = useRef({});
+    const[modalText,updateModalText]=useState("")
+    const history=useHistory()
     password.current = watch("password", "");
 
     return(
-        <Form onSubmit={handleSubmit(submit)}>
+        <div>
+           <Modal show={modalText!==""} onHide={_=>updateModalText("")} centered>
+                    <Modal.Header closeButton></Modal.Header>
+                    <Modal.Body>
+                        <p>{modalText}</p>
+                    </Modal.Body>
+                </Modal>
+
+        <Form onSubmit={handleSubmit(()=>{
+            axios.post(`https://localhost:5000`,getValues()).then(response=>{
+                switch (response.status){
+                    case 201:
+                        localStorage.setItem("cookie",response.data.cookie)
+                        history.push("/home")
+                        break
+                    case 409:
+                        updateModalText("Username already taken!")
+                        break
+                    default:
+                       updateModalText("Something went wrong. Please try again")
+                }
+            })
+        })}>
             <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Username</Form.Label>
-                <Form.Control name="username" {...register("username",{required:true, validate:{freeUsername:value=>value==="Ron" || "Username isn't free"}})} type="text" placeholder="Enter username"  />
+                <Form.Control name="username" {...register("username",{required:true})} type="text" placeholder="Enter username"  />
                 {errors?.username?.type==='required' && <p>Please enter username</p>}
-                {errors.username && <p>{errors.username.message}</p>}
                 </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
                 <Form.Label>Password</Form.Label>
                 <Form.Control {...register("password",{required: true, pattern:/^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+*!=])(?=.*[0-9]).*$/,minLength:8})} type="password" placeholder="Enter password" />
                 <Form.Text className="text-muted">
-                    Password must contain at least one letter and one digit and it's length should be at least 8 characters
+                    Password must contain at least one small letter, one uppercase letter, one special char and one digit and it's length should be at least 8 characters
                 </Form.Text>
-                {errors?.password?.type==='pattern' && <p>password must contain at least one digit, one lowercase character and one uppercase character</p>}
+                {errors?.password?.type==='pattern' && <p>password must contain at least one digit, one lowercase character, one uppercase character and one special char</p>}
                 {errors?.password?.type==='required' && <p>Please enter password</p>}
                 {errors?.password?.type==="minLength" && <p>Password must be at least 8 characters long</p>}
                 </Form.Group>
@@ -47,6 +72,7 @@ function SignUp(){
             </Form.Group>
             <Button type="submit" variant="primary">Register</Button>
         </Form>
+        </div>
     )
 }
 
