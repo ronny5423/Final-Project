@@ -42,7 +42,7 @@ export function ChangeMatrixWeights(){
     function submit(event){
         event.preventDefault()
         if(weights.uml+weights.queries+weights.nfr===1){
-            axios.post(`server address`,weights).then(res=>{
+            axios.put(`server address`,weights).then(res=>{
                 if(res.status===201){
                     updateDisabled(true)
                     if(showModal){
