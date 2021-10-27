@@ -2,8 +2,19 @@ import * as go from 'gojs';
 import { ReactDiagram, ReactPalette } from "gojs-react";
 import * as React from "react";
 import "../cssComponents/umlEditor.css";
-import "../cssComponents/UmlStyle.css";
+//import "../cssComponents/UmlStyle.css";
 import val from "../../Utils/UmlValidationUtill"
+
+
+var umlJson={ "class": "GraphLinksModel",
+"copiesArrays": true,
+"copiesArrayObjects": true,
+"linkKeyProperty": "key",
+"linkLabelKeysProperty": "labelKeys",
+"modelData": {"position":"-269.5 -5"},
+"nodeDataArray": [],
+"linkDataArray": []};
+
 
 var myDiagram;
 
@@ -288,7 +299,7 @@ const Pallete = () => {
             // property visibility/access
             $(go.TextBlock, "+",
             { isMultiline: false, editable: true, width: 12 },
-            new go.Binding("text", "visibility", convertVisibility).makeTwoWay()),
+            new go.Binding("text", "visibility", function (v) { return convertVisibility(v) }).makeTwoWay()),
             // property name, underlined if scope=="class" to indicate static property
             $(go.TextBlock, "Attribute Name:",
             { isMultiline: false, editable: true },
@@ -296,8 +307,7 @@ const Pallete = () => {
             //makeTwoWaySubBinding("text", "name"),
             new go.Binding("isUnderline", "scope", function (s) { return s[0] === 'c' })),
             // property type, if known
-            $(go.TextBlock,
-            new go.Binding("text", "type", function (t) { return (t ? ": " : ""); })),
+            $(go.TextBlock, " "),
             $(go.TextBlock, "Type",
             { isMultiline: false, editable: true },
             new go.Binding("text", "type").makeTwoWay()),
@@ -459,6 +469,9 @@ const Pallete = () => {
             copiesArrays: true,
             copiesArrayObjects: true
         });
+
+        //loadUml();
+        //console.log(myDiagram.model);
 
         return myDiagram;
     }
@@ -712,9 +725,14 @@ const Pallete = () => {
     }
 
         function save() {
-            console.log(myDiagram.model);
+            let umlJ = JSON.parse(myDiagram.model.toJson());
+            if(val(umlJ) === false){
+                alert("error");
+                return;
+            }
             saveDiagramProperties();  // do this first, before writing to JSON
             document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+            umlJson = myDiagram.model.toJson();
             myDiagram.isModified = false;
         }
         function load() {
@@ -722,6 +740,10 @@ const Pallete = () => {
             loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
         }
 
+        function loadUml() {
+            myDiagram.model = go.Model.fromJson(umlJson);
+            loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
+        }
 
         function saveDiagramProperties() {
             myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
@@ -732,16 +754,12 @@ const Pallete = () => {
             if (pos) myDiagram.initialPosition = go.Point.parse(pos);
         }
 
-    function cccc(changes){
-        //console.log(changes);
-    }
-
 
     return (
-        <div style={{ display: "flex" }}>
+        <div id="wrapper">
           <script src="../../../uml_editor_resources/release/go.js"></script>
           <script src="../../../uml_editor_resources/extensions/Figures.js"></script>
-          <div style={{width: "100%", display: "flex" }}>
+          <div id="editorDiv">
           <ReactPalette
             initPalette={initPalette}
             divClassName="paletteComponent"
@@ -749,7 +767,6 @@ const Pallete = () => {
           <ReactDiagram
             initDiagram={initDiagram.bind(this)}
             divClassName="diagram-component"
-            onModelChange={cccc}
           />
 
         </div>
@@ -763,13 +780,12 @@ const Pallete = () => {
                 <div>
                 <button id="SaveButton" onClick={() => save()}>Save</button>
                 <button onClick={() => load()}>Load</button>
-                <button onClick={() => val("aaa")}>val</button>
                 Diagram Model saved in JSON format:
                 </div>
-                <textarea id="mySavedModel" style={{width: "200px", height: "300px"}}>
+                <textarea value={JSON.stringify(umlJson)} id="mySavedModel" style={{width: "500px", height: "300px"}}>
                     
                 </textarea>
-    </div>
+            </div>
         </div>
 
         </div>
