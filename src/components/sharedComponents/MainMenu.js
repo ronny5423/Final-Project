@@ -9,7 +9,7 @@ export default function MainMenu() {
     const[isOpen,setOpen]=useState(false);
 
   return (
-    <Menu isOpen={isOpen} onOpen={()=>setOpen(true)} >
+    <Menu isOpen={isOpen} onOpen={()=>setOpen(true)} onClose={_=>setOpen(false)} >
             <Link id="home" className="bm-item" to="/home" onClick={()=>setOpen(false)}>
                 <FontAwesomeIcon icon={faHome}></FontAwesomeIcon>
                 <span>Home</span>
