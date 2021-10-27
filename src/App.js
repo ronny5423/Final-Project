@@ -6,8 +6,10 @@ import Login from './components/sharedComponents/Login'
 import {Route, Switch} from "react-router-dom";
 import About from "./components/pageComponents/About";
 import ContactForm from "./components/pageComponents/ContactUs";
+import UmlEditor from "./components/pageComponents/UmlEditor";
 import React from "react";
 import SignUp from "./components/pageComponents/SignUp";
+
 
 function App() {
   let isLoggedIn = false;
@@ -26,6 +28,9 @@ function App() {
             </Route>
             <Route path={"/contact"}>
                 <ContactForm/>
+            </Route>
+            <Route path="/UmlEditor" >
+                <UmlEditor></UmlEditor>
             </Route>
             <Route>
                 <SignUp/>

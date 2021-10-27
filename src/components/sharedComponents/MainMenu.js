@@ -22,6 +22,10 @@ export default function MainMenu() {
                 <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
                 <span>Contact Us</span>
             </Link>
+            <Link id="umlEditor" className="bm-item" to="/UmlEditor" onClick={()=>setOpen(false)}>
+                <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
+                <span>UML</span>
+            </Link>
     </Menu>
   )
 }
