@@ -4,15 +4,28 @@
   }
   
   .diagram-component {
-    width: 400px;
+    width: 500px;
+    height: 500px;
     border: solid 1px black;
     background-color: white;
     flex-grow: 1;
   }
   
   .paletteComponent {
-    width: 300px;
+    width: 200px;
+    height: 500px;
     margin-right: 2px;
     background-color: whitesmoke; 
     border: solid 1px black
+  }
+
+  #wrapper {
+    /* display: "flex"; */
+    width: 100%;
+  }
+
+  #editorDiv {
+    width: 60%;
+    display: flex;
+    margin: 20px 20%;
   }
