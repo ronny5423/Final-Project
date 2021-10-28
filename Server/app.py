@@ -1,6 +1,9 @@
 from flask import Flask, request
+from flask.wrappers import Response
 from flask_mongoengine import MongoEngine
+from flask_pymongo import PyMongo
 import time
+import json
 
 app = Flask(__name__, static_url_path='')
 
@@ -13,13 +16,9 @@ app.config['MONGODB_SETTINGS'] = {
     'port': 27017
 }
 
-db = MongoEngine()
-
-db.init_app(app)
-
-class User(db.Document):
-    Username = db.StringField()
-    password = db.StringField()
+app.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
+mongodb_client = PyMongo(app)
+db = mongodb_client.db
 
 @app.route("/")
 def default():
@@ -27,14 +26,20 @@ def default():
 
 @app.route("/Login", methods = ['POST'])
 def home():
-    UsernameForm = request.form['Username']
-    passwordForm = request.form['password']
-    UserMongoDB = User.objects(name=UsernameForm).first()
+    UsernameForm = request.json.get('Username')
+    passwordForm = request.json.get('password')
+    UserMongoDB = db.Users.find_one({"Username": UsernameForm})
     if UserMongoDB and UserMongoDB['password'] == passwordForm:
-        return True
+        result = True
     else:
-        return False
+        result = False
+    return Response(json.dumps(result), status=200, mimetype='application/json')
 
+
+@app.route("/Signup", methods = ['POST'])
+def Register():
+    data = request.json
+    
 
 @app.route("/testArea")
 def testArea():
