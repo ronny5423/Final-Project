@@ -1,28 +1,19 @@
 from flask import Flask, request
 from flask.wrappers import Response
-from flask_mongoengine import MongoEngine
 from flask_pymongo import PyMongo
-# import routes
-from routes.auth import auth
 
 import time
 import json
 
 app = Flask(__name__, static_url_path='')
-app.register_blueprint()
-
-
-# app.config['SERVER_NAME'] = 'https://rps.ise.bgu.ac.il/njsw27'
-
-app.config['MONGODB_SETTINGS'] = {
-    'db': 'your_database',
-    'host': 'localhost',
-    'port': 27017
-}
-
 app.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
-mongodb_client = PyMongo(app)
-db = mongodb_client.db
+
+from database import db
+db.init_app(app)
+
+# import routes
+from routes.auth import auth
+app.register_blueprint(auth)
 
 @app.route("/")
 def default():

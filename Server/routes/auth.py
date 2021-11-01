@@ -1,15 +1,11 @@
 from flask import Blueprint, render_template, session, abort, request
 from flask.wrappers import Response
-from flask_mongoengine import MongoEngine
-from flask_pymongo import PyMongo
 import json
 
-
+from database import db
 auth = Blueprint('auth', __name__)
 
-auth.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
-mongodb_client = PyMongo(auth)
-db = mongodb_client.db
+db = db.db
 
 @auth.route("/Login", methods = ['POST'])
 def home():
