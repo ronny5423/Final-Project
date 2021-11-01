@@ -1,0 +1,9 @@
+#tableAndTextAreaDiv{
+    display: flex;
+    flex-direction: row;
+}
+
+#index{
+    cursor: pointer;
+    color: blue;
+}
