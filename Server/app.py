@@ -9,7 +9,7 @@ app = Flask(__name__, static_url_path='')
 app.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
 
 from database import db
-db.init_app(app)
+db.initMongoDB(app)
 
 # import routes
 from routes.auth import auth
