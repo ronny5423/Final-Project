@@ -8,7 +8,7 @@ auth = Blueprint('auth', __name__)
 from database import db
 
 # Import modules
-from ..modules.User import User
+from modules.User import User
 
 @auth.route("/Login", methods = ['POST'])
 def home():

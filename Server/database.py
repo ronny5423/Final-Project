@@ -2,7 +2,7 @@ from flask_pymongo import PyMongo
 import json
 
 # Import modules
-from .modules.User import User
+from modules.User import User
 
 class DataBase:
     def __init__(self):
