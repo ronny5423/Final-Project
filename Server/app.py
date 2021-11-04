@@ -2,7 +2,6 @@ from flask import Flask, request
 from flask.wrappers import Response
 from flask_pymongo import PyMongo
 
-import time
 import json
 
 app = Flask(__name__, static_url_path='')
@@ -13,7 +12,9 @@ db.initMongoDB(app)
 
 # import routes
 from routes.auth import auth
+from routes.editors import editors
 app.register_blueprint(auth)
+app.register_blueprint(editors)
 
 @app.route("/")
 def default():

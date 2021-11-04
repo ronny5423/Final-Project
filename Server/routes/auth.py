@@ -33,5 +33,6 @@ def Register():
         data = request.json
         newUser = User(data.get('Username'), data.get('password'))
         db.insertOneObject('Users', newUser)
+        return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

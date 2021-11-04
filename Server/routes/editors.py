@@ -6,12 +6,18 @@ editors = Blueprint('editors', __name__)
 
 from database import db
 
+# Impost modules
+from modules.UML_editor import UMLEditor
+from modules.NFR_editor import NFREditor
+from modules.SQL_editor import SQLEditor
 
 @editors.route("/saveData/UMLEditor", ["POST"])
 def saveUMLEditor():
     try:
         data = request.json
-        # TODO build UML Editor class and create db function for saving and updating
+        newUMLEditor = UMLEditor(data.get('jsonFile'))
+        db.insertOneObject('Editors', newUMLEditor)
+        return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
@@ -19,7 +25,9 @@ def saveUMLEditor():
 def saveNFREditor():
     try:
         data = request.json
-        # TODO build NFR Editor class and create db function for saving and updating
+        newNFREditor = NFREditor(data.get('jsonFile'))
+        db.insertOneObject('Editors', newNFREditor)
+        return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
@@ -27,6 +35,18 @@ def saveNFREditor():
 def saveSQLEditor():
     try:
         data = request.json
-        # TODO build SQL Editor class and create db function for saving and updating
+        newSQLEditor = SQLEditor(data.get('jsonFile'))
+        db.insertOneObject('Editors', newSQLEditor)
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+@editors.route("/loadData/Editor", ["GET"])
+def loadUMLEditor():
+    try:
+        data = request.args
+        query = {'EditorID': data.get('ID'), 'type': data.get('type')}
+        EditorFromDB = db.getOneEditor(query)
+        return Response(json.dumps(EditorFromDB.__dict__), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
