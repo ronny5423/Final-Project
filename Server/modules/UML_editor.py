@@ -1,5 +1,5 @@
 
-from Editor import Editor
+from modules.Editor import Editor
 
 
 class UMLEditor(Editor):
