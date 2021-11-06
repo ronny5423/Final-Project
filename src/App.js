@@ -7,7 +7,9 @@ import {Route, Switch} from "react-router-dom";
 import About from "./components/pageComponents/About";
 import ContactForm from "./components/pageComponents/ContactUs";
 import React, { useState, useEffect } from 'react';
+import UmlEditor from "./components/pageComponents/UmlEditor";
 import SignUp from "./components/pageComponents/SignUp";
+
 
 function App() {
   const [currentTime, setCurrentTime] = useState(0);
@@ -36,6 +38,9 @@ function App() {
             </Route>
             <Route path={"/contact"}>
                 <ContactForm/>
+            </Route>
+            <Route path="/UmlEditor" >
+                <UmlEditor></UmlEditor>
             </Route>
             <Route>
                 <SignUp/>

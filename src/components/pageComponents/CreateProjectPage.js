@@ -1,5 +1,7 @@
 import React,{useState} from "react";
 import {Tabs,Tab} from "react-bootstrap";
+import NFREditor from "./NFREditor";
+import {ChangeMatrixWeights} from "./ChangeMatrixWeights";
 
 function CreateProjectPage(){
     const [key,setKey]=useState("Uml");
@@ -20,7 +22,10 @@ function CreateProjectPage(){
 
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-
+                    <NFREditor editibale={true}/>
+                </Tab>
+                <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
+                    <ChangeMatrixWeights/>
                 </Tab>
             </Tabs>
         </div>

@@ -9,7 +9,7 @@ export default function MainMenu() {
     const[isOpen,setOpen]=useState(false);
 
   return (
-    <Menu isOpen={isOpen} onOpen={()=>setOpen(true)} >
+    <Menu isOpen={isOpen} onOpen={()=>setOpen(true)} onClose={_=>setOpen(false)} >
             <Link id="home" className="bm-item" to="/home" onClick={()=>setOpen(false)}>
                 <FontAwesomeIcon icon={faHome}></FontAwesomeIcon>
                 <span>Home</span>
@@ -21,6 +21,10 @@ export default function MainMenu() {
             <Link id="contact" className="bm-item" to="/contact" onClick={()=>setOpen(false)}>
                 <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
                 <span>Contact Us</span>
+            </Link>
+            <Link id="umlEditor" className="bm-item" to="/UmlEditor" onClick={()=>setOpen(false)}>
+                <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
+                <span>UML</span>
             </Link>
     </Menu>
   )
