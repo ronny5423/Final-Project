@@ -1,77 +1,20 @@
 import React,{useState,useEffect,useRef} from "react"
 import axios from "axios"
 import {Button,Form, Table} from "react-bootstrap";
-
-const umlJson={
-    nodeDataArray:[{
-        type:"Class",
-        name:"name of the class"
-    }]
-};
-
-const weightsArray=new Map();
-weightsArray["name"]={
-    type:" Range or select box",
-    values:[],// if range so it is going to be [min, max] and if select box, the array is going to include the different values
-    defaultValue:null
-};
-
-const valueOfWeightAndClass=new Map();
-valueOfWeightAndClass["class name"]=new Map();
-valueOfWeightAndClass["class name"]["weight name"]=5;
-
-
-////tests
-    const weightsTemp=new Map();
-    weightsTemp["aa"]={
-        type:"Range",
-        values:[0,1,0.5]
-    }
-    weightsTemp["bb"]={type:"select box",values:["a","b","c","d"]}
-    const uml={nodeDataArray:[{type:"Class",name:"A"},{type:"Class",name: "B"}]}
-
-    const weightsAndClassesTemp=new Map();
-    weightsAndClassesTemp["Person"]=new Map();
-    weightsAndClassesTemp["Person"]["Integrity"]=0.65
-    weightsAndClassesTemp["Person"]["Consistency"]="c"
-    weightsAndClassesTemp["User"]=new Map()
-    weightsAndClassesTemp["User"]["Integrity"]=0.9
-    weightsAndClassesTemp["User"]["Consistency"]="a"
-
-    let response={data:{weightsArr:weightsAndClassesTemp,uml:uml}}
+import {serverAddress} from "../../Constants";
 
 export default function NFREditor(props){
     const [weights,updateWeights]=useState(new Map());
     const [weightsValues,updateWeightsValues]=useState(new Map());
-    const [editable,updateEditable]=useState(props.editibale)
+    const [editable,updateEditable]=useState(props.editable)
     const oldWeightsBeforeEdit=useRef(new Map())
     const createNfr=useRef(true)
 
     useEffect(()=>{
         async function getDataFromServer(){
-            // get data from server, to fix!!!
-            //let response= await axios.get("get from server data");
-            let weightsTemp=new Map();
-            weightsTemp.set("Integrity",{
-                type:"range",
-                values:[0,1],
-                defaultValue:0.5
-            })
-            weightsTemp.set("Consistency",{type:"select box",values:["a","b","c","d"],defaultValue:"a"})
-            let umlTemp={nodeDataArray:[{type:"Class",name:"Person"},{type:"Class",name: "User"}]}
-
-            const weightsAndClassesTemp=new Map();
-            weightsAndClassesTemp["Person"]=new Map();
-            weightsAndClassesTemp["Person"]["Integrity"]=0.65
-            weightsAndClassesTemp["Person"]["Consistency"]="c"
-            weightsAndClassesTemp["User"]=new Map()
-            weightsAndClassesTemp["User"]["Integrity"]=0.9
-            weightsAndClassesTemp["User"]["Consistency"]="a"
-
-            let response={data:{weightsArr:weightsTemp,uml:umlTemp}}
-
+            let response= await axios.get(serverAddress+`/getNFR`);
+            response.data.weightsArr=new Map(Object.entries(response.data.weightsArr))
             updateWeights(response.data.weightsArr);
-
             if(!response.data.valueOfWeightAndClass){//create a map of class and weight as keys and their value
                 let classesArray=response.data.uml.nodeDataArray.map(classObj=> classObj.name);
                 let weightClassMap=new Map();
@@ -86,8 +29,14 @@ export default function NFREditor(props){
                 }
             else{
                 createNfr.current=false
-                createPreviousState(response.data.valueOfWeightAndClass)
-                updateWeightsValues(response.data.valueOfWeightAndClass);
+                let map=new Map(Object.entries(response.data.valueOfWeightAndClass))
+                let newMap=new Map(map)
+                map.forEach((value,key,map)=>{
+                    newMap.delete(key)
+                    newMap.set(key,new Map(Object.entries(value)))
+                })
+                createPreviousState(newMap)
+                updateWeightsValues(newMap);
             }
         }
         getDataFromServer();
@@ -121,7 +70,8 @@ export default function NFREditor(props){
             if(weights.get(weightName).type==="range"){//create range input
                 rowArr.push(<td key={key+weightName}><div><input readOnly={!editable} type={"number"} min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}
                            step={0.01} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}/>
-                <Form.Text> min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}</Form.Text></div>
+                <br/>
+                    <Form.Text> min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}</Form.Text></div>
                 </td>)
             }
             else{
@@ -156,7 +106,7 @@ export default function NFREditor(props){
             createNfr.current=false
           }
         updateEditable(false)
-        axios.post(weightsValues);
+        axios.post(serverAddress+`/sendNFR`,JSON.stringify(weightsValues));
     }
 
     function cancelChanges(){
@@ -165,7 +115,7 @@ export default function NFREditor(props){
     }
 
     return(
-        <Form onSubmit={sendNFRToServer}>
+        <Form data-testid={"NFREditor"} onSubmit={sendNFRToServer}>
             <Table responsive>
                 <thead>
                     <tr>
@@ -187,7 +137,7 @@ export default function NFREditor(props){
                 </div>:
             <Button onClick={_=>{
                 createPreviousState(weightsValues)
-                console.log(oldWeightsBeforeEdit.current===weightsValues)
+                createNfr.current=false
                 updateEditable(true)
             }}>Edit</Button>
             }
