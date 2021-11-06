@@ -107,36 +107,35 @@ describe("test input changing",()=>{
     const server=createServer(false)
     preapareTests(server)
 
-    it("test change input",async ()=>{
+    async function testInputChange(oldValue,newValue){
         renderNFREditor(true)
-        const inputElements=await screen.findAllByDisplayValue("0.5")
-        fireEvent.change(inputElements[0],{target:{value:"0.75"}})
-        expect(inputElements[0].value).toBe("0.75")
+        const elements=await screen.findAllByDisplayValue(oldValue)
+        fireEvent.change(elements[0],{target:{value:newValue}})
+        expect(elements[0].value).toBe(newValue)
+    }
+
+    async function testAfterClickSave(oldValue,newValue){
+        renderNFREditor(true)
+        const inputElements=await screen.findAllByDisplayValue(oldValue)
+        fireEvent.change(inputElements[0],{target:{value:newValue}})
+        const buttonElement=await screen.findByText(/Save/i)
+        fireEvent.click(buttonElement)
+        expect(inputElements[0].value).toBe(newValue)
+    }
+    it("test change input",async ()=>{
+        await testInputChange("0.5","0.75")
     })
 
     it("test change select box value",async ()=>{
-        renderNFREditor(true)
-        const selectElements=await screen.findAllByDisplayValue("a")
-        fireEvent.change(selectElements[0],{target:{value:"b"}})
-        expect(selectElements[0].value).toBe("b")
+        await testInputChange("a","b")
     })
 
     it("test that input saved after click on save button",async()=>{
-        renderNFREditor(true)
-        const inputElements=await screen.findAllByDisplayValue("0.5")
-        fireEvent.change(inputElements[0],{target:{value:"0.75"}})
-        const buttonElement=await screen.findByText(/Save/i)
-        fireEvent.click(buttonElement)
-        expect(inputElements[0].value).toBe("0.75")
+        await testAfterClickSave("0.5","0.75")
     })
 
     it("test that select saved after click on input",async()=>{
-        renderNFREditor(true)
-        const selectElements=await screen.findAllByDisplayValue("a")
-        fireEvent.change(selectElements[0],{target:{value:"b"}})
-        const buttonElement=await screen.findByText(/Save/i)
-        fireEvent.click(buttonElement)
-        expect(selectElements[0].value).toBe("b")
+        await testAfterClickSave("a","b")
     })
 
     it("test change input value after click on save and edit",async ()=>{
@@ -180,4 +179,3 @@ describe("test previous states",()=>{
         expect(selectElements[0].value).toBe("a")
     })
   })
-

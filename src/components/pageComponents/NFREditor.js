@@ -29,14 +29,12 @@ export default function NFREditor(props){
                 }
             else{
                 createNfr.current=false
-                let map=new Map(Object.entries(response.data.valueOfWeightAndClass))
-                let newMap=new Map(map)
-                map.forEach((value,key,map)=>{
-                    newMap.delete(key)
-                    newMap.set(key,new Map(Object.entries(value)))
+                let weightsValuesMap=new Map(Object.entries(response.data.valueOfWeightAndClass))
+                weightsValuesMap.forEach((value,key,map)=>{
+                    map.set(key,new Map(Object.entries(value)))
                 })
-                createPreviousState(newMap)
-                updateWeightsValues(newMap);
+                createPreviousState(weightsValuesMap)
+                updateWeightsValues(weightsValuesMap);
             }
         }
         getDataFromServer();
@@ -106,7 +104,11 @@ export default function NFREditor(props){
             createNfr.current=false
           }
         updateEditable(false)
-        axios.post(serverAddress+`/sendNFR`,JSON.stringify(weightsValues));
+        let weightsValuesObject=Object.fromEntries(weightsValues)
+        for(let key in weightsValuesObject){
+            weightsValuesObject[key]=Object.fromEntries(weightsValuesObject[key])
+        }
+        axios.post(serverAddress+`/sendNFR`,JSON.stringify(weightsValuesObject));
     }
 
     function cancelChanges(){
