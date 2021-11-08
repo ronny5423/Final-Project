@@ -15,16 +15,17 @@ function mockData(addThirdAttribute){
         values:[0,1],
         defaultValue:0.5
     })
-    weightsTemp.set("Consistency",{type:"select box",values:["a","b","c","d"],defaultValue:"a"})
+    let labelsAndValues={a:1,b:2,c:3,d:4}
+    weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
     let umlTemp={nodeDataArray:[{type:"Class",name:"Person"},{type:"Class",name: "User"}]}
 
     const weightsAndClassesTemp=new Map();
     weightsAndClassesTemp["Person"]=new Map();
     weightsAndClassesTemp["Person"]["Integrity"]=0.65
-    weightsAndClassesTemp["Person"]["Consistency"]="c"
+    weightsAndClassesTemp["Person"]["Consistency"]=["c",3]
     weightsAndClassesTemp["User"]=new Map()
     weightsAndClassesTemp["User"]["Integrity"]=0.9
-    weightsAndClassesTemp["User"]["Consistency"]="a"
+    weightsAndClassesTemp["User"]["Consistency"]=["a",1]
 
     let data={}
     if(addThirdAttribute){
@@ -110,14 +111,14 @@ describe("test input changing",()=>{
     async function testInputChange(oldValue,newValue){
         renderNFREditor(true)
         const elements=await screen.findAllByDisplayValue(oldValue)
-        fireEvent.change(elements[0],{target:{value:newValue}})
+        fireEvent.change(elements[0],{target:{value:newValue,innerText:"b"}})
         expect(elements[0].value).toBe(newValue)
     }
 
     async function testAfterClickSave(oldValue,newValue){
         renderNFREditor(true)
         const inputElements=await screen.findAllByDisplayValue(oldValue)
-        fireEvent.change(inputElements[0],{target:{value:newValue}})
+        fireEvent.change(inputElements[0],{target:{value:newValue,innerText:"b"}})
         const buttonElement=await screen.findByText(/Save/i)
         fireEvent.click(buttonElement)
         expect(inputElements[0].value).toBe(newValue)
@@ -127,7 +128,7 @@ describe("test input changing",()=>{
     })
 
     it("test change select box value",async ()=>{
-        await testInputChange("a","b")
+        await testInputChange("a","2")
     })
 
     it("test that input saved after click on save button",async()=>{
@@ -135,7 +136,7 @@ describe("test input changing",()=>{
     })
 
     it("test that select saved after click on input",async()=>{
-        await testAfterClickSave("a","b")
+        await testAfterClickSave("a","2")
     })
 
     it("test change input value after click on save and edit",async ()=>{
@@ -173,9 +174,9 @@ describe("test previous states",()=>{
         const editButton=await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const selectElements=await screen.findAllByDisplayValue("a")
-        fireEvent.change(selectElements[0],{target:{value:"d"}})
+        fireEvent.change(selectElements[0],{target:{value:"4"}})
         const cancelButton=await screen.findByText(/cancel/i)
         fireEvent.click(cancelButton)
-        expect(selectElements[0].value).toBe("a")
+        expect(selectElements[0].value).toBe("1")
     })
   })

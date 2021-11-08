@@ -50,9 +50,14 @@ export default function NFREditor(props){
         }
     }
 
-    function onChange(value,className,weight){//change value
+    function onChange(value,className,weight,displayValue=""){//change value
         let newClassWeights=new Map(weightsValues);
-        newClassWeights.get(className).set(weight,value)
+        if(weights.get(weight).type==="range"){
+            newClassWeights.get(className).set(weight,value)
+        }
+        else{
+            newClassWeights.get(className).set(weight,[displayValue,value])
+        }
         updateWeightsValues(newClassWeights);
     }
 
@@ -73,9 +78,10 @@ export default function NFREditor(props){
                 </td>)
             }
             else{
-                rowArr.push(<td key={key+weightName}><select disabled={!editable} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}>
+                rowArr.push(<td key={key+weightName}><select disabled={!editable} value={weightsValues.get(key).get(weightName)[1]} onChange={e=>onChange(e.target.value,key,weightName,e.target.innerText)}>
                     {//create select for each value
-                   weights.get(weightName).values.map((value,index)=><option key={index} value={value}>{value}</option>)
+                        //weights.get(weightName).values.map((value,index)=><option key={index} value={value[1]}>{value[0]}</option>)
+                        createSelectRow(weights.get(weightName).values)
                }
                     </select></td>
 
@@ -83,6 +89,14 @@ export default function NFREditor(props){
             }
         })
         return rowArr;
+    }
+
+    function createSelectRow(weightObj){
+        let arr=[]
+        for(let key in weightObj){
+            arr.push(<option key={key} value={weightObj[key]}>{key}</option>)
+        }
+        return arr
     }
 
     function createRestOfTable(){// create row with class and inputs
