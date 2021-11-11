@@ -9,6 +9,7 @@ import ContactForm from "./components/pageComponents/ContactUs";
 import React, { useState, useEffect } from 'react';
 import UmlEditor from "./components/pageComponents/UmlEditor";
 import SignUp from "./components/pageComponents/SignUp";
+import CreateProjectPage from "./components/pageComponents/CreateProjectPage";
 
 
 function App() {
@@ -43,7 +44,7 @@ function App() {
                 <UmlEditor></UmlEditor>
             </Route>
             <Route>
-                <SignUp/>
+                <CreateProjectPage/>
             </Route>
         </Switch>
     </div>
