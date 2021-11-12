@@ -1,28 +1,36 @@
 import React,{useState,useEffect,useRef} from "react"
 import axios from "axios"
 import {Button, Form, OverlayTrigger, Table, Tooltip} from "react-bootstrap";
-import "../cssComponents/SqlEditor.css"
+import { faTrash} from '@fortawesome/fontawesome-free-solid'
+import "../cssComponents/SqlEditor.css";
+import * as SqlHelper from "../../Utils/SqlValidationUtils";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 export default function SqlEditor(props){
-    const[queries,updateQueries]=useState(new Map().set(0,["",35,false,""]))
+    const[queries,updateQueries]=useState(new Map().set(0,{"name":"query","tpm": 35, "selectable": true, "query": ""}))
     const[currentRowIndex,updateRowIndex]=useState(0)
     const classes=useRef({})
     const edit=useRef(true)
     const[disabled,updateDisabled]=useState(false)
-    const previousState=useRef(new Map())
+    const previousState=useRef(new Map());
 
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
             // let response = await axios.get(`server path`)
             // classes.current = response.data.classes
-            let map=new Map()
-            map.set(0,["abc",45,true,"abc"])
-            map.set(1,["def",15,false,"def"])
+            let map=new Map();
+            map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": "abc"});
+            map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": "def"});
             let response={
                 data:{
                     queries:map
                 }
-            }
+            };
             if (response.data.queries) {
                 edit.current=false
                 previousState.current=response.data.queries
@@ -33,18 +41,39 @@ export default function SqlEditor(props){
         fetchSQLQueriesFromServer()
     },[])
 
+    useEffect(()=>{
+        async function fetchUmlClassesFromServer() {
+            // let response = await axios.get(`server path`)
+            // classes.current = response.data.classes
+            let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
+
+            //let classesDict = {"Query Matrix": [], "Project": ["userId"], "Relation": [], "UML CD": [], "Attribute": [], "Class": []};
+
+            let response={
+                data:{
+                    classes: classesDict
+                }
+            };
+            if (response.data.classes) {
+                SqlHelper.addUmlClasses(response.data.classes);
+            }
+        }
+        fetchUmlClassesFromServer();
+    },[])
+
+
     function createQuery(index){
-        let query=queries.get(index)
+        let query=queries.get(index);
         return(
             <tr>
                 <td><OverlayTrigger placement={"bottom"} overlay={<Tooltip placement={"bottom"}>Click on index to view the query</Tooltip> }><span id={"index"} onClick={_=>updateRowIndex(index)}><u>{index +1}</u></span></OverlayTrigger></td>
-                <td><input disabled={disabled} value={query[0]} onChange={e=>changeValue(index,0,e.target.value)}/></td>
+                <td><input required disabled={disabled} value={query["name"] ? query["name"] : "query"} onChange={e=>changeValue(index,"name",e.target.value)}/></td>
                 <td><div>
-                    <Form.Range disabled={disabled} value={query[1]} min={0} max={60} step={1} onChange={e=>changeValue(index,1,e.target.value)}></Form.Range>
-                    {query[1]}
+                    <Form.Range disabled={disabled} value={query["tpm"]} min={0} max={60} step={1} onChange={e=>changeValue(index,"tpm",e.target.value)}></Form.Range>
+                    {query["tpm"]}
                 </div></td>
-                <td><Form.Check disabled={disabled} checked={query[2]} onChange={e=>changeValue(index,2,e.target.value)}></Form.Check></td>
-                <td><Button disabled={disabled} variant={"danger"} onClick={_=>deleteRow(index)}>Delete</Button></td>
+                <td><Form.Check disabled={disabled} checked={query["selectable"]} onChange={e=>changeValue(index,"selectable",e.target.value)}></Form.Check></td>
+                <td><Button disabled={disabled} variant={"danger"} onClick={_=>deleteRow(index)}><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></Button></td>
             </tr>
         )
     }
@@ -60,7 +89,7 @@ export default function SqlEditor(props){
         }
         updateQueries(newQueriesMap)
         if(newQueriesMap.size===0){
-            newQueriesMap.set(0,["",35,false,""])
+            newQueriesMap.set(0,{"name":"query","tpm": 35, "selectable": true, "query": ""})
         }
         if(currentRowIndex===rowIndex && currentRowIndex===newQueriesMap.size){
             updateRowIndex(currentRowIndex-1)
@@ -68,6 +97,7 @@ export default function SqlEditor(props){
     }
 
     function createTable(){
+        //console.log(queries.size);
         let arr=[]
         for(let i=0;i<queries.size;i++){
             arr.push(createQuery(i))
@@ -79,17 +109,17 @@ export default function SqlEditor(props){
         let newQueriesMap= new Map(queries)
         let values={...queries.get(key)}
         switch (indexOfValueToChange) {
-            case 0:
-                values[0]=newValue
+            case "name":
+                values["name"]=newValue;
                 break
-            case 1:
-                values[1]=parseInt(newValue,10)
+            case "tpm":
+                values["tpm"]=parseInt(newValue,10);
                 break
-            case 2:
-                values[2]=!values[2]
+            case "selectable":
+                values["selectable"]=!values["selectable"];
                 break
-            case 3:
-                values[3]=newValue
+            case "query":
+                values["query"]=newValue;
                 break
         }
         newQueriesMap.delete(key)
@@ -99,7 +129,7 @@ export default function SqlEditor(props){
 
     function addQuery(){
         let newQueriesMap=new Map(queries)
-        newQueriesMap.set(newQueriesMap.size,["",35,false,""])
+        newQueriesMap.set(newQueriesMap.size,{"name":"query","tpm": 35, "selectable": true, "query": ""})
         updateQueries(newQueriesMap)
     }
 
@@ -115,8 +145,19 @@ export default function SqlEditor(props){
     }
 
     function handleSubmit(event){
-        //check all sql queries
         event.preventDefault()
+        //check all sql queries
+        let problems = SqlHelper.ValidateAllQueries(queries);
+        if (Object.keys(problems).length > 0){
+            for(let key in problems){
+                let queryName = queries.get(parseInt(key, 10))["name"];
+                for(let problemIdx in problems[key]){
+                    toast.error("In query: " + queryName + ", error: " + problems[key][problemIdx], { position: toast.POSITION.TOP_CENTER })
+                }
+            }
+            return;
+        }
+
         previousState.current=new Map(queries)
         edit.current=false
         updateDisabled(true)
@@ -142,11 +183,12 @@ export default function SqlEditor(props){
                 }
                 </tbody>
             </Table>
-            <textarea disabled={disabled} cols={40} placeholder={"Enter your query here"} value={queries.get(currentRowIndex)[3]} onChange={e=>changeValue(currentRowIndex,3,e.target.value)}></textarea>
+            <textarea disabled={disabled} cols={40} placeholder={"Enter your query here"} value={queries.get(currentRowIndex)["query"]} onChange={e=>changeValue(currentRowIndex,"query",e.target.value)}></textarea>
+            <ToastContainer />
         </div>
             {
                 disabled ? <Button variant={"success"} onClick={editDetails}>Edit</Button> :
-                <div>
+                <div id={"buttonsDiv"}>
                     <Button variant={"info"} onClick={addQuery}>Add Query</Button>
                     <Button type={"submit"} variant={"success"} >Save</Button>
                     {edit.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button> }
