@@ -7,6 +7,7 @@ import {Route, Switch} from "react-router-dom";
 import About from "./components/pageComponents/About";
 import ContactForm from "./components/pageComponents/ContactUs";
 import UmlEditor from "./components/pageComponents/UmlEditor";
+import SqlEditor from "./components/pageComponents/SqlEditor";
 import React from "react";
 import SignUp from "./components/pageComponents/SignUp";
 
@@ -31,6 +32,9 @@ function App() {
             </Route>
             <Route path="/UmlEditor" >
                 <UmlEditor></UmlEditor>
+            </Route>
+            <Route path="/SqlEditor" >
+                <SqlEditor></SqlEditor>
             </Route>
             <Route>
                 <SignUp/>

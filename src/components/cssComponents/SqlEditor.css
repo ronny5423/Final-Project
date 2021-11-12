@@ -1,9 +1,24 @@
 #tableAndTextAreaDiv{
     display: flex;
     flex-direction: row;
+    margin: 0px 10%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    width: 80%;
 }
 
 #index{
     cursor: pointer;
     color: blue;
+}
+
+textarea{
+    margin-left: 5%;
+    height: 200px;
+    margin-top: 20px;
+}
+
+#buttonsDiv{
+    width: 20%;
+    margin: 0px 40%;
 }

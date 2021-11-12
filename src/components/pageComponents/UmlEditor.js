@@ -3,7 +3,11 @@ import { ReactDiagram, ReactPalette } from "gojs-react";
 import * as React from "react";
 import "../cssComponents/umlEditor.css";
 //import "../cssComponents/UmlStyle.css";
-import val from "../../Utils/UmlValidationUtill"
+import val from "../../Utils/UmlValidationUtill";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import * as SqlHelper from "../../Utils/SqlValidationUtils";
 
 
 var umlJson={ "class": "GraphLinksModel",
@@ -304,7 +308,6 @@ const Pallete = () => {
             $(go.TextBlock, "Attribute Name:",
             { isMultiline: false, editable: true },
             new go.Binding("text", "name", function (s) { return s.slice(-1)===':' ? s : s+":" }).makeTwoWay(),
-            //makeTwoWaySubBinding("text", "name"),
             new go.Binding("isUnderline", "scope", function (s) { return s[0] === 'c' })),
             // property type, if known
             $(go.TextBlock, " "),
@@ -397,6 +400,13 @@ const Pallete = () => {
             myDiagram.commitTransaction("add property");
         }
 
+        function convertFill(v) {
+            switch (v) {
+                case "Association Class": return "orange";
+                default: return "lightyellow";
+            }
+        }
+
         myDiagram.nodeTemplate =
         $(go.Node, "Auto",
         {
@@ -406,12 +416,7 @@ const Pallete = () => {
         },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         { selectionAdornmentTemplate: UndesiredEventAdornment },
-        $(go.Shape, { fill: "lightyellow", 
-                        //fromLinkable: true, toLinkable: true,
-                        //portId: "", cursor: "",
-                        //fromLinkableDuplicates: true, toLinkableDuplicates: true,
-                        //fromLinkableSelfNode: true, toLinkableSelfNode: true
-                    }),
+        $(go.Shape, new go.Binding("fill", "type", convertFill)),
         $(go.Panel, "Table",
             { defaultRowSeparatorStroke: "black" },
             // header
@@ -429,7 +434,7 @@ const Pallete = () => {
             $(go.Panel, "Vertical", { name: "PROPERTIES" },
             {
                 row: 1, margin: 3, stretch: go.GraphObject.Fill,
-                defaultAlignment: go.Spot.Left, background: "lightyellow",
+                defaultAlignment: go.Spot.Left,
                 itemTemplate: propertyTemplate,
                 
             },
@@ -654,7 +659,12 @@ const Pallete = () => {
             new go.Binding("text", "type").makeTwoWay())
         );
 
-
+        function convertFill(v) {
+            switch (v) {
+                case "Association Class": return "orange";
+                default: return "lightyellow";
+            }
+        }
 
 
         myPalette.nodeTemplate =
@@ -665,12 +675,7 @@ const Pallete = () => {
             toSpot: go.Spot.AllSides
         },
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-        $(go.Shape, { fill: "lightyellow", 
-                        //fromLinkable: true, toLinkable: true,
-                        //portId: "", cursor: "",
-                        //fromLinkableDuplicates: true, toLinkableDuplicates: true,
-                        //fromLinkableSelfNode: true, toLinkableSelfNode: true
-                    }),
+        $(go.Shape, new go.Binding("fill", "type", convertFill)),
         $(go.Panel, "Table",
             { defaultRowSeparatorStroke: "black" },
             // header
@@ -688,7 +693,7 @@ const Pallete = () => {
             $(go.Panel, "Vertical", { name: "PROPERTIES" },
             {
                 row: 1, margin: 3, stretch: go.GraphObject.Fill,
-                defaultAlignment: go.Spot.Left, background: "lightyellow",
+                defaultAlignment: go.Spot.Left,
                 itemTemplate: propertyTemplate,
                 
             },
@@ -726,8 +731,12 @@ const Pallete = () => {
 
         function save() {
             let umlJ = JSON.parse(myDiagram.model.toJson());
-            if(val(umlJ) === false){
-                alert("error");
+
+            let problems = val(umlJ);
+            if (problems.length > 0) {
+                for (let problemIdx in problems) {
+                    toast.error("error: " + problems[problemIdx], {position: toast.POSITION.TOP_CENTER})
+                }
                 return;
             }
             saveDiagramProperties();  // do this first, before writing to JSON
@@ -735,6 +744,7 @@ const Pallete = () => {
             umlJson = myDiagram.model.toJson();
             myDiagram.isModified = false;
         }
+
         function load() {
             myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
             loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
@@ -783,9 +793,9 @@ const Pallete = () => {
                 Diagram Model saved in JSON format:
                 </div>
                 <textarea value={JSON.stringify(umlJson)} id="mySavedModel" style={{width: "500px", height: "300px"}}>
-                    
                 </textarea>
             </div>
+            <ToastContainer />
         </div>
 
         </div>
