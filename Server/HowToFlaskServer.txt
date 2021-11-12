@@ -1,0 +1,27 @@
+# Flask
+
+How to build flask route-
+@app.route("/your_route_name", methods = [can be few methods, 'POST', 'GET'])
+def FunctionActiveWhenRouteReceived():
+
+How to return Data-
+Response(json.dumps(dataToReturn), status=statusToReturn, mimetype='application/json')
+
+Access Data Received in Flask-
+request.json.get(KeyName)
+
+
+# MongoDB
+
+- Get one line from DB
+db.Collection.find_one({"Field in Mongo": SomeValueToCompare})
+- Get all lines from DB
+db.Collection.find({"Field in Mongo": SomeValueToCompare})
+- Save one line to DB
+db.Collection.insert_one({"Field in Mongo": SomeValueToCompare})
+ - Save Many Lines to DB
+ db.Collection.insert_many({"Field in Mongo": SomeValueToCompare})
+
+Inside () can be replace with json object
+
+More Info in https://stackabuse.com/integrating-mongodb-with-flask-using-flask-pymongo/

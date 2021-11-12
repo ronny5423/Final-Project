@@ -6,16 +6,26 @@ import Login from './components/sharedComponents/Login'
 import {Route, Switch} from "react-router-dom";
 import About from "./components/pageComponents/About";
 import ContactForm from "./components/pageComponents/ContactUs";
+import React, { useState, useEffect } from 'react';
 import UmlEditor from "./components/pageComponents/UmlEditor";
-import SqlEditor from "./components/pageComponents/SqlEditor";
-import React from "react";
 import SignUp from "./components/pageComponents/SignUp";
+import CreateProjectPage from "./components/pageComponents/CreateProjectPage";
 
 
 function App() {
+  const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    fetch('/home').then(res => res.json()).then(data => {
+      setCurrentTime(data.time);
+    });
+  }, []);
+
   let isLoggedIn = false;
+
   return (
     <div className="App">
+      <p>The current time is {currentTime}</p>
       <div>
         <MainMenu />
         <UserMenu />
@@ -33,11 +43,8 @@ function App() {
             <Route path="/UmlEditor" >
                 <UmlEditor></UmlEditor>
             </Route>
-            <Route path="/SqlEditor" >
-                <SqlEditor></SqlEditor>
-            </Route>
             <Route>
-                <SignUp/>
+                <CreateProjectPage/>
             </Route>
         </Switch>
     </div>

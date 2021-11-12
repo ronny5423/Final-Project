@@ -10,6 +10,8 @@
 
 # production
 /build
+Server/static/*
+!Server/static/.gitkeep
 
 # misc
 .DS_Store
