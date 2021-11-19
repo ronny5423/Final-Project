@@ -522,14 +522,19 @@ function parseConnectQuery(queryArr) {
 }
 
 export function ValidateAllQueries(queries){
-
-    // const obj = Object.fromEntries(queries);
+    //  console.log(queries);
+    //  const obj = Object.fromEntries(queries);
+    //  console.log(obj);
+    //  const jo = JSON.stringify(obj);
+    //  console.log(jo);
+    //  const j = JSON.parse(jo);
+    // console.log(jo);
+    // for (let key in j){
+    //     console.log(j[key])
+    // }
+    // const a = new Map(Object.entries(j))
+    // console.log(a);
     //
-    // const str = JSON.stringify(obj);
-    // console.log(str);
-    // const newValue = JSON.parse(str);
-    // console.log(queries, newValue);
-
     let problems = {};
 
     for (let [key, queryObj] of queries) {
@@ -617,7 +622,7 @@ export function ValidateAllQueries(queries){
                 continue;
             }
         }
-        else if(queryType === 5){ // Delete
+        else if(queryType === 5){ // Connect
             try {
                 parseConnectQuery(queryArr);
 

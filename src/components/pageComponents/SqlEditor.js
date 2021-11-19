@@ -23,12 +23,15 @@ export default function SqlEditor(props){
         async function fetchSQLQueriesFromServer() {
             // let response = await axios.get(`server path`)
             // classes.current = response.data.classes
+            let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
+
             let map=new Map();
             map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": "abc"});
             map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": "def"});
             let response={
                 data:{
-                    queries:map
+                    queries:map,
+                    classes: classesDict
                 }
             };
             if (response.data.queries) {
@@ -37,29 +40,32 @@ export default function SqlEditor(props){
                 updateDisabled(true)
                 updateQueries(response.data.queries)
             }
-        }
-        fetchSQLQueriesFromServer()
-    },[])
-
-    useEffect(()=>{
-        async function fetchUmlClassesFromServer() {
-            // let response = await axios.get(`server path`)
-            // classes.current = response.data.classes
-            let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
-
-            //let classesDict = {"Query Matrix": [], "Project": ["userId"], "Relation": [], "UML CD": [], "Attribute": [], "Class": []};
-
-            let response={
-                data:{
-                    classes: classesDict
-                }
-            };
             if (response.data.classes) {
                 SqlHelper.addUmlClasses(response.data.classes);
             }
         }
-        fetchUmlClassesFromServer();
+        fetchSQLQueriesFromServer()
     },[])
+
+    // useEffect(()=>{
+    //     async function fetchUmlClassesFromServer() {
+    //         // let response = await axios.get(`server path`)
+    //         // classes.current = response.data.classes
+    //         let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
+    //
+    //         //let classesDict = {"Query Matrix": [], "Project": ["userId"], "Relation": [], "UML CD": [], "Attribute": [], "Class": []};
+    //
+    //         let response={
+    //             data:{
+    //                 classes: classesDict
+    //             }
+    //         };
+    //         if (response.data.classes) {
+    //             SqlHelper.addUmlClasses(response.data.classes);
+    //         }
+    //     }
+    //     fetchUmlClassesFromServer();
+    // },[])
 
 
     function createQuery(index){

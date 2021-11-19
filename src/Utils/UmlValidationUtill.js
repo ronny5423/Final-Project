@@ -111,6 +111,31 @@ function checkAscClassConnectToAscLink(umlObj){
     return Object.keys(ascClassDict).length === 0 ? "" : "Association class must be connected to Association class link";
 }
 
+function checkAllClassesWithUniqueName(umlObj){
+    let names = new Set();
+    let nodesDataArray = umlObj["nodeDataArray"];
+    for(let i = 0; i < nodesDataArray.length; i++){
+        let node = nodesDataArray[i];
+        if("name" in node){
+            if (names.has(node["name"]))
+                return "Class name must be unique";
+            names.add(node["name"]);
+        }
+    }
+    return "";
+}
+
+function checkAtLeastOneClassExist(umlObj){
+    let nodesDataArray = umlObj["nodeDataArray"];
+    for(let i = 0; i < nodesDataArray.length; i++){
+        let node = nodesDataArray[i];
+        if("type" in node){
+            return ""
+        }
+    }
+    return "At least one class must exist";
+}
+
 function validateUml(umlObj){
     let problems = [];
     let linkClassAssociate = checkLinkClassAssociateConnectToLinkAssociateAndClassAssociate(umlObj);
@@ -125,6 +150,12 @@ function validateUml(umlObj){
     let ascClassConnectToAscLink = checkAscClassConnectToAscLink(umlObj);
     if(ascClassConnectToAscLink.length > 0)
         problems.push(ascClassConnectToAscLink);
+    let uniqueNames = checkAllClassesWithUniqueName(umlObj);
+    if(uniqueNames.length > 0)
+        problems.push(uniqueNames);
+    let atLeastOneClass = checkAtLeastOneClassExist(umlObj);
+    if(atLeastOneClass.length > 0)
+        problems.push(atLeastOneClass);
     return problems;
 }
 
