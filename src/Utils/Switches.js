@@ -13,7 +13,6 @@ import AlgorithmResult from "../components/pageComponents/AlgorithmResult";
 export default function Switches(){
     return(
         <Switch>
-
             <Route path={"/about"}>
                 <About/>
             </Route>
@@ -27,7 +26,7 @@ export default function Switches(){
                 <CreateProjectPage/>
             </Route>
             <Route path={"/editorsTabs"}>
-                <EditorsTabs projectIndex={localStorage.getItem("currentProjectIndex")}/>
+                <EditorsTabs />
             </Route>
             <Route path={"/"}>
                 <CreateProjectPage/>
