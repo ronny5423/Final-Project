@@ -1,14 +1,15 @@
 
 from modules.Editor import Editor
-
+from modules.parsers.parserSQL import sql_parser
 
 class SQLEditor(Editor):
-    def __init__(self, undecipheredJson, convertedMatrix=None, EditorID=None):
-        super().__init__(undecipheredJson, convertedMatrix, EditorID)
+    def __init__(self, undecipheredJson, convertedData=None, EditorID=None):
+        super().__init__(undecipheredJson, convertedData, EditorID)
+        self.parseJson()
         self.type = 'SQL'
     
     def parseJson(self):
-        pass
+        self.convertedData = sql_parser(self.undecipheredJson)
 
     def updateEditor(self, undecipheredJson):
         self.undecipheredJson = undecipheredJson
