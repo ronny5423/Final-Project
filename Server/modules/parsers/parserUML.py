@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 umlJ = {"class": "GraphLinksModel",
         "copiesArrays": True,
@@ -60,6 +61,6 @@ def uml_parser(uml_json):
                     increment_matrix_table_cell(matrix_classes, classes[asc_from], classes[asc_class])
                     break
 
-    res = {'classes': classes, 'matrix_classes': matrix_classes}
+    res = {'classes': json.dumps(classes), 'matrix_classes': json.dumps(dict(enumerate(matrix_classes.flatten(), 1))), 'shape': matrix_classes.shape[0]}
     return res
 

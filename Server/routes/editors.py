@@ -17,8 +17,6 @@ def saveUMLEditor():
     try:
         data = request.json
         saveEditors(data.get('jsonFile'), 'UML')
-        # newUMLEditor = UMLEditor(data.get('jsonFile'))
-        # db.insertOneObject('Editors', newUMLEditor)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
@@ -28,8 +26,6 @@ def saveNFREditor():
     try:
         data = request.json
         saveEditors(data.get('jsonFile'), 'NFR')
-        # newNFREditor = NFREditor(data.get('jsonFile'))
-        # db.insertOneObject('Editors', newNFREditor)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
@@ -39,19 +35,15 @@ def saveSQLEditor():
     try:
         data = request.json
         saveEditors(data.get('jsonFile'), 'SQL')
-        # newSQLEditor = SQLEditor(data.get('jsonFile'))
-        # db.insertOneObject('Editors', newSQLEditor)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/loadData/Editor", methods = ["GET"])
+@editors.route("/loadData", methods = ["GET"])
 def loadUMLEditor():
     try:
         data = request.args
         EditorFromDB = loadEditor(data.get('ID'))
-        # query = {'EditorID': data.get('ID')}
-        # EditorFromDB = db.getOneEditor(query)
         return Response(json.dumps(EditorFromDB.__dict__), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

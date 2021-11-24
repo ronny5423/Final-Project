@@ -1,4 +1,4 @@
-import re
+import re, json
 import itertools as it
 import numpy as np
 
@@ -330,6 +330,11 @@ def sql_parser(sql_json, uml_json):
             complexity = calculate_query_complexity(uml_json, query_classes, classes_names, query)
             queries_complexity[key] = complexity
 
-    res = {'classes': classes, 'matrix_classes': matrix_classes, 'queries_complexity': queries_complexity}
+    res = {
+            'classes': json.dumps(classes), 
+            'matrix_classes': json.dumps(dict(enumerate(matrix_classes.flatten(), 1))),
+            'shape': matrix_classes.shape[0], 
+            'queries_complexity': queries_complexity
+        }
     return res
 

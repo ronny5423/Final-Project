@@ -1,6 +1,11 @@
-
+# Import father class
 from modules.Editor import Editor
+
+# Import Editor parser
 from modules.parsers.parserUML import uml_parser
+
+# Import utils
+from modules.utils.project_utils import *
 
 class UMLEditor(Editor):
     def __init__(self, undecipheredJson, convertedData=None, EditorID=None):

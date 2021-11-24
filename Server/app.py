@@ -13,8 +13,8 @@ db.initMongoDB(app)
 # import routes
 from routes.auth import auth
 from routes.editors import editors
-app.register_blueprint(auth)
-app.register_blueprint(editors)
+app.register_blueprint(auth, '/auth')
+app.register_blueprint(editors, '/editors')
 
 @app.route("/")
 def default():
