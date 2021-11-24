@@ -10,16 +10,17 @@ import React, { useState, useEffect } from 'react';
 import UmlEditor from "./components/pageComponents/UmlEditor";
 import SignUp from "./components/pageComponents/SignUp";
 import CreateProjectPage from "./components/pageComponents/CreateProjectPage";
+import Switches from "./Utils/Switches";
 
 
 function App() {
   const [currentTime, setCurrentTime] = useState(0);
 
-  useEffect(() => {
-    fetch('/home').then(res => res.json()).then(data => {
-      setCurrentTime(data.time);
-    });
-  }, []);
+  // useEffect(() => {
+  //   fetch('/home').then(res => res.json()).then(data => {
+  //     setCurrentTime(data.time);
+  //   });
+  // }, []);
 
   let isLoggedIn = false;
 
@@ -30,23 +31,7 @@ function App() {
         <MainMenu />
         <UserMenu />
       </div>
-        <Switch>
-            <Route path="/home" >
-                <Login></Login>
-            </Route>
-            <Route path={"/about"}>
-                <About/>
-            </Route>
-            <Route path={"/contact"}>
-                <ContactForm/>
-            </Route>
-            <Route path="/UmlEditor" >
-                <UmlEditor></UmlEditor>
-            </Route>
-            <Route>
-                <CreateProjectPage/>
-            </Route>
-        </Switch>
+        <Switches/>
     </div>
   );
 }
