@@ -26,6 +26,10 @@ export default function MainMenu() {
                 <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
                 <span>UML</span>
             </Link>
+            <Link id="SqlEditor" className="bm-item" to="/SqlEditor" onClick={()=>setOpen(false)}>
+                <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
+                <span>SQL</span>
+            </Link>
     </Menu>
   )
 }
