@@ -7,7 +7,7 @@ import val from "../../Utils/UmlValidationUtill";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import * as SqlHelper from "../../Utils/SqlValidationUtils";
+import {useRef, useState} from "react";
 
 
 var umlJson={ "class": "GraphLinksModel",
@@ -22,7 +22,7 @@ var umlJson={ "class": "GraphLinksModel",
 
 var myDiagram;
 
-const Pallete = () => {    
+const Pallete = (props) => {
 
     function initDiagram() {
         var $ = go.GraphObject.make;  // for conciseness in defining templates
@@ -743,6 +743,8 @@ const Pallete = () => {
             document.getElementById("mySavedModel").value = myDiagram.model.toJson();
             umlJson = myDiagram.model.toJson();
             myDiagram.isModified = false;
+            if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
+                props.changeUmlStatus();
         }
 
         function load() {
@@ -762,6 +764,10 @@ const Pallete = () => {
             // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
             var pos = myDiagram.model.modelData.position;
             if (pos) myDiagram.initialPosition = go.Point.parse(pos);
+        }
+
+        function hi(){
+            alert("hi")
         }
 
 
@@ -803,6 +809,16 @@ const Pallete = () => {
 };
 
 
-export default Pallete;
+export default function UmlEditor(props){
+    let initMap = new Map();
+    initMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""});
+    const[queries,updateQueries] = useState(initMap)
+    const[currentRowIndex,updateRowIndex]=useState(0)
+    const classes=useRef({})
+    const edit=useRef(true)
+    const[disabled,updateDisabled]=useState(false)
+    const previousState=useRef(new Map());
+    return Pallete(props);
+}
 
 

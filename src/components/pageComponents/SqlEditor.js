@@ -5,6 +5,7 @@ import { faTrash} from '@fortawesome/fontawesome-free-solid'
 import "../cssComponents/SqlEditor.css";
 import * as SqlHelper from "../../Utils/SqlValidationUtils";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {serverAddress} from "../../Constants";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,7 +13,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function SqlEditor(props){
-    const[queries,updateQueries]=useState(new Map().set(0,{"name":"query","tpm": 35, "selectable": true, "query": ""}))
+    let initMap = new Map();
+    initMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""});
+    const[queries,updateQueries] = useState(initMap)
     const[currentRowIndex,updateRowIndex]=useState(0)
     const classes=useRef({})
     const edit=useRef(true)
@@ -21,24 +24,33 @@ export default function SqlEditor(props){
 
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
-            // let response = await axios.get(`server path`)
-            // classes.current = response.data.classes
-            let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
-
-            let map=new Map();
-            map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": "abc"});
-            map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": "def"});
-            let response={
-                data:{
-                    queries:map,
-                    classes: classesDict
-                }
-            };
+            let response = undefined;
+            try {
+                response = await axios.get(serverAddress+`/getSql`);
+            }catch (e){
+                let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
+                let map=new Map();
+                map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": ""});
+                map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": ""});
+                response={
+                    data:{
+                        queries: Object.fromEntries(map),
+                        classes: classesDict
+                    }
+                };
+            }
+            //response = await axios.get(serverAddress+`/getSql`);
             if (response.data.queries) {
                 edit.current=false
-                previousState.current=response.data.queries
+                previousState.current = response.data.queries
                 updateDisabled(true)
-                updateQueries(response.data.queries)
+                response.data.queries = new Map(Object.entries(response.data.queries))
+                let convertMapKeys = new Map();
+                for (let [key, value] of response.data.queries){
+                    let newKey = parseInt(key, 10);
+                    convertMapKeys.set(newKey, value)
+                }
+                updateQueries(convertMapKeys)
             }
             if (response.data.classes) {
                 SqlHelper.addUmlClasses(response.data.classes);
@@ -47,29 +59,10 @@ export default function SqlEditor(props){
         fetchSQLQueriesFromServer()
     },[])
 
-    // useEffect(()=>{
-    //     async function fetchUmlClassesFromServer() {
-    //         // let response = await axios.get(`server path`)
-    //         // classes.current = response.data.classes
-    //         let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
-    //
-    //         //let classesDict = {"Query Matrix": [], "Project": ["userId"], "Relation": [], "UML CD": [], "Attribute": [], "Class": []};
-    //
-    //         let response={
-    //             data:{
-    //                 classes: classesDict
-    //             }
-    //         };
-    //         if (response.data.classes) {
-    //             SqlHelper.addUmlClasses(response.data.classes);
-    //         }
-    //     }
-    //     fetchUmlClassesFromServer();
-    // },[])
 
 
     function createQuery(index){
-        let query=queries.get(index);
+        let query = queries.get(index);
         return(
             <tr>
                 <td><OverlayTrigger placement={"bottom"} overlay={<Tooltip placement={"bottom"}>Click on index to view the query</Tooltip> }><span id={"index"} onClick={_=>updateRowIndex(index)}><u>{index +1}</u></span></OverlayTrigger></td>
@@ -95,7 +88,7 @@ export default function SqlEditor(props){
         }
         updateQueries(newQueriesMap)
         if(newQueriesMap.size===0){
-            newQueriesMap.set(0,{"name":"query","tpm": 35, "selectable": true, "query": ""})
+            newQueriesMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""})
         }
         if(currentRowIndex===rowIndex && currentRowIndex===newQueriesMap.size){
             updateRowIndex(currentRowIndex-1)
@@ -105,7 +98,7 @@ export default function SqlEditor(props){
     function createTable(){
         //console.log(queries.size);
         let arr=[]
-        for(let i=0;i<queries.size;i++){
+        for(let i=0; i<queries.size; i++){
             arr.push(createQuery(i))
         }
         return arr
@@ -135,7 +128,7 @@ export default function SqlEditor(props){
 
     function addQuery(){
         let newQueriesMap=new Map(queries)
-        newQueriesMap.set(newQueriesMap.size,{"name":"query","tpm": 35, "selectable": true, "query": ""})
+        newQueriesMap.set(newQueriesMap.size,{"name":"query","tpm": 45, "selectable": true, "query": ""})
         updateQueries(newQueriesMap)
     }
 
@@ -171,7 +164,7 @@ export default function SqlEditor(props){
 
 
     return (
-        <Form style={{width:"100%"}} onSubmit={handleSubmit}>
+        <Form data-testid={"SqlEditor"} style={{width:"100%"}} onSubmit={handleSubmit}>
         <div id={"tableAndTextAreaDiv"}>
             <Table responsive>
                 <thead>

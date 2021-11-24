@@ -55,6 +55,7 @@ let properties = new Set();
 // return {"Person": ["Name"], "User": ["UserName", "Password"]}
 export function addUmlClasses(classDict){
     classes = classDict;
+    properties = new Set();
     for (const [key, value] of Object.entries(classDict)) {
         for (let idx in value){
             properties.add(value[idx]);
@@ -62,27 +63,6 @@ export function addUmlClasses(classDict){
     }
 }
 
-
-function replacer(key, value) {
-    if(value instanceof Map) {
-        return {
-            dataType: 'Map',
-            value: Array.from(value.entries()), // or with spread: value: [...value]
-        };
-    } else {
-        return value;
-    }
-}
-
-
-function reviver(key, value) {
-    if(typeof value === 'object' && value !== null) {
-        if (value.dataType === 'Map') {
-            return new Map(value.value);
-        }
-    }
-    return value;
-}
 
 function addProblem(problemsObj, key, problem){
     if(key in problemsObj){
@@ -123,7 +103,7 @@ function getAllClassesInFrom(queryArr){
                         }
                     }
                     if(!exist)
-                        throw cls + " is not a valid class name.";
+                        throw cls + " is not a valid class name";
                     else
                         idx = tmpIdx;
                 }
@@ -416,8 +396,6 @@ function parseUpdateQuery(queryArr) {
         parseWhereQuery(queryArr, idx, classAs);
     }
 
-    console.log(classAs);
-
 }
 
 function parseInsertQuery(queryArr) {
@@ -573,6 +551,13 @@ export function ValidateAllQueries(queries){
         let classAs = {}; //saving renames of classes
         if(queryType === 1){ // Return
             try {
+                const includesFrom = queryArr.some(element => {
+                    return element.toLowerCase() === 'from';
+                });
+                if (!includesFrom){
+                    addProblem(problems, key, "From is missing");
+                    continue;
+                }
                 classAs = getAllClassesInFrom(queryArr);
                 parseReturnQuery(queryArr,1,classAs);
                 const whereIdx = queryArr.findIndex(element => {

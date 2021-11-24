@@ -62,6 +62,10 @@
   "proxy": "http://localhost:5000",
   "devDependencies": {
     "axios": "^0.23.0",
-    "msw": "^0.35.0"
+    "msw": "^0.35.0",
+    "string.prototype.replaceall": "^1.0.6"
+  },
+  "jest": {
+
   }
 }
