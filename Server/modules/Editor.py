@@ -2,9 +2,10 @@
 EditorsID = 1
 
 class Editor:
-    def __init__(self, undecipheredJson, convertedMatrix=None, EditorID=EditorsID):
+    def __init__(self, undecipheredJson, projectID, convertedData=None, EditorID=EditorsID):
         self.undecipheredJson = undecipheredJson
-        self.convertedMatrix = convertedMatrix
+        self.projectID = projectID
+        self.convertedData = convertedData
         # Manage Editors ID
         global EditorsID
         if EditorID == EditorsID:
