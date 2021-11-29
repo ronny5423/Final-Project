@@ -17,7 +17,6 @@ export default function SqlEditor(props){
     initMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""});
     const[queries,updateQueries] = useState(initMap)
     const[currentRowIndex,updateRowIndex]=useState(0)
-    const classes=useRef({})
     const edit=useRef(true)
     const[disabled,updateDisabled]=useState(false)
     const previousState=useRef(new Map());
@@ -26,7 +25,7 @@ export default function SqlEditor(props){
         async function fetchSQLQueriesFromServer() {
             let response = undefined;
             try {
-                response = await axios.get(serverAddress+`/getSql`);
+                response = await axios.get(serverAddress+`/editors/loadData?ID=${props.id}`);
             }catch (e){
                 let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
                 let map=new Map();
