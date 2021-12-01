@@ -2,7 +2,6 @@ import * as go from 'gojs';
 import { ReactDiagram, ReactPalette } from "gojs-react";
 import * as React from "react";
 import "../cssComponents/umlEditor.css";
-//import "../cssComponents/UmlStyle.css";
 import val from "../../Utils/UmlValidationUtill";
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
-import * as SqlHelper from "../../Utils/SqlValidationUtils";
 
 
 var umlJson={ "class": "GraphLinksModel",
@@ -829,8 +827,10 @@ export default function UmlEditor(props){
     useEffect(()=>{
         async function fetchUmlFromServer() {
             let response = undefined;
+            if (!props.editorID)
+                return;
             try {
-                response = await axios.get(serverAddress+`/editors/loadData?ID=${props.id}`);
+                response = await axios.get(serverAddress+`/editors/loadData?ID=${props.editorID}`);
             }catch (e){
                 loadUml(umlJson);
             }
@@ -1567,6 +1567,22 @@ export default function UmlEditor(props){
         myDiagram.isModified = false;
         if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
             props.changeUmlStatus();
+
+    }
+
+    async function saveUmlToServer(){
+        let url = undefined;
+        if (props.editorID){
+
+        }
+        let uml = myDiagram.model.toJson();
+        try {
+            let response = await axios.post(serverAddress+`/editors/saveUMLEditor`, {'jsonFile': uml});
+            console.log(response);
+        }catch (e){
+            console.log(e);
+            console.trace();
+        }
     }
 
     function load() {
@@ -1582,6 +1598,7 @@ export default function UmlEditor(props){
     function saveDiagramProperties() {
         myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
     }
+
     function loadDiagramProperties(e) {
         // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
         var pos = myDiagram.model.modelData.position;
