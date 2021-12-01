@@ -47,7 +47,7 @@ class DataBase:
         convertedData = []
         for line in objectsFromDB:
             convertedData.append(EditorsSwitchCase(line))
-        return convertedData
+        return convertedData        
     
     def getOneProject(self, data):
         objectFromDB = self.db.db.Projects.find_one(data)
@@ -71,24 +71,36 @@ class DataBase:
     def insertOneObject(self,saveTo, objectToSave):
         self.db.db[saveTo].insert_one(objectToSave.__dict__)
 
-    def insertManyOjects(self, saveTo, objectsToSave):
+    def insertManyObjects(self, saveTo, objectsToSave):
         # Convert objects list to dict list
         dictObjects = []
         for object in objectsToSave:
             dictObjects.append(object.__dict__)
         self.db.db[saveTo].insert_many(dictObjects)
+        
+    def updateOneEditor(self, editorToUpdate):
+        self.db.db.Editors.update_one({'EditorID': editorToUpdate.EditorID}, {
+            '$set': {
+                'undecipheredJson': editorToUpdate.undecipheredJson,
+                'convertedData': editorToUpdate.convertedData
+            }
+        })
+        
+    # def getNextID(self, collection):
+    #     return self.db[collection].findOne({},sort={'ProjectID':-1})
+
 
 
 # Helper Functions
 def EditorsSwitchCase(objectFromDB):
     if objectFromDB['type'] == 'UML':
-        return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['convertedMatrix'], objectFromDB['EditorID'])
+        return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     elif objectFromDB['type'] == 'SQL':
-        return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['convertedMatrix'], objectFromDB['EditorID'])
+        return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     elif objectFromDB['type'] == 'NFR':
-        return NFREditor(objectFromDB['undecipheredJson'], objectFromDB['convertedMatrix'], objectFromDB['EditorID'])
+        return NFREditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     else:
-        return Editor(objectFromDB['undecipheredJson'], objectFromDB['convertedMatrix'], objectFromDB['EditorID'])
+        return Editor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
 
 
 db = DataBase()

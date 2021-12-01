@@ -5,17 +5,18 @@ from modules.Editor import Editor
 from modules.parsers.praserNFR import nfr_parser
 
 # Import utils
-from modules.utils.project_utils import *
+from database import *
 
 class NFREditor(Editor):
     def __init__(self, undecipheredJson, projectID, convertedData=None, EditorID=None):
         super().__init__(undecipheredJson, projectID, convertedData, EditorID)
-        self.parseJson()
+        # if convertedData == None:
+        #     self.parseJson()
+        self.convertedData = convertedData
         self.type = 'NFR'
     
-    def parseJson(self):
-        editorProject = loadProject(self.projectID)
-        self.convertedData = nfr_parser(self.undecipheredJson, editorProject.getProjectUML(), editorProject.getProjectSQL())
+    def parseJson(self, UMLclasses, AHPvalues):
+        self.convertedData = nfr_parser(self.undecipheredJson, UMLclasses, AHPvalues)
 
     def updateEditor(self, undecipheredJson):
         self.undecipheredJson = undecipheredJson

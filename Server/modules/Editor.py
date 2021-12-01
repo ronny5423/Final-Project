@@ -1,16 +1,16 @@
 
-EditorsID = 1
+import itertools
 
 class Editor:
-    def __init__(self, undecipheredJson, projectID, convertedData=None, EditorID=EditorsID):
+    id_iter = itertools.count()
+
+    def __init__(self, undecipheredJson, projectID, convertedData=None, EditorID=None):
         self.undecipheredJson = undecipheredJson
         self.projectID = projectID
         self.convertedData = convertedData
-        # Manage Editors ID
-        global EditorsID
-        if EditorID == EditorsID:
-            EditorsID += 1
-        self.UserID = EditorID
+        if EditorID == None:
+            EditorID = next(Editor.id_iter)
+        self.EditorID = EditorID
 
     def parseJson(self):
         pass

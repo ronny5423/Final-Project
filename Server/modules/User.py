@@ -1,15 +1,9 @@
 
-UsersID = 1
-
 class User:
-    def __init__(self, Username, Password, UserID=UsersID):
+    def __init__(self, Username, Password, userProjects=[]):
         self.Username = Username
         self.Password = Password
-        # Manage Users ID
-        global UsersID
-        if UserID == UsersID:
-            UsersID += 1
-        self.UserID = UserID
+        self.Projects = userProjects
 
     def comparePassword(self, toCompare):
         return self.Password == toCompare

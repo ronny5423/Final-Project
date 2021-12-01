@@ -12,34 +12,43 @@ from modules.UML_editor import UMLEditor
 from modules.NFR_editor import NFREditor
 from modules.SQL_editor import SQLEditor
 
-@editors.route("/saveData/UMLEditor", methods = ["POST"])
+@editors.route("/saveUMLEditor", methods = ["POST"])
 def saveUMLEditor():
     try:
         data = request.json
-        saveEditors(data.get('jsonFile'), 'UML')
+        saveEditors(data, 'UML')
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@editors.route("/updateUMLEditor", methods = ["POST"])
+def updateUMLEditor():
+    try:
+        data = request.json
+        updateEditor(data, 'UML')
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/saveData/NFREditor", methods = ["POST"])
+@editors.route("/saveNFREditor", methods = ["POST"])
 def saveNFREditor():
     try:
         data = request.json
-        saveEditors(data.get('jsonFile'), 'NFR')
+        saveEditors(data, 'NFR')
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/saveData/SQLEditor", methods = ["POST"])
+@editors.route("/saveSQLEditor", methods = ["POST"])
 def saveSQLEditor():
     try:
         data = request.json
-        saveEditors(data.get('jsonFile'), 'SQL')
+        saveEditors(data, 'SQL')
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/loadData", methods = ["GET"])
+@editors.route("/loadEditor", methods = ["GET"])
 def loadUMLEditor():
     try:
         data = request.args

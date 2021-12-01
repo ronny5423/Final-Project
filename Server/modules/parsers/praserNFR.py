@@ -1,13 +1,18 @@
 import numpy as np
 
-def nfr_parser(classes, nfrValues, ahpValues):
+def nfr_parser(nfrValues, classes, ahpValues):
     """
     This function convers nfr input to nfr matrix
-    :param classes: set, a set of classes in project
+    :param classes: set, a set of classes from the UML in project
     :param nfrValues: dict, a odict that stores the classes and a dict of nfr weight and it's value as it's value
     :param ahpValues: dictionary, a dictionary that map each nfr to it's ahp
     :return: tuple holds dictionary that map each class to it's index in nfr matrix and numpy matrix that represents nfr
      matrix
+     
+     Input example:
+        classesSet = {"A", "B"}
+        ahpDict = {"aa": 0.2, "bb": 0.3, "cc": 0.5}
+        classesObj = {"A": {"aa": 0.1, "bb": 0.4, "cc": 0.5}, "B": {"aa": 0.2, "bb": 0.3, "cc": 0.5}}
     """
     classesMap = {}
     i = 0

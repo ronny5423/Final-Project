@@ -4,13 +4,13 @@ from modules.Editor import Editor
 # Import Editor parser
 from modules.parsers.parserUML import uml_parser
 
-# Import utils
-from modules.utils.project_utils import *
-
 class UMLEditor(Editor):
-    def __init__(self, undecipheredJson, convertedData=None, EditorID=None):
-        super().__init__(undecipheredJson, convertedData, EditorID)
-        self.parseJson()
+    def __init__(self, undecipheredJson, projectID, convertedData=None, EditorID=None):
+        super().__init__(undecipheredJson, projectID, convertedData, EditorID)
+        if convertedData == None:
+            self.parseJson()
+        else:
+            self.convertedData = convertedData
         self.type = 'UML'
     
     def parseJson(self):

@@ -44,7 +44,6 @@ def uml_parser(uml_json):
             class_from = classes[link["from"]]
             increment_matrix_table_cell(matrix_classes, class_to, class_from)
         else:
-            matrix_classes = 0
             asc_class = 0
             if link["to"] not in classes:
                 link_label = link["to"]
