@@ -117,6 +117,8 @@ function checkAllClassesWithUniqueName(umlObj){
     for(let i = 0; i < nodesDataArray.length; i++){
         let node = nodesDataArray[i];
         if("name" in node){
+            if(node["name"].length === 0)
+                return "Class must have a name";
             if (names.has(node["name"]))
                 return "Class name must be unique";
             names.add(node["name"]);
