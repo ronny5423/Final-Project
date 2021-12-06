@@ -18,31 +18,44 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
         async function fetchProjectsFromServer(startIndex){
             let end
             let numberOfSpare=0
-            if(startIndex+numberOfItemsInPage+spareDataNumber<=dataLength){
-                end=startIndex+numberOfItemsInPage+spareDataNumber-1
+            if(dataLength===0){
                 numberOfSpare=spareDataNumber
+                end=numberOfItemsInPage+spareDataNumber
             }
             else{
-                end=dataLength-1
-                if(end-startIndex+1>numberOfItemsInPage){
-                    numberOfSpare=end-startIndex+1-numberOfItemsInPage
+                if(startIndex+numberOfItemsInPage+spareDataNumber<=dataLength){
+                    end=startIndex+numberOfItemsInPage+spareDataNumber-1
+                    numberOfSpare=spareDataNumber
+                }
+                else{
+                    end=dataLength-1
+                    if(end-startIndex+1>numberOfItemsInPage){
+                        numberOfSpare=end-startIndex+1-numberOfItemsInPage
+                    }
                 }
             }
-            otherParametersToSendToServer.current.startIndex=startIndex
-            otherParametersToSendToServer.current.endIndex=end
+            // otherParametersToSendToServer.current.startIndex=startIndex
+            // otherParametersToSendToServer.current.endIndex=end
             // let response= await axios.get(serverAddress+`${route}`,{params:otherParametersToSendToServer.current})
             // if(response.status===200){
-            //     let endIndex=response.data.projects.length-1
+            //     let endIndex=response.data.data.length-1
+            //     if(dataLength===0){
+            //         if(response.data.data.length>numberOfItemsInPage){
+            //             numberOfSpare=response.data.data.length-numberOfItemsInPage
+            //         }
+            //         else{
+            //             numberOfSpare=0
+            //             }
+            //     }
             //     if(numberOfSpare>0){
             //         endIndex=numberOfItemsInPage-1
             //         spareData.current=response.data.data.slice(response.data.data.length-numberOfSpare,response.data.data.length)
             //     }
-            // else{
+            //     else{
             //         spareData.current=[]
             //     }
             //     updateData(response.data.slice(0,endIndex+1))
-            //     dataLength=response.data.dataLength
-            //      updateDataLength(response.data.dataLength)
+            //     updateDataLength(response.data.dataLength)
             //     dataToShowEndIndex.current=end-numberOfSpare
             // }
             // else{
