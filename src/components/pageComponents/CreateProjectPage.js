@@ -2,28 +2,29 @@ import React, {useState} from "react";
 import {Button, FloatingLabel, Form} from "react-bootstrap";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 function CreateProjectPage(props){
     const[name,updateName]=useState("")
     const[description,updateDescription]=useState("")
-    let history=useHistory()
+    let history=useNavigate()
 
    async function createProject(event){
         event.preventDefault()
         let objToSend={projectName:name,projectDescription:description}
-        let response=await axios.post(serverAddress+`/createProject`,objToSend)
-        if(response.status===201){
-            localStorage.setItem("currentProjectIndex",response.data.index)
-            history.push("/editorsTabs")
-        }
+        // let response=await axios.post(serverAddress+`/createProject`,objToSend)
+        // if(response.status===201){
+        //     localStorage.setItem("currentProjectIndex",response.data.index)
+        //     history("/editorsTabs")
+        // }
+       history("/editorsTabs")
      }
 
     return(
         <Form>
             <h1>Project Creation</h1>
             <br/>
-            <div id={"projectNAmeInput"}>
+            <div id={"projectNameInput"}>
                 <p>Please enter project name:</p>
                 <input type={"text"} onChange={event=>updateName(event.target.value)}/>
             </div>

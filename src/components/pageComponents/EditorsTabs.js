@@ -4,11 +4,13 @@ import UmlEditor from "./UmlEditor";
 import SqlEditor from "./SqlEditor";
 import NFREditor from "./NFREditor";
 import {ChangeMatrixWeights} from "./ChangeMatrixWeights";
+import {useParams} from "react-router-dom";
 
 export default function EditorsTabs(props){
     const [key,setKey]=useState("Uml");
     const [showModal,updateShowModal]=useState(false)
     const moveToOtherTabs=useRef(false)
+    let {umlEditorId,sqlEditorId,nfrEditorId,projectId}=useParams()
 
     function changeMoveToOtherTabs(){
         moveToOtherTabs.current=true
@@ -42,16 +44,16 @@ export default function EditorsTabs(props){
             </Modal>
             <Tabs defaultActiveKey={"Uml"}  activeKey={key} onSelect={(key)=>shouldMoveToOtherTabs(key)}>
                 <Tab title={"Uml"} id={"uml"} eventKey={"Uml"}>
-                    <UmlEditor changeUmlStatus={changeMoveToOtherTabs}/>
+                    <UmlEditor id={umlEditorId} changeUmlStatus={changeMoveToOtherTabs} projectId={projectId}/>
                 </Tab>
                 <Tab title={"Queries"} eventKey={"Queries"} id={"queries"}>
-                    <SqlEditor/>
+                    <SqlEditor id={sqlEditorId} projectId={projectId}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor editibale={true}/>
+                    <NFREditor id={nfrEditorId} projectId={projectId} editibale={true}/>
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
-                    <ChangeMatrixWeights/>
+                    <ChangeMatrixWeights id={props.ahpEditorId}/>
                 </Tab>
             </Tabs>
             <Button variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>

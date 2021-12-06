@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from "react";
 import axios from "axios"
 import {Button, Col, Form, Modal, Row} from "react-bootstrap";
+import {serverAddress} from "../../Constants";
 
 const weightsObj={
     uml:0.4,
@@ -8,14 +9,14 @@ const weightsObj={
     nfr:0.3
 }
 
-export function ChangeMatrixWeights(){
+export function ChangeMatrixWeights(props){
     const[weights,updateWeights]=useState(weightsObj)
     const[disabled,updateDisabled]=useState(false)
     const[showModal,updateShowModal]=useState(false)
 
     useEffect(_=>{
         async function getWeightsFromServer(){
-            let response=await axios.get("server address")
+            let response=await axios.get(serverAddress+`/ahp`)
             if(response.status===200){
                 updateWeights(response.data)
             }
