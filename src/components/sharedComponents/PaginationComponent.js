@@ -26,6 +26,11 @@ export default function PaginationComponent(props){
             }
             updatePagesArr(newPagesArr)
         }
+        else if(numberOfPages.current>pagesArr.length){
+            let newPagesArr=[...pagesArr]
+            newPagesArr.push(pagesArr.length+1)
+            updatePagesArr(newPagesArr)
+        }
     },[props.numberOfElements])
 
     async function clickOnPage(page){
@@ -36,7 +41,7 @@ export default function PaginationComponent(props){
     async function clickOnLast(){
         await props.fetchData((numberOfPages.current-1)*numberOfItemsInPage)
         let newPagesArr=[]
-        let start=numberOfPages.current-1
+        let start=numberOfPages.current
         if(numberOfPages.current-numberOfPagesToShow>=0){
             start=numberOfPages.current % numberOfPagesToShow
         }

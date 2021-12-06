@@ -89,8 +89,8 @@ export default function ProjectRow(props){
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant={"success"} onClick={editNameAndDescription}>Yes</Button>
-                        <Button variant={"info"} onClick={_=>updateEditModal(false)}>No</Button>
+                        <Button variant={"success"} onClick={editNameAndDescription}>Save</Button>
+                        <Button variant={"danger"} onClick={_=>updateEditModal(false)}>Cancel</Button>
                     </Modal.Footer>
                 </Modal>
            </tr>

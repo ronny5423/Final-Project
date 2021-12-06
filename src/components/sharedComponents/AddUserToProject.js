@@ -11,16 +11,18 @@ export default function AddUserToProject(props){
 
    async function addUser(){
         //send axios
-        let response=await axios.post(serverAddress+`/addUserToProject`,{params:{projectId:props.projectId,username:user}})
-        if(response.status===201){
-            props.addUser()
-        }
-        else if(response.status===409){
-            updateShowErrorModal(true)
-        }
-        else{
-            history("/error")
-        }
+        // let response=await axios.post(serverAddress+`/addUserToProject`,{params:{projectId:props.projectId,username:user}})
+        // if(response.status===201){
+        //     props.addUser()
+        // }
+        // else if(response.status===409){
+        //     updateShowErrorModal(true)
+        // }
+        // else{
+        //     history("/error")
+        // }
+       props.addUser(user)
+       props.hide()
     }
 
     return(
@@ -30,10 +32,11 @@ export default function AddUserToProject(props){
                 Add user to project
             </Modal.Header>
             <Modal.Body>
-                <Form>
+                <div style={{"display":"flex","flex-direction":"column"}}>
                     <Form.Label>Please type username to add to project</Form.Label>
-                    <Form.Control as={"text"} value={user} onChange={event => updateUser(event.target.value)} placeholder={"username to add to project"}/>
-                </Form>
+                    <input type={"text"} value={user} onChange={event => updateUser(event.target.value)} placeholder={"username to add to project"}/>
+
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={addUser} variant={"success"}>Add User</Button>
