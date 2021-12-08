@@ -11,9 +11,10 @@ export default function EditorsTabs(props){
     const [showModal,updateShowModal]=useState(false)
     const moveToOtherTabs=useRef(false)
     let {umlEditorId,sqlEditorId,nfrEditorId,projectId}=useParams()
+    let classes=useRef({})
 
-    function changeMoveToOtherTabs(){
-        moveToOtherTabs.current=true
+    function changeMoveToOtherTabs(shouldMove){
+        moveToOtherTabs.current=shouldMove
     }
 
     function shouldMoveToOtherTabs(key){
@@ -34,6 +35,10 @@ export default function EditorsTabs(props){
         }
     }
 
+    function updateClasses(classesArr){
+        classes.current=classesArr
+    }
+
     return(
         <div>
             <Modal show={showModal} onHide={_=>updateShowModal(false)} centered>
@@ -44,13 +49,13 @@ export default function EditorsTabs(props){
             </Modal>
             <Tabs defaultActiveKey={"Uml"}  activeKey={key} onSelect={(key)=>shouldMoveToOtherTabs(key)}>
                 <Tab title={"Uml"} id={"uml"} eventKey={"Uml"}>
-                    <UmlEditor id={umlEditorId} changeUmlStatus={changeMoveToOtherTabs} projectId={projectId}/>
+                    <UmlEditor id={umlEditorId} changeUmlStatus={changeMoveToOtherTabs} projectId={projectId} updateClasses={updateClasses}/>
                 </Tab>
                 <Tab title={"Queries"} eventKey={"Queries"} id={"queries"}>
-                    <SqlEditor id={sqlEditorId} projectId={projectId}/>
+                    <SqlEditor id={sqlEditorId} projectId={projectId} classes={classes.current}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor id={nfrEditorId} projectId={projectId} editibale={true}/>
+                    <NFREditor id={nfrEditorId} projectId={projectId} editibale={true} classes={Object.keys(classes.current)}/>
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
                     <ChangeMatrixWeights id={props.ahpEditorId}/>
