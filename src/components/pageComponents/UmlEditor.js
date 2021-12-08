@@ -2,7 +2,6 @@ import * as go from 'gojs';
 import { ReactDiagram, ReactPalette } from "gojs-react";
 import * as React from "react";
 import "../cssComponents/umlEditor.css";
-//import "../cssComponents/UmlStyle.css";
 import val from "../../Utils/UmlValidationUtill";
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
-import * as SqlHelper from "../../Utils/SqlValidationUtils";
 
 
 var umlJson={ "class": "GraphLinksModel",
@@ -18,30 +16,16 @@ var umlJson={ "class": "GraphLinksModel",
     "copiesArrayObjects": true,
     "linkKeyProperty": "key",
     "linkLabelKeysProperty": "labelKeys",
-    "modelData": {"position":"-424 -225.68612874830794"},
-    "nodeDataArray": [
-        {"type":"Class","name":"Person","properties":[{"name":"Name:","type":"String"}],"methods":[],"key":-1,"loc":"-260 -180"},
-        {"type":"Class","name":"User","properties":[{"name":"UserName:","type":"String"},{"name":"Password:","type":"String","visibility":"-"}],"methods":[],"key":-2,"loc":"170 -180"},
-        {"type":"Class","name":"WatchList","properties":[{"name":"Movies:","type":"Integer"}],"methods":[],"key":-3,"loc":"-70 10"},
-        {"type":"Class","name":"Movie","properties":[{"name":"Name","type":"String"}],"methods":[],"key":-4,"loc":"-50 190"},
-        {"category":"LinkLabel","key":-5,"segmentIndex":1,"segmentFraction":0.7216621600001181},
-        {"type":"Association Class","name":"Showing","properties":[{"name":"showTime","type":"Time"}],"methods":[],"key":-6,"loc":"300 90"}
-    ],
-    "linkDataArray": [
-        {"name":"generalization","toArrow":"Triangle","points":[83.62900797044205,-180,73.62900797044205,-180,-51.861816406250014,-180,-51.861816406250014,-180,-177.35264078294207,-180,-187.35264078294207,-180],"from":-2,"to":-1,"labelKeys":[],"key":-1},
-        {"category":"Linkble","name":"association","RoleFrom":"from","RoleTo":"to","MultiFrom":"1","MultiTo":"*","toArrow":"","points":[170,-139.31387125169206,170,-129.31387125169206,170,-79.61928812542301,-70,-79.61928812542301,-70,-29.92470499915397,-70,-19.92470499915397],"from":-2,"to":-3,"labelKeys":[],"key":-2},
-        {"category":"Linkble","name":"association","RoleFrom":"from","RoleTo":"to","MultiFrom":"*","MultiTo":"*","toArrow":"","points":[-70,39.924704999153974,-70,49.924704999153974,-70,100,-50,100,-50,150.07529500084604,-50,160.07529500084604],"from":-3,"to":-4,"labelKeys":[-5],"key":-3},
-        {"name":"associationClassLink","dashed":[5,5],"toArrow":"","points":[-67,86.06215055210762,-57,86.06215055210762,75.54570515709602,86.06215055210762,75.54570515709602,90,208.09141031419205,90,218.09141031419205,90],"from":-5,"to":-6,"labelKeys":[],"key":-4}
-    ]};
+    "nodeDataArray": [],
+    "linkDataArray": []};
 
 
-//var myDiagram;
 
 // const Pallete = (props) => {
-//
+
 //     function initDiagram() {
 //         var $ = go.GraphObject.make;  // for conciseness in defining templates
-//
+
 //         myDiagram =
 //         $(go.Diagram, // must name or refer to the DIV HTML element
 //             {
@@ -71,7 +55,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             "toolManager.hoverDelay": 1
 //             });
 //         myDiagram.model.copiesArrayObjects = true;
-//
+
 //         // when the document is modified, add a "*" to the title and enable the "Save" button
 //         myDiagram.addDiagramListener("Modified", function(e) {
 //         var button = document.getElementById("SaveButton");
@@ -83,7 +67,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             if (idx >= 0) document.title = document.title.substr(0, idx);
 //         }
 //         });
-//
+
 //         // Define a function for creating a "port" that is normally transparent.
 //         // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
 //         // and where the port is positioned on the node, and the boolean "output" and "input" arguments
@@ -105,13 +89,13 @@ var umlJson={ "class": "GraphLinksModel",
 //             fromLinkableSelfNode: true, toLinkableSelfNode: true
 //             });
 //         }
-//
+
 //         var nodeSelectionAdornmentTemplate =
 //         $(go.Adornment, "Auto",
 //             $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] }),
 //             $(go.Placeholder)
 //         );
-//
+
 //         var nodeResizeAdornmentTemplate =
 //         $(go.Adornment, "Spot",
 //             { locationSpot: go.Spot.Right },
@@ -119,23 +103,23 @@ var umlJson={ "class": "GraphLinksModel",
 //             $(go.Shape, { alignment: go.Spot.TopLeft, cursor: "nw-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
 //             $(go.Shape, { alignment: go.Spot.Top, cursor: "n-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
 //             $(go.Shape, { alignment: go.Spot.TopRight, cursor: "ne-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-//
+
 //             $(go.Shape, { alignment: go.Spot.Left, cursor: "w-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
 //             $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-//
+
 //             $(go.Shape, { alignment: go.Spot.BottomLeft, cursor: "se-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
 //             $(go.Shape, { alignment: go.Spot.Bottom, cursor: "s-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
 //             $(go.Shape, { alignment: go.Spot.BottomRight, cursor: "sw-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" })
 //         );
-//
+
 //         var nodeRotateAdornmentTemplate =
 //         $(go.Adornment,
 //             { locationSpot: go.Spot.Center, locationObjectName: "ELLIPSE" },
 //             $(go.Shape, "Ellipse", { name: "ELLIPSE", cursor: "pointer", desiredSize: new go.Size(7, 7), fill: "lightblue", stroke: "deepskyblue" }),
 //             $(go.Shape, { geometryString: "M3.5 7 L3.5 30", isGeometryPositioned: true, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] })
 //         );
-//
-//
+
+
 //         function showSmallPorts(node, show) {
 //         node.ports.each(function(port) {
 //             if (port.portId !== "") {  // don't change the default port, which is the big shape
@@ -143,16 +127,16 @@ var umlJson={ "class": "GraphLinksModel",
 //             }
 //         });
 //         }
-//
-//
+
+
 //         var linkSelectionAdornmentTemplate =
 //         $(go.Adornment, "Link",
 //             $(go.Shape,
 //             // isPanelMain declares that this Shape shares the Link.geometry
 //             { isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0 })  // use selection object's strokeWidth
 //         );
-//
-//
+
+
 //         function AssociationClassLinkValidation(fromnode, fromport, tonode, toport){
 //         //console.log(fromnode);
 //         if(!fromnode || !tonode){
@@ -161,14 +145,14 @@ var umlJson={ "class": "GraphLinksModel",
 //         if(fromnode.data.type === "Association Class" || tonode.data.type === "Association Class"){
 //             return true;
 //         }
-//
+
 //         return false;
 //         }
-//
+
 //         //myDiagram.toolManager.linkingTool.linkValidation = AssociationClassLinkValidation;
-//
+
 //         //myDiagram.toolManager.relinkingTool.linkValidation = AssociationClassLinkValidation;
-//
+
 //         myDiagram.nodeTemplateMap.add("LinkLabel",
 //         $(go.Node,
 //         {
@@ -201,8 +185,8 @@ var umlJson={ "class": "GraphLinksModel",
 //             fromLinkable: true, toLinkable: true, cursor: "pointer"
 //             })
 //         ));
-//
-//
+
+
 //         myDiagram.linkTemplate =
 //         $(go.Link,  // the whole link panel
 //             { selectable: true, selectionAdornmentTemplate: linkSelectionAdornmentTemplate },
@@ -232,14 +216,14 @@ var umlJson={ "class": "GraphLinksModel",
 //             { segmentIndex: -1, segmentOffset: new go.Point(NaN, 10),
 //                 segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "MultiTo").makeTwoWay())
 //         );
-//
+
 //         //load();  // load an initial diagram from some JSON text
-//
+
 //         // show visibility or access as a single character at the beginning of each property or method
 //         function convertVisibility(v) {
 //             if(v==="+" || v==="-" || v==="#" || v==="~")
 //                 return v;
-//
+
 //             switch (v) {
 //                 case "public": return "+";
 //                 case "private": return "-";
@@ -248,28 +232,28 @@ var umlJson={ "class": "GraphLinksModel",
 //                 default: return "+";
 //             }
 //         }
-//
+
 //         function createJunction(e, link) { // Creates Junction node when user double clicks on a link
 //         if(link && link.ob.labelKeys.length === 1)
 //             return;
 //         e.handled = true;
 //         e.diagram.startTransaction("Link Label");
-//
+
 //         var label = { category: "LinkLabel" }; // Create data for label node -- the junction Node
 //         e.diagram.model.addNodeData(label);
-//
+
 //         var labelnode = e.diagram.findNodeForData(label); // Finds the created node from the NodeData
 //         attachJunction(link, labelnode, e.documentPoint);
-//
+
 //         e.diagram.commitTransaction("Link Label");
 //         }
-//
+
 //     function attachJunction(link, labelnode, pos) {
 //         labelnode.labeledLink = link;		// set the labeledLink for the junction node
-//
+
 //         var index = link.findClosestSegment(pos); // Finds the index of the segment that is closest to POS
 //         labelnode.segmentIndex = index;
-//
+
 //         var startPoint = link.points.elt(index); // Grabs the point at the start and end of the segment
 //         var endPoint = link.points.elt(index + 1);
 //         // Finds diff between pos and startPoint divided by diff of endPoint and startPoint
@@ -279,7 +263,7 @@ var umlJson={ "class": "GraphLinksModel",
 //         labelnode.segmentFraction = (pos.x - startPoint.x) / (endPoint.x - startPoint.x);
 //         }
 //     }
-//
+
 //     myDiagram.linkTemplateMap.add("Linkble",
 //     $("Link",
 //             { selectable: true, selectionAdornmentTemplate: linkSelectionAdornmentTemplate },
@@ -310,8 +294,8 @@ var umlJson={ "class": "GraphLinksModel",
 //             { segmentIndex: -1, segmentOffset: new go.Point(NaN, 10),
 //                 segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "MultiTo").makeTwoWay())
 //     ));
-//
-//
+
+
 //         // the item template for properties
 //         var propertyTemplate =
 //         $(go.Panel, "Horizontal",
@@ -339,7 +323,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             },
 //             $(go.Shape, "LineH", { desiredSize: new go.Size(10, 10) }))
 //         );
-//
+
 //         var methodTemplate =
 //         $(go.Panel, "Horizontal",
 //         // method visibility/access
@@ -370,8 +354,8 @@ var umlJson={ "class": "GraphLinksModel",
 //             { isMultiline: false, editable: true },
 //             new go.Binding("text", "type").makeTwoWay())
 //         );
-//
-//
+
+
 //         var UndesiredEventAdornment =
 //         $(go.Adornment, "Spot",
 //             $(go.Panel, "Auto",
@@ -387,7 +371,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             $(go.Shape, "PlusLine", { desiredSize: new go.Size(10, 10) })
 //             )
 //         );
-//
+
 //         function removeProperty(e, obj){
 //             var pan = obj.panel;
 //             if (pan === null) return;
@@ -404,7 +388,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             }
 //             myDiagram.commitTransaction("remove property");
 //         }
-//
+
 //         function addProperty(e, obj) {
 //             var adorn = obj.part;
 //             if (adorn === null) return;
@@ -414,14 +398,14 @@ var umlJson={ "class": "GraphLinksModel",
 //             myDiagram.model.addArrayItem(arr, {});
 //             myDiagram.commitTransaction("add property");
 //         }
-//
+
 //         function convertFill(v) {
 //             switch (v) {
 //                 case "Association Class": return "orange";
 //                 default: return "lightyellow";
 //             }
 //         }
-//
+
 //         myDiagram.nodeTemplate =
 //         $(go.Node, "Auto",
 //         {
@@ -451,7 +435,7 @@ var umlJson={ "class": "GraphLinksModel",
 //                 row: 1, margin: 3, stretch: go.GraphObject.Fill,
 //                 defaultAlignment: go.Spot.Left,
 //                 itemTemplate: propertyTemplate,
-//
+
 //             },
 //             new go.Binding("itemArray", "properties"),
 //             ),
@@ -480,8 +464,8 @@ var umlJson={ "class": "GraphLinksModel",
 //             makePort("R", go.Spot.Right, true, true),
 //             makePort("B", go.Spot.Bottom, true, true),
 //         );
-//
-//
+
+
 //         myDiagram.model = $(go.GraphLinksModel,
 //         {
 //             linkKeyProperty: "key",
@@ -489,13 +473,13 @@ var umlJson={ "class": "GraphLinksModel",
 //             copiesArrays: true,
 //             copiesArrayObjects: true
 //         });
-//
+
 //         //loadUml();
 //         //console.log(myDiagram.model);
-//
+
 //         return myDiagram;
 //     }
-//
+
 //     function initPalette() {
 //         const $ = go.GraphObject.make;
 //         var myPalette = $(go.Palette, {
@@ -545,7 +529,7 @@ var umlJson={ "class": "GraphLinksModel",
 //                 ],
 //                 methods: []
 //               },{
-//
+
 //                 type: "Association Class",
 //                 name: "Association Class",
 //                 properties: [
@@ -561,12 +545,12 @@ var umlJson={ "class": "GraphLinksModel",
 //               ])
 //           }
 //         );
-//
-//
+
+
 //         function convertVisibility(v) {
 //             if(v==="+" || v==="-" || v==="#" || v==="~")
 //                 return v;
-//
+
 //             switch (v) {
 //                 case "public": return "+";
 //                 case "private": return "-";
@@ -575,9 +559,9 @@ var umlJson={ "class": "GraphLinksModel",
 //                 default: return "+";
 //             }
 //         }
-//
+
 //         let myDiagram = undefined;
-//
+
 //         function removeProperty(e, obj){
 //             var pan = obj.panel;
 //             if (pan === null) return;
@@ -594,7 +578,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             }
 //             myDiagram.commitTransaction("remove property");
 //         }
-//
+
 //         function makePort(name, spot, output, input) {
 //             // the port is basically just a small transparent circle
 //             return $(go.Shape, "Circle",
@@ -612,7 +596,7 @@ var umlJson={ "class": "GraphLinksModel",
 //                 fromLinkableSelfNode: true, toLinkableSelfNode: true
 //                 });
 //             }
-//
+
 //         // the item template for properties
 //         var propertyTemplate =
 //         $(go.Panel, "Horizontal",
@@ -642,7 +626,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             },
 //             $(go.Shape, "LineH", { desiredSize: new go.Size(10, 10) }))
 //         );
-//
+
 //         var methodTemplate =
 //         $(go.Panel, "Horizontal",
 //         // method visibility/access
@@ -673,15 +657,15 @@ var umlJson={ "class": "GraphLinksModel",
 //             { isMultiline: false, editable: true },
 //             new go.Binding("text", "type").makeTwoWay())
 //         );
-//
+
 //         function convertFill(v) {
 //             switch (v) {
 //                 case "Association Class": return "orange";
 //                 default: return "lightyellow";
 //             }
 //         }
-//
-//
+
+
 //         myPalette.nodeTemplate =
 //         $(go.Node, "Auto",
 //         {
@@ -710,7 +694,7 @@ var umlJson={ "class": "GraphLinksModel",
 //                 row: 1, margin: 3, stretch: go.GraphObject.Fill,
 //                 defaultAlignment: go.Spot.Left,
 //                 itemTemplate: propertyTemplate,
-//
+
 //             },
 //             new go.Binding("itemArray", "properties"),
 //             ),
@@ -739,14 +723,14 @@ var umlJson={ "class": "GraphLinksModel",
 //             makePort("R", go.Spot.Right, true, true),
 //             makePort("B", go.Spot.Bottom, true, true),
 //         );
-//
-//
+
+
 //         return myPalette;
 //     }
-//
+
 //         function save() {
 //             let umlJ = JSON.parse(myDiagram.model.toJson());
-//
+
 //             let problems = val(umlJ);
 //             if (problems.length > 0) {
 //                 for (let problemIdx in problems) {
@@ -761,17 +745,17 @@ var umlJson={ "class": "GraphLinksModel",
 //             if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
 //                 props.changeUmlStatus();
 //         }
-//
+
 //         function load() {
 //             myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
 //             loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
 //         }
-//
+
 //         function loadUml() {
 //             myDiagram.model = go.Model.fromJson(umlJson);
 //             loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
 //         }
-//
+
 //         function saveDiagramProperties() {
 //             myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
 //         }
@@ -780,12 +764,12 @@ var umlJson={ "class": "GraphLinksModel",
 //             var pos = myDiagram.model.modelData.position;
 //             if (pos) myDiagram.initialPosition = go.Point.parse(pos);
 //         }
-//
+
 //         function hi(){
 //             alert("hi")
 //         }
-//
-//
+
+
 //     return (
 //         <div id="wrapper">
 //           <script src="../../../uml_editor_resources/release/go.js"></script>
@@ -799,9 +783,9 @@ var umlJson={ "class": "GraphLinksModel",
 //             initDiagram={initDiagram.bind(this)}
 //             divClassName="diagram-component"
 //           />
-//
+
 //         </div>
-//
+
 //           <div id="sample">
 //             {/* <div style={{width: "100%", display: "flex"}}>
 //                 <div id="myPaletteDiv" style={{width: "200px", marginRight: "2px", backgroundColor: "whitesmoke", border: "solid 1px black"}}></div>
@@ -818,7 +802,7 @@ var umlJson={ "class": "GraphLinksModel",
 //             </div>
 //             <ToastContainer />
 //         </div>
-//
+
 //         </div>
 //       );
 // };
@@ -826,18 +810,24 @@ var umlJson={ "class": "GraphLinksModel",
 
 export default function UmlEditor(props){
     let myDiagram;
+    //props.editorID = 0;
     useEffect(()=>{
         async function fetchUmlFromServer() {
             let response = undefined;
+            // if (!props.editorID)
+            //     return;
             try {
-                response = await axios.get(serverAddress+`/editors/loadData?ID=${props.id}`);
+                response = await axios.get(serverAddress+`/editors/loadEditor?ID=${0}`);
+                console.log(response);
             }catch (e){
-                loadUml(umlJson);
+                console.log(e);
+                console.trace();
+                //loadUml(umlJson); 
             }
             //response = await axios.get(serverAddress+`/getSql`);
-            if (response && response.data.uml) {
+            if (response && response.data.undecipheredJson) {
                 //myDiagram = response.data.uml;
-                loadUml(response.data.uml)
+                loadUml(response.data.undecipheredJson)
             }
         }
         fetchUmlFromServer()
@@ -1567,6 +1557,18 @@ export default function UmlEditor(props){
         myDiagram.isModified = false;
         if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
             props.changeUmlStatus();
+        saveUmlToServer().then(r => console.log("saved"));
+    }
+
+    async function saveUmlToServer(){
+        let uml = JSON.parse(myDiagram.model.toJson());
+        try {
+            let response = await axios.post(serverAddress+`/editors/saveUMLEditor`, {'jsonFile': uml, 'projectID': 1});
+            console.log(response);
+        }catch (e){
+            console.log(e);
+            console.trace();
+        }
     }
 
     function load() {
@@ -1577,11 +1579,14 @@ export default function UmlEditor(props){
     function loadUml(umlJson) {
         myDiagram.model = go.Model.fromJson(umlJson);
         loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
+        document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+        umlJson = myDiagram.model.toJson();
     }
 
     function saveDiagramProperties() {
         myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
     }
+
     function loadDiagramProperties(e) {
         // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
         var pos = myDiagram.model.modelData.position;

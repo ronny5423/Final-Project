@@ -25,9 +25,9 @@ export default function SqlEditor(props){
         async function fetchSQLQueriesFromServer() {
             let response = undefined;
             try {
-                response = await axios.get(serverAddress+`/editors/loadData?ID=${props.id}`);
+                response = await axios.get(serverAddress+`/editors/loadEditor?ID=${10}`);
             }catch (e){
-                let classesDict= {"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]};
+                let classesDict= {"Class": ["Name"], "Class1": ["UserName", "Password"], "NamedModelElement": ["name"]};
                 let map=new Map();
                 map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": ""});
                 map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": ""});
@@ -159,6 +159,20 @@ export default function SqlEditor(props){
         previousState.current=new Map(queries)
         edit.current=false
         updateDisabled(true)
+
+        saveSqlToServer();
+    }
+
+
+    async function saveSqlToServer(){
+        const obj = Object.fromEntries(queries);
+        try {
+            let response = await axios.post(serverAddress+`/editors/saveSQLEditor`, {'jsonFile': obj, 'projectID': 1});
+            console.log(response);
+        }catch (e){
+            console.log(e);
+            console.trace();
+        }
     }
 
 

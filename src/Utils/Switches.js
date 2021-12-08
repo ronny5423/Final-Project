@@ -4,6 +4,7 @@ import Login from "../components/sharedComponents/Login";
 import About from "../components/pageComponents/About";
 import ContactForm from "../components/pageComponents/ContactUs";
 import UmlEditor from "../components/pageComponents/UmlEditor";
+import SqlEditor from "../components/pageComponents/SqlEditor";
 import CreateProjectPage from "../components/pageComponents/CreateProjectPage";
 import EditorsTabs from "../components/pageComponents/EditorsTabs";
 import HomePage from "../components/pageComponents/HomePage";
@@ -21,6 +22,9 @@ export default function Switches(){
             </Route>
             <Route path={"/UmlEditor"} >
                 <UmlEditor/>
+            </Route>
+            <Route path={"/SqlEditor"} >
+                <SqlEditor/>
             </Route>
             <Route path={"/createProject"}>
                 <CreateProjectPage/>
