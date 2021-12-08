@@ -1,6 +1,8 @@
 from flask_pymongo import PyMongo
 import json
 
+import pymongo
+
 # Import modules
 from modules.User import User
 from modules.Project import Project
@@ -17,6 +19,29 @@ class DataBase:
     def initMongoDB(self, app):
         self.db.init_app(app)
         
+        # Test IDs
+        proj = self.db.db.Projects.find_one(sort=[('ProjectID', pymongo.DESCENDING)])
+        if proj:
+            self.next_ProjectID = proj['ProjectID']
+        else:
+            self.next_ProjectID = 0
+            
+        edi = self.db.db.Editors.find_one(sort=[('EditorID', pymongo.DESCENDING)])
+        if edi:
+            self.next_EditorID = edi['EditorID']
+        else:
+            self.next_nextEditorID = 0
+            
+    @property
+    def nextEditorID(self):
+        self.next_EditorID += 1
+        return self.next_EditorID
+    
+    @property
+    def nextProjectID(self):
+        self.next_ProjectID += 1
+        return self.next_ProjectID
+    
     # def getNextID(self, collectionFrom):
     #     self.db.db[collectionFrom].aggregate([ 
     #         { "$group": { 
@@ -28,13 +53,14 @@ class DataBase:
 
     def getOneUser(self, data):
         objectFromDB = self.db.db.Users.find_one(data)
-        return User(objectFromDB['Username'], objectFromDB['password'], objectFromDB['UserID'])
+        if objectFromDB:
+            return User(objectFromDB['Username'], objectFromDB['Password'])
 
     def getManyUsers(self, data):
         objectsFromDB = self.db.db.Users.find(data)
         convertedData = []
         for line in objectsFromDB:
-            convertedData.append(User(line['Username'], line['password'], line['UserID']))
+            convertedData.append(User(line['Username'], line['Password']))
         return convertedData
 
     def getOneEditor(self, data):
@@ -51,8 +77,9 @@ class DataBase:
     
     def getOneProject(self, data):
         objectFromDB = self.db.db.Projects.find_one(data)
-        return Project(objectFromDB)
-    
+        if objectFromDB:
+            return Project(objectFromDB['ProjectID'], objectFromDB)
+        
     def getManyProjects(self, data):
         objectsFromDB = self.db.db.Projects.find(data)
         convertedData = []
@@ -78,6 +105,13 @@ class DataBase:
             dictObjects.append(object.__dict__)
         self.db.db[saveTo].insert_many(dictObjects)
         
+    def updateOneUser(self, userToUpdate):
+        self.db.db.Editors.update_one({'Username': userToUpdate.Username}, {
+            '$set': {
+                'password': userToUpdate.password
+            }
+        })
+    
     def updateOneEditor(self, editorToUpdate):
         self.db.db.Editors.update_one({'EditorID': editorToUpdate.EditorID}, {
             '$set': {
@@ -86,6 +120,14 @@ class DataBase:
             }
         })
         
+    def updateProjectEditors(self, editor):
+        field = editor.type + 'EditorID'
+        self.db.db.Projects.update_one({'ProjectID': editor.ProjectID}, {
+            '$set': {
+                field: editor.EditorID
+            }
+        })
+    
     # def getNextID(self, collection):
     #     return self.db[collection].findOne({},sort={'ProjectID':-1})
 
@@ -93,14 +135,14 @@ class DataBase:
 
 # Helper Functions
 def EditorsSwitchCase(objectFromDB):
-    if objectFromDB['type'] == 'UML':
-        return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
+    if objectFromDB is None:
+        return
     elif objectFromDB['type'] == 'SQL':
         return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     elif objectFromDB['type'] == 'NFR':
         return NFREditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
-    else:
-        return Editor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
+    elif objectFromDB['type'] == 'UML':
+        return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
 
 
 db = DataBase()

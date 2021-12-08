@@ -6,9 +6,10 @@ from modules.NFR_editor import *
 from modules.SQL_editor import *
 
 def saveEditors(data, editorType):
+    data['EditorID'] = db.nextEditorID
     newEditor = editorSwitch(data, editorType)
     db.insertOneObject('Editors', newEditor)
-
+    db.updateProjectEditors(newEditor)
 
 def loadEditor(ID):
     query = {'EditorID': ID}

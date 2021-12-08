@@ -38,6 +38,15 @@ def saveNFREditor():
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@editors.route("/updateNFREditor", methods = ["POST"])
+def updateNFREditor():
+    try:
+        data = request.json
+        updateEditor(data, 'NFR')
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
 @editors.route("/saveSQLEditor", methods = ["POST"])
 def saveSQLEditor():
@@ -47,9 +56,18 @@ def saveSQLEditor():
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@editors.route("/updateSQLEditor", methods = ["POST"])
+def updateSQLEditor():
+    try:
+        data = request.json
+        updateEditor(data, 'SQL')
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
 @editors.route("/loadEditor", methods = ["GET"])
-def loadUMLEditor():
+def loadEditor():
     try:
         data = request.args
         EditorFromDB = loadEditor(data.get('ID'))
