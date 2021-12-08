@@ -4,35 +4,33 @@ import json
 
 auth = Blueprint('auth', __name__)
 
-# Import DB class
-from database import db
-
-# Import modules
-from modules.User import User
+# Import Utils
+from modules.utils.auth_utils import *
 
 @auth.route("/Login", methods = ['POST'])
-def home():
+def Login_route():
     try:
-        UsernameForm = request.json.get('Username')
-        passwordForm = request.json.get('password')
-        UserMongoDB = db.getOneUser({"Username": UsernameForm})
-        if UserMongoDB and UserMongoDB.comparePassword(passwordForm):
-            result = True
-        else:
-            result = False
-        return Response(json.dumps(result), status=200, mimetype='application/json')
+        result = Login(request)
+        resp = Response(json.dumps(result[0]), status=200, mimetype='application/json')
+        resp.set_cookie('LoggedUser', result[1])
+        return resp
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
 
-
-
 @auth.route("/Signup", methods = ['POST'])
-def Register():
+def Signuo_route():
     try:
-        data = request.json
-        newUser = User(data.get('Username'), data.get('password'))
-        db.insertOneObject('Users', newUser)
+        Signup(request)
         return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@auth.route("/Logout", methods=['POST', 'GET'])
+def Logout_route():
+    try:
+        resp = Response(status=200, mimetype='application/json')
+        resp.delete_cookie('LoggedUser')
+        return resp
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

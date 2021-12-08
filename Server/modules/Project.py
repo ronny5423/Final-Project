@@ -3,10 +3,11 @@
 ProjectsID = 1
 
 class Project:
-    def __init__(self, ProjectID, Discribtion='', UMLEditorID=None, SQLEditorID=None, 
+    def __init__(self, ProjectID, name, Discription='', UMLEditorID=None, SQLEditorID=None, 
                 NFREditorID=None, AHPEditorID=None, Owner=None, Members=[]):
         self.ProjectID = ProjectID
-        self.Discribtion = Discribtion
+        self.name = name
+        self.Discription = Discription
         self.UMLEditorID = UMLEditorID
         self.SQLEditorID = SQLEditorID
         self.NFREditorID = NFREditorID
@@ -14,9 +15,10 @@ class Project:
         self.Owner = Owner
         self.Members = Members
     
-    def __init__(self, data):
-        self.ProjectID = data.get('projectID')
-        self.Discribtion = data.get('Discribtion')
+    def __init__(self, projectID, data):
+        self.ProjectID = projectID
+        self.name = data.get('name')
+        self.Discription = data.get('Discription')
         self.UMLEditorID = data.get('UMLEditorID')
         self.SQLEditorID = data.get('SQLEditorID')
         self.NFREditorID = data.get('NFREditorID')
@@ -26,6 +28,15 @@ class Project:
             self.Members = data.get('Members')
         else:
             self.Members = []
+    
+    def project_preview(self):
+        proj = self.__dict__
+        del proj['Members']
+        return proj
+    
+    @property
+    def getMembers(self):
+        return self.Members
         
     # def __dict__(self):
     #     return {
