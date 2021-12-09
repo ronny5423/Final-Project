@@ -9,10 +9,9 @@ def changePassword(data):
     db.updateOneUser(userToUpdate)
     
 def getUserProjects(data):
-    jsonData = data.json
+    queryData = data.args
     username = data.cookies.get('LoggedUser')
-    indexes = jsonData.get('indexes')
     user = db.getOneUser({"Username": username})
-    projects = [proj.project_preview for proj in db.getManyProjects({"ProjectID": user.Projects[indexes[0]:indexes[1]]})]
+    projects = [proj.project_preview for proj in db.getManyProjects({"ProjectID": user.Projects[queryData.get('startIndex'):queryData.get('endIndex')]})]
     return projects, len(user.Projects)
     

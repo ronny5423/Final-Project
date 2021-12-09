@@ -19,7 +19,7 @@ def Login_route():
 
 
 @auth.route("/Signup", methods = ['POST'])
-def Signuo_route():
+def Signup_route():
     try:
         Signup(request)
         return Response(status=200, mimetype='application/json')

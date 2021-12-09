@@ -15,26 +15,31 @@ def save_Project():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
-@projects.route("/loadProject", methods=["GET"])
-def load_Project():
+@projects.route("/loadProject/<projectID>", methods=["GET"])
+def load_Project(projectID):
     try:
-        project = loadProject(request)
+        project = loadProject(projectID)
         return Response(json.dumps(project.__dict__), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
-@projects.route("/getMembers", methods=["GET"])
-def project_members():
+@projects.route("/getMembers/<projectID>", methods=["GET"])
+def project_members(projectID):
     try:
-        projectMembers = getProjectMembers(request)
+        projectMembers = getProjectMembers(int(projectID))
         return Response(json.dumps(projectMembers), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@projects.route("/removeMembers", methods=["POST"])
-def remove_members():
+@projects.route("/removeMembers/<projectID>/<member>", methods=["DELETE"])
+def remove_members(projectID, member):
     try:
-        removeProjectMembers(request)
+        removeProjectMembers(request, projectID, member)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@projects.route("/addMember", methods = ["POST"])
+def add_Member():
+    #TODO add projectID to user's project list
+    pass

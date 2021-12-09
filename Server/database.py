@@ -86,6 +86,12 @@ class DataBase:
         for line in objectsFromDB:
             convertedData.append(Project(line))
         return convertedData
+    
+    def getNFRWeights(self):
+        return {"Integrity",{ "type":"range", "values":[0,1], "defaultValue":0.5 }, "Consistency",{ "type": "select box", "values":{"a":1,"b":2,"c":3,"d":4}, "defaultValue": ["a",1] }}
+
+    def getAHP_NFRWeights(self):
+        return {"Integrity": 0.2, "Consistency": 0.8}
         
     def getOneObject(self, loadFrom, data):
         objectFromDB = self.db.db[loadFrom].find_one(data)
@@ -128,8 +134,7 @@ class DataBase:
             }
         })
     
-    # def getNextID(self, collection):
-    #     return self.db[collection].findOne({},sort={'ProjectID':-1})
+    
 
 
 
@@ -138,11 +143,13 @@ def EditorsSwitchCase(objectFromDB):
     if objectFromDB is None:
         return
     elif objectFromDB['type'] == 'SQL':
-        return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
+        return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     elif objectFromDB['type'] == 'NFR':
-        return NFREditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
+        nfrEditor = NFREditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID']).__dict__
+        Weights = {"Integrity",{ "type":"range", "values":[0,1], "defaultValue":0.5 }, "Consistency",{ "type": "select box", "values":{"a":1,"b":2,"c":3,"d":4}, "defaultValue": ["a",1] }}
+        return nfrEditor, Weights
     elif objectFromDB['type'] == 'UML':
-        return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['projectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
+        return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
 
 
 db = DataBase()

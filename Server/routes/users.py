@@ -19,10 +19,14 @@ def updatePassword():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
-@users.route('/getProjects', methods=['POST', 'GET'])
+@users.route('/getProjects', methods=['GET'])
 def userProjects():
     try:
         data = getUserProjects(request)
         return Response(json.dumps(data), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@users.route('/leaveProject/<projectID>', methods=['DELETE'])
+def leave_project(projectID):
+    pass

@@ -9,17 +9,15 @@ def saveProject(data):
     db.insertOneObject('Projects', newProject)
     return newProject.ProjectID
 
-def loadProject(data):
-    jsonData = data.json
-    return db.getOneProject(jsonData).project_preview()
+def loadProject(projectID):
+    return db.getOneProject({"ProjectID": projectID}).project_preview()
 
-def getProjectMembers(data):
-    jsonData = data.json
-    return db.getOneProject(jsonData).getMembers
+def getProjectMembers(projectID):
+    return db.getOneProject({"ProjectID": projectID}).getMembers
 
-def removeProjectMembers(data):
-    jsonData = data.json
-    project =  db.getOneProject({"ProjectID": jsonData.get('ID')})
+def removeProjectMembers(data, projectID, member):
+    project =  db.getOneProject({"ProjectID": projectID})
+    #TODO remove project ID from user's list
     if project.Owner == data.cookies.get('LoggedUser'):
         pass
     else:
