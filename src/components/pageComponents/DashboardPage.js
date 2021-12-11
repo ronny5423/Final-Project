@@ -34,11 +34,12 @@ function DashboardPage(props){
     let history=useNavigate()
     const [searchQuery,updateSearchQuery]=useState("")
 
+
     useEffect(()=>{
         let parametersToServer={
-            username:"ronny54",
             searchQuery:searchQuery
-        }
+          }
+        props.updateFetchDataRoute(`/users/getProjects`)
         props.updateServerParameters(parametersToServer)
         props.fetchDataFromServer(0)
         },[])
@@ -68,7 +69,7 @@ function DashboardPage(props){
                     {props.dataToShow.length>0 ?
                         props.dataToShow.map((project,index)=><ProjectRow key={index} projectId={project.ProjectID} projectOwner={project.ProjectOwner}
                           umlEditor={project.UMLEditorID} sqlEditor={project.SQLEditorID} nfrEditor={project.NFREditorID} projectDescription={project.Description}
-                          ahpEditor={project.AHPEditorID} projectName={project.ProjectName} deleteProject={index=>props.deleteData(index)} index={index}
+                          ahpEditor={project.AHPEditorID} projectName={project.ProjectName} deleteProject={props.deleteData} index={index}
                         />) :
                         <tr>No projects. To add new project press on + button</tr>
                         }
@@ -79,4 +80,4 @@ function DashboardPage(props){
        )
 }
 
-export default withFetchData(DashboardPage,"/projects",projectsArr)
+export default withFetchData(DashboardPage,projectsArr)

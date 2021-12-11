@@ -2,6 +2,7 @@ import React,{useState,useEffect} from "react";
 import axios from "axios"
 import {Button, Col, Form, Modal, Row} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
+import {useNavigate} from "react-router-dom";
 
 const weightsObj={
     uml:0.4,
@@ -13,12 +14,27 @@ export function ChangeMatrixWeights(props){
     const[weights,updateWeights]=useState(weightsObj)
     const[disabled,updateDisabled]=useState(false)
     const[showModal,updateShowModal]=useState(false)
+    let navigate=useNavigate()
 
     useEffect(_=>{
         async function getWeightsFromServer(){
-            let response=await axios.get(serverAddress+`/ahp`)
-            if(response.status===200){
-                updateWeights(response.data)
+            if(props.id){
+                let response=await axios.get(serverAddress+`/editors/loadEditor`,{params:{editorID:props.id}})
+                if(response.status===200){
+                    updateWeights(response.data)
+                }
+                else{
+                    navigate(`/error`)
+                }
+            }
+            else{
+                let response=await axios.get(serverAddress+`/getDefaultAhp`)
+                if(response.status===200){
+                    updateWeights(response.data)
+                }
+                else{
+                    navigate(`/error`)
+                }
             }
           }
         getWeightsFromServer()
@@ -43,7 +59,7 @@ export function ChangeMatrixWeights(props){
     function submit(event){
         event.preventDefault()
         if(weights.uml+weights.queries+weights.nfr===1){
-            axios.put(`server address`,weights).then(res=>{
+            axios.post(serverAddress+``,weights).then(res=>{
                 if(res.status===201){
                     updateDisabled(true)
                     if(showModal){

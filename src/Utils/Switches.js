@@ -12,6 +12,7 @@ import AlgorithmResult from "../components/pageComponents/AlgorithmResult";
 import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
 import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
+import NFREditor from "../components/pageComponents/NFREditor";
 
 export default function Switches(){
     return(
@@ -27,7 +28,8 @@ export default function Switches(){
             <Route path={"/createProject"} element={<CreateProjectPage/>}/>
 
             <Route path={"/editorsTabs"} element={<EditorsTabs/>}>
-                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:ahpEditorId"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:projectId"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:ahpEditorId/:projectId"} element={<EditorsTabs/>}/>
             </Route>
 
             <Route path={"/error"} element={<ErrorPage/>}/>

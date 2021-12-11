@@ -6,7 +6,7 @@ import PaginationComponent from "./PaginationComponent";
 
 const spareDataNumber=5
 
-const withFetchData=(WrappedComponent,route,projectsArr)=>{
+const withFetchData=(WrappedComponent,projectsArr)=>{
     function WithFetchData(props){
         const[dataLength,updateDataLength]=useState(projectsArr.length)
         let history=useNavigate()
@@ -14,6 +14,7 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
         const spareData=useRef([])
         const dataToShowEndIndex=useRef(0)
         const otherParametersToSendToServer=useRef({})
+        const fetchDataRoute=useRef(``)
 
         async function fetchProjectsFromServer(startIndex){
             let end
@@ -36,7 +37,7 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
             }
             // otherParametersToSendToServer.current.startIndex=startIndex
             // otherParametersToSendToServer.current.endIndex=end
-            // let response= await axios.get(serverAddress+`${route}`,{params:otherParametersToSendToServer.current})
+            // let response= await axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current})
             // if(response.status===200){
             //     let endIndex=response.data.data.length-1
             //     if(dataLength===0){
@@ -87,7 +88,7 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
             }
             // otherParametersToSendToServer.current.startIndex=startIndex
             // otherParametersToSendToServer.current.endIndex=end
-            // axios.get(serverAddress+`${route}`,{params:otherParametersToSendToServer.current).then(res=>{
+            // axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current}).then(res=>{
             //     if(res.status===200){
             //         spareData.current=res.data.data.slice(0,res.data.data.length)
             //     }
@@ -98,7 +99,30 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
             spareData.current=projectsArr.slice(startIndex,end+1)
         }
 
-        function deleteDataFromArray(index){
+        async function deleteDataFromArray(index,id,route){
+            // let response=await axios.delete(serverAddress+route)
+            // if(response.status===201){
+            //     let newDataArr=[...dataToShow]
+            //     projectsArr.splice(0,1)
+            //     updateDataLength(dataLength-1)
+            //     newDataArr.splice(index,1)
+            //     if(spareData.current.length>0){
+            //         newDataArr.push(spareData.current[0])
+            //         spareData.current.splice(0,1)
+            //     }
+            //     if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
+            //         fetchSpareData(dataToShowEndIndex.current+1)
+            //     }
+            //     if(dataLength===numberOfItemsInPage && newDataArr.length===0){
+            //         fetchProjectsFromServer(0)
+            //     }
+            //     else{
+            //         updateData(newDataArr)
+            //     }
+            // }
+            // else{
+            //     history(`/error`)
+            // }
             let newDataArr=[...dataToShow]
             projectsArr.splice(0,1)
             updateDataLength(dataLength-1)
@@ -128,7 +152,12 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
             otherParametersToSendToServer.current={...otherParametersToSendToServer.current,...params}
         }
 
+        function updateFetchDataRoute(route){
+            fetchDataRoute.current=route
+        }
+
         function increaseDataLength(user){
+            //check if can update in manage users component
             updateDataLength(dataLength+1)
             projectsArr.push(user)
         }
@@ -137,7 +166,7 @@ const withFetchData=(WrappedComponent,route,projectsArr)=>{
             <div>
             <WrappedComponent deleteData={deleteDataFromArray} updateServerParameters={updateParametersToSendToServer}
             dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength}
-            increaseDataLength={increaseDataLength}
+            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute}
             />
         {
             numberOfItemsInPage<dataLength && <PaginationComponent fetchData={fetchProjectsFromServer} numberOfElements={dataLength}/>
