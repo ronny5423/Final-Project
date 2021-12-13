@@ -157,13 +157,21 @@ export default function NFREditor(props){
         }
 
         if(props.id){
-            let response=await axios.post(serverAddress+`/editors/updateNFREditor`,{weightsValuesObject},{params:{editorId:props.id}})
+            let dataToSend={
+              jsonFile:weightsValuesObject,
+              EditorID:props.id
+            }
+            let response=await axios.post(serverAddress+`/editors/updateNFREditor`,dataToSend)
             if(response.status!==201){
                 navigate(`/error`)
             }
         }
         else{
-            let response=await axios.post(serverAddress+`/editors/saveNFREditor`,{weightsValuesObject},{params:{projectID:props.projectId}})
+            let dataToSend={
+                jsonFile:weightsValuesObject,
+                projectID:props.projectId
+            }
+            let response=await axios.post(serverAddress+`/editors/saveNFREditor`,dataToSend)
             if(response.status===201){
                 props.updateEditorId(response.data.id,3)
             }

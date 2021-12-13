@@ -51,11 +51,11 @@ function createServer(){
             }
         return res(ctx.json(data),ctx.status(200))
     })
-    const saveNFR=rest.post(serverAddress+`/editors/saveNFREditor/?ProjectID=1`,(req,res,ctx)=>{
+    const saveNFR=rest.post(serverAddress+`/editors/saveNFREditor`,(req,res,ctx)=>{
         let id={id:1}
         return res(ctx.json({id}),ctx.status(201))
     })
-    const updateNFR=rest.post(serverAddress+`/editors/updateNFREditor/?editorID=1`,(req,res,ctx)=>{
+    const updateNFR=rest.post(serverAddress+`/editors/updateNFREditor`,(req,res,ctx)=>{
         return res(ctx.status(201))
     })
 
