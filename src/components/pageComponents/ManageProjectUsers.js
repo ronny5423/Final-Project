@@ -14,8 +14,13 @@ for(let i=0;i<50;i++){
     const[showAddUser,updateAddUser]=useState(false)
 
     useEffect(()=>{
+        props.updateFetchDataRoute(`/projects/getMembers/${projectId}`)
         props.fetchDataFromServer(0)
     },[])
+
+     function deleteUser(index,user){
+        props.deleteData(index,user,`/projects/removeMembers/${projectId}/${user}`)
+     }
 
     return(
         <div>
@@ -31,7 +36,7 @@ for(let i=0;i<50;i++){
                 props.dataToShow.map((user,index) =>
                     <tr key={index}>
                         <td>{user}</td>
-                        <td><Button variant={"danger"} onClick={index=>props.deleteData(index)}>Delete user from project</Button></td>
+                        <td><Button variant={"danger"} onClick={_=>deleteUser(index,user)}>Delete user from project</Button></td>
                     </tr>
                 ) :
                 <tr>No users in project. Press Add user to project button to add users</tr>
@@ -44,4 +49,4 @@ for(let i=0;i<50;i++){
     )
 }
 
-export default withFetchData(ManageProjectUsers,"/users",users)
+export default withFetchData(ManageProjectUsers,users)

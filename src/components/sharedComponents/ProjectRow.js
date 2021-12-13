@@ -34,14 +34,28 @@ export default function ProjectRow(props){
 
     async function deleteProject(){
         //send axios request
-        // let response=await axios.put(serverAddress+`/deleteProject`)
+        // let response=await axios.delete(serverAddress+`/users/leaveProject/${props.projectId}`)
+        // if(response.status===201){
+        //     updateDeleteModal(false)
+        //     props.deleteProject(props.index,props.projectId) //delete project from array
+        // }
+        // else{
+        //     history(`/error`)
+        // }
         updateDeleteModal(false)
-        props.deleteProject(props.index) //delete project from array
+        props.deleteProject(props.index,props.projectId) //delete project from array
     }
 
    async function editNameAndDescription(){
         //send axios request
-
+       // let body={projectName:projectName,projectDescription:projectDescription}
+       //  let response=await axios.post(serverAddress+`/projects/updateProjectNameAndDescription/${props.projectId}`,body)
+       // if(response.status===201){
+       //     updateEditModal(false)
+       // }
+       // else{
+       //     history(`/error`)
+       // }
         updateEditModal(false)
     }
 

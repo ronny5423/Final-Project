@@ -11,7 +11,7 @@ export default function AddUserToProject(props){
 
    async function addUser(){
         //send axios
-        // let response=await axios.post(serverAddress+`/addUserToProject`,{params:{projectId:props.projectId,username:user}})
+        // let response=await axios.post(serverAddress+`/projects/addMember,{projectID:id,member:username})
         // if(response.status===201){
         //     props.addUser()
         // }

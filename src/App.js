@@ -11,7 +11,9 @@ import UmlEditor from "./components/pageComponents/UmlEditor";
 import SignUp from "./components/pageComponents/SignUp";
 import CreateProjectPage from "./components/pageComponents/CreateProjectPage";
 import Switches from "./Utils/Switches";
+import axios from "axios";
 
+axios.defaults.withCredentials=true
 
 function App() {
   const [currentTime, setCurrentTime] = useState(0);

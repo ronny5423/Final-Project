@@ -2,6 +2,7 @@ import React,{useState,useEffect,useRef} from "react"
 import axios from "axios"
 import {Button,Form, Table} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
+import {useNavigate} from "react-router-dom";
 
 export default function NFREditor(props){
     const [weights,updateWeights]=useState(new Map());
@@ -9,36 +10,68 @@ export default function NFREditor(props){
     const [editable,updateEditable]=useState(props.editable)
     const oldWeightsBeforeEdit=useRef(new Map())
     const createNfr=useRef(true)
+    let navigate=useNavigate()
 
     useEffect(()=>{
         async function getDataFromServer(){
-            let response= await axios.get(serverAddress+`/getNFR`);
-            response.data.weightsArr=new Map(Object.entries(response.data.weightsArr))
-            updateWeights(response.data.weightsArr);
-            if(!response.data.valueOfWeightAndClass){//create a map of class and weight as keys and their value
-                let classesArray=response.data.uml.nodeDataArray.map(classObj=> classObj.name);
-                let weightClassMap=new Map();
-                for(let i=0;i<classesArray.length;i++){
-                    weightClassMap.set(classesArray[i],new Map())
-                    response.data.weightsArr.forEach((val,key) =>{
-                        let value=response.data.weightsArr.get(key).defaultValue;
-                        weightClassMap.get(classesArray[i]).set(key,value)
-                    })
+            // const person={Integrity:0.65,Consistency:["c",3]}
+            // const user={Integrity:0.9,Consistency:["a",1]}
+            // const weightsAndClassesTemp={Person:person,User:user};
+            // let weightsTemp=new Map();
+            // weightsTemp.set("Integrity",{
+            //     type:"range",
+            //     values:[0,1],
+            //     defaultValue:0.5
+            // })
+            // let labelsAndValues={a:1,b:2,c:3,d:4}
+            // weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
+
+            if(props.id){
+                // let response1={data:{nfrEditor: weightsAndClassesTemp,Weights:Object.fromEntries(weightsTemp)}}
+                let response= await axios.get(serverAddress+`/editors/loadEditor`,{params:{id:props.id}});
+                if(response.status!==200){
+                    navigate(`/error`)
+                    return
                 }
-                updateWeightsValues(weightClassMap);
-                }
-            else{
                 createNfr.current=false
-                let weightsValuesMap=new Map(Object.entries(response.data.valueOfWeightAndClass))
+                let weightsValuesMap=new Map(Object.entries(response.data.nfrEditor))
                 weightsValuesMap.forEach((value,key,map)=>{
                     map.set(key,new Map(Object.entries(value)))
                 })
                 createPreviousState(weightsValuesMap)
+                updateNFRWeights(response.data.Weights)
                 updateWeightsValues(weightsValuesMap);
             }
+            else{
+                // let getWeights={data:Object.fromEntries(weightsTemp)}
+                let getWeights=await axios.get(serverAddress+`/editors/getWeights`)
+                if(getWeights.status!==200){
+                    navigate(`/error`)
+                    return
+                }
+                let weightsMap=updateNFRWeights(getWeights.data)
+                let classesArray=props.classes
+                let weightClassMap=new Map();
+                for(let i=0;i<classesArray.length;i++){
+                    weightClassMap.set(classesArray[i],new Map())
+                    weightsMap.forEach((val,key) =>{
+                        let value=weightsMap.get(key).defaultValue;
+                        weightClassMap.get(classesArray[i]).set(key,value)
+                    })
+                }
+                updateWeightsValues(weightClassMap);
+            }
+
         }
         getDataFromServer();
     },[])
+
+    function updateNFRWeights(weightsArr){
+        weightsArr=new Map(Object.entries(weightsArr))
+        updateWeights(weightsArr)
+        return weightsArr
+    }
+
 
     function createPreviousState(map){
         oldWeightsBeforeEdit.current=new Map()
@@ -112,7 +145,7 @@ export default function NFREditor(props){
         return restOfTable
     }
 
-    function sendNFRToServer(e){
+    async function sendNFRToServer(e){
         e.preventDefault()
         if(createNfr.current){
             createNfr.current=false
@@ -122,7 +155,30 @@ export default function NFREditor(props){
         for(let key in weightsValuesObject){
             weightsValuesObject[key]=Object.fromEntries(weightsValuesObject[key])
         }
-        axios.post(serverAddress+`/sendNFR`,JSON.stringify(weightsValuesObject));
+
+        if(props.id){
+            let dataToSend={
+              jsonFile:weightsValuesObject,
+              EditorID:props.id
+            }
+            let response=await axios.post(serverAddress+`/editors/updateNFREditor`,dataToSend)
+            if(response.status!==201){
+                navigate(`/error`)
+            }
+        }
+        else{
+            let dataToSend={
+                jsonFile:weightsValuesObject,
+                projectID:props.projectId
+            }
+            let response=await axios.post(serverAddress+`/editors/saveNFREditor`,dataToSend)
+            if(response.status===201){
+                props.updateEditorId(response.data.id,3)
+            }
+            else{
+                navigate(`/error`)
+            }
+        }
     }
 
     function cancelChanges(){
