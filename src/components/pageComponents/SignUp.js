@@ -3,7 +3,7 @@ import {Button, Form, Modal} from "react-bootstrap";
 import {useRef} from "react";
 import {useForm} from "react-hook-form";
 import axios from "axios";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import "../cssComponents/SignUp.css"
 
  async function submit(userDetails,updateModal){
@@ -15,7 +15,7 @@ function SignUp(){
     const { register,getValues, handleSubmit, watch, formState: { errors } } = useForm();
     const password = useRef({});
     const[modalText,updateModalText]=useState("")
-    const history=useHistory()
+    const history=useNavigate()
     password.current = watch("password", "");
 
     return(

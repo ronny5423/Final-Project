@@ -12,12 +12,14 @@ from modules.UML_editor import UMLEditor
 from modules.NFR_editor import NFREditor
 from modules.SQL_editor import SQLEditor
 
+#TODO update editors - check editorID and remove projectID
+
 @editors.route("/saveUMLEditor", methods = ["POST"])
 def saveUMLEditor():
     try:
         data = request.json
-        saveEditors(data, 'UML')
-        return Response(status=200, mimetype='application/json')
+        newEditorID = saveEditors(data, 'UML')
+        return Response(json.dumps(newEditorID), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
@@ -34,8 +36,8 @@ def updateUMLEditor():
 def saveNFREditor():
     try:
         data = request.json
-        saveEditors(data, 'NFR')
-        return Response(status=200, mimetype='application/json')
+        newEditorID = saveEditors(data, 'NFR')
+        return Response(json.dumps(newEditorID), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
@@ -52,8 +54,8 @@ def updateNFREditor():
 def saveSQLEditor():
     try:
         data = request.json
-        saveEditors(data, 'SQL')
-        return Response(status=200, mimetype='application/json')
+        newEditorID = saveEditors(data, 'SQL')
+        return Response(json.dumps(newEditorID), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
@@ -67,10 +69,18 @@ def updateSQLEditor():
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
 @editors.route("/loadEditor", methods = ["GET"])
-def loadEditor():
+def load_Editor():
     try:
         data = request.args
         EditorFromDB = loadEditor(data.get('ID'))
         return Response(json.dumps(EditorFromDB.__dict__), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+@editors.route("/getWeights", methods=['GET'])
+def get_weigths():
+    try:
+        weights = getProjectsWeights()
+        return Response(json.dump(weights), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
