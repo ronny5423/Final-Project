@@ -776,6 +776,7 @@ export default function UmlEditor(props){
 
     async function saveUmlToServer(){
         let uml = JSON.parse(myDiagram.model.toJson());
+        let url = undefined;
         try {
             if(false && props.editorID !== undefined){
                 url = serverAddress+`/editors/updateUMLEditor`;

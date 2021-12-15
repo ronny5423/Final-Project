@@ -19,41 +19,42 @@ export default function SqlEditor(props){
     const[currentRowIndex,updateRowIndex]=useState(0)
     const edit=useRef(true)
     const[disabled,updateDisabled]=useState(false)
-    const previousState=useRef(new Map());
+    const previousState = useRef(new Map());
 
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
             let response = undefined;
+            let classesDict = {"Class": ["Name"], "Class1": ["UserName", "Password"], "NamedModelElement": ["name"]};
             try {
-                response = await axios.get(serverAddress+`/editors/loadEditor?ID=${10}`);
+                response = await axios.get(serverAddress+`/editors/loadEditor?ID=${3}`);
+                console.log(response);
             }catch (e){
-                let classesDict= {"Class": ["Name"], "Class1": ["UserName", "Password"], "NamedModelElement": ["name"]};
                 let map=new Map();
                 map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": ""});
                 map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": ""});
                 response={
                     data:{
-                        queries: Object.fromEntries(map),
-                        classes: classesDict
+                        undecipheredJson: Object.fromEntries(map),
                     }
                 };
             }
             //response = await axios.get(serverAddress+`/getSql`);
-            if (response.data.queries) {
+            if ( response && response.data.undecipheredJson) {
                 edit.current=false
-                previousState.current = response.data.queries
                 updateDisabled(true)
-                response.data.queries = new Map(Object.entries(response.data.queries))
+                response.data.undecipheredJson = new Map(Object.entries(response.data.undecipheredJson))
                 let convertMapKeys = new Map();
-                for (let [key, value] of response.data.queries){
+                for (let [key, value] of response.data.undecipheredJson){
                     let newKey = parseInt(key, 10);
                     convertMapKeys.set(newKey, value)
                 }
                 updateQueries(convertMapKeys)
+                previousState.current = new Map(convertMapKeys)
             }
-            if (response.data.classes) {
-                SqlHelper.addUmlClasses(response.data.classes);
-            }
+            SqlHelper.addUmlClasses(classesDict);
+            // if (response.data.classes) {
+            //     SqlHelper.addUmlClasses(response.data.classes);
+            // }
         }
         fetchSQLQueriesFromServer()
     },[])
@@ -166,9 +167,20 @@ export default function SqlEditor(props){
 
     async function saveSqlToServer(){
         const obj = Object.fromEntries(queries);
+        console.log(obj);
+        let url = undefined;
         try {
-            let response = await axios.post(serverAddress+`/editors/saveSQLEditor`, {'jsonFile': obj, 'projectID': 1});
-            console.log(response);
+            if(true || props.editorID !== undefined){
+                url = serverAddress+`/editors/updateSQLEditor`;
+                let response = await axios.post(url, {'jsonFile': obj, 'EditorID': 3, 'projectID': 1});
+                console.log(response);
+            }
+            else{
+                url = serverAddress+`/editors/saveSQLEditor`;
+                let response = await axios.post(url, {'jsonFile': obj, 'projectID': 1});
+                console.log(response);
+            }
+            
         }catch (e){
             console.log(e);
             console.trace();
