@@ -1,14 +1,25 @@
-import {fireEvent, render, screen,cleanup} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import '@testing-library/jest-dom'
 import NFREditor from "../pageComponents/NFREditor";
 import {rest} from "msw";
 import {setupServer} from "msw/node";
 import {serverAddress} from "../../Constants";
+import {BrowserRouter} from "react-router-dom";
 
-function renderNFREditor(editable){
-    render(<NFREditor editable={editable}/>)
+function renderNFREditor(editable,renderWithEditorId=false){
+    if(renderWithEditorId){
+        render(<BrowserRouter><NFREditor editable={editable} id={1} projectId={1} classes={["Person","User"]} updateEditorId={update}/></BrowserRouter>)
+    }
+    else{
+        render(<BrowserRouter><NFREditor editable={editable}  projectId={1} classes={["Person","User"]} updateEditorId={update}/></BrowserRouter>)
+    }
 }
-function mockData(addThirdAttribute){
+
+function update(id,type){
+
+}
+
+function getWeightsArr(){
     let weightsTemp=new Map();
     weightsTemp.set("Integrity",{
         type:"range",
@@ -17,35 +28,38 @@ function mockData(addThirdAttribute){
     })
     let labelsAndValues={a:1,b:2,c:3,d:4}
     weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
-    let umlTemp={nodeDataArray:[{type:"Class",name:"Person"},{type:"Class",name: "User"}]}
-
-    const weightsAndClassesTemp=new Map();
-    weightsAndClassesTemp["Person"]=new Map();
-    weightsAndClassesTemp["Person"]["Integrity"]=0.65
-    weightsAndClassesTemp["Person"]["Consistency"]=["c",3]
-    weightsAndClassesTemp["User"]=new Map()
-    weightsAndClassesTemp["User"]["Integrity"]=0.9
-    weightsAndClassesTemp["User"]["Consistency"]=["a",1]
-
-    let data={}
-    if(addThirdAttribute){
-        data={weightsArr:Object.fromEntries(weightsTemp),uml:umlTemp,valueOfWeightAndClass:weightsAndClassesTemp}
-    }
-    else{
-        data={weightsArr:Object.fromEntries(weightsTemp),uml:umlTemp}
-    }
-    return data
+    return Object.fromEntries(weightsTemp)
 }
 
-function createServer(addThirdAttribute){
-    const getNFR=rest.get(serverAddress+`/getNFR`,(req,res,ctx)=>{
-        let data=mockData(addThirdAttribute)
-        return res(ctx.json(data),)
+function getNFREditor(){
+    const person={Integrity:0.65,Consistency:["c",3]}
+    const user={Integrity:0.9,Consistency:["a",1]}
+    return {Person: person, User: user}
+}
+
+function createServer(){
+    const getWeights=rest.get(serverAddress+`/editors/getWeights`,(req,res,ctx)=>{
+        let weights=getWeightsArr()
+        return res(ctx.json(weights),ctx.status(200))
     })
-    const sendNFR=rest.post(serverAddress+`/sendNFR`,(req,res,ctx)=>{
-        return res(ctx.json({}))
+    const getNFRAndWeights=rest.get(serverAddress+`/editors/loadEditor/?id=1`,(req,res,ctx)=>{
+        let weights=getWeightsArr()
+        let nfr=getNFREditor()
+        let data={
+            nfrEditor:nfr,
+            Weights:weights
+            }
+        return res(ctx.json(data),ctx.status(200))
     })
-    const handlers=[getNFR,sendNFR]
+    const saveNFR=rest.post(serverAddress+`/editors/saveNFREditor`,(req,res,ctx)=>{
+        let id={id:1}
+        return res(ctx.json({id}),ctx.status(201))
+    })
+    const updateNFR=rest.post(serverAddress+`/editors/updateNFREditor`,(req,res,ctx)=>{
+        return res(ctx.status(201))
+    })
+
+    const handlers=[getWeights,getNFRAndWeights,saveNFR,updateNFR]
     return new setupServer(...handlers)
 }
 function preapareTests(server){
@@ -59,7 +73,7 @@ function preapareTests(server){
 
 
 describe("test Nfr Component render",()=>{
-    const server=createServer(false)
+    const server=createServer()
     preapareTests(server)
 
     it("test Nfr component render",()=>{
@@ -105,7 +119,7 @@ describe("test Nfr Component render",()=>{
 })
 
 describe("test input changing",()=>{
-    const server=createServer(false)
+    const server=createServer()
     preapareTests(server)
 
     async function testInputChange(oldValue,newValue){
@@ -155,11 +169,11 @@ describe("test input changing",()=>{
 })
 
 describe("test previous states",()=>{
-    const server=createServer(true)
+    const server=createServer()
     preapareTests(server)
 
     it("test cancel changes on input",async()=>{
-        renderNFREditor(false)
+        renderNFREditor(false,true)
         const editButton= await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const inputElements=await screen.findAllByDisplayValue("0.65")
@@ -170,7 +184,7 @@ describe("test previous states",()=>{
     })
 
     it("test cancel changes on select",async()=>{
-        renderNFREditor(false)
+        renderNFREditor(false,true)
         const editButton=await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const selectElements=await screen.findAllByDisplayValue("a")
