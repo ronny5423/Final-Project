@@ -30,7 +30,7 @@ class DataBase:
         if edi:
             self.next_EditorID = edi['EditorID']
         else:
-            self.next_nextEditorID = 0
+            self.next_EditorID = 0
             
     @property
     def nextEditorID(self):
@@ -41,15 +41,6 @@ class DataBase:
     def nextProjectID(self):
         self.next_ProjectID += 1
         return self.next_ProjectID
-    
-    # def getNextID(self, collectionFrom):
-    #     self.db.db[collectionFrom].aggregate([ 
-    #         { "$group": { 
-    #             "_id": None,
-    #             "max": { "$max": "$" }, 
-    #             "min": { "$min": "$price" } 
-    #         }}
-    #     ])
 
     def getOneUser(self, data):
         objectFromDB = self.db.db.Users.find_one(data)
@@ -88,11 +79,16 @@ class DataBase:
         return convertedData
     
     def getNFRWeights(self):
-        return {"Integrity",{ "type":"range", "values":[0,1], "defaultValue":0.5 }, "Consistency",{ "type": "select box", "values":{"a":1,"b":2,"c":3,"d":4}, "defaultValue": ["a",1] }}
+        weights = self.db.db.Constants.find_one({"Constant": "NFRWeights"})
+        del weights["_id"]
+        return weights
 
-    def getAHP_NFRWeights(self):
-        return {"Integrity": 0.2, "Consistency": 0.8}
-        
+    def getAHPWeights(self):
+        weights = self.db.db.Constants.find_one({"Constant": "AHPWeights"})
+        del weights["_id"]
+        del weights["Constant"]
+        return weights
+    
     def getOneObject(self, loadFrom, data):
         objectFromDB = self.db.db[loadFrom].find_one(data)
         # create class from the return data
@@ -111,10 +107,10 @@ class DataBase:
             dictObjects.append(object.__dict__)
         self.db.db[saveTo].insert_many(dictObjects)
         
-    def updateOneUser(self, userToUpdate):
-        self.db.db.Editors.update_one({'Username': userToUpdate.Username}, {
+    def updateOneUser(self, userToUpdate, newPass):
+        self.db.db.Editors.update_one({'Username': userToUpdate}, {
             '$set': {
-                'password': userToUpdate.password
+                'password': newPass
             }
         })
     
@@ -133,7 +129,33 @@ class DataBase:
                 field: editor.EditorID
             }
         })
+        
+    def addProjectMember(self, projectID, member):
+        self.db.db.Projects.update_one({'ProjectID': projectID}, {
+            '$addToSet': {
+                'Members': member
+            }
+        })    
     
+    def removeProjectMember(self, project, member):
+        self.db.db.Projects.update_one({'ProjectID': project.ProjectID}, {
+            '$pull': {
+                'Members': member
+            }
+        })
+        
+        self.db.db.Users.update_one({'Username': member}, {
+            '$pull': {
+                'Projects': project.ProjectID
+            }
+        })
+        
+        project.Members.remove(member)
+        self.db.db.Projects.update_one({'ProjectID': project.ProjectID}, {
+            '$set': {
+                'Owner':  project.Members[0]
+            }
+        })
     
 
 
@@ -145,9 +167,9 @@ def EditorsSwitchCase(objectFromDB):
     elif objectFromDB['type'] == 'SQL':
         return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     elif objectFromDB['type'] == 'NFR':
-        nfrEditor = NFREditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID']).__dict__
-        Weights = {"Integrity",{ "type":"range", "values":[0,1], "defaultValue":0.5 }, "Consistency",{ "type": "select box", "values":{"a":1,"b":2,"c":3,"d":4}, "defaultValue": ["a",1] }}
-        return nfrEditor, Weights
+        nfrEditor = NFREditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
+        nfrEditor.setWeights(db.getNFRWeights())
+        return nfrEditor
     elif objectFromDB['type'] == 'UML':
         return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
 

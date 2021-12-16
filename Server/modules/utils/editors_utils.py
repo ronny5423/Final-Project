@@ -20,7 +20,7 @@ def updateEditor(data, editorType):
     to_update = editorSwitch(data, editorType)
     db.updateOneEditor(to_update)
         
-def getProjectsWeights():
+def getNFRWeights():
     return db.getNFRWeights()
     
     
@@ -48,5 +48,5 @@ def SQL_parser_editors(sql):
 
 def NFR_parser_editors(nfr):
     proj = db.getOneProject({'ProjectID': nfr.ProjectID})
-    ahp = db.getAHP_NFRWeights()
+    ahp = db.getAHPWeights()
     return (loadEditor(proj.UMLEditorID), ahp)
