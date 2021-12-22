@@ -21,7 +21,7 @@ function SignUp(){
     return(
         <div>
            <Modal show={modalText!==""} onHide={_=>updateModalText("")} centered>
-                    <Modal.Header closeButton></Modal.Header>
+                    <Modal.Header closeButton/>
                     <Modal.Body>
                         <p>{modalText}</p>
                     </Modal.Body>

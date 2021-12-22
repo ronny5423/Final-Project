@@ -11,44 +11,45 @@ export default function NFREditor(props){
     const oldWeightsBeforeEdit=useRef(new Map())
     const createNfr=useRef(true)
     let navigate=useNavigate()
+    const[id,updateId]=useState(props.id)
 
     useEffect(()=>{
         async function getDataFromServer(){
-            // const person={Integrity:0.65,Consistency:["c",3]}
-            // const user={Integrity:0.9,Consistency:["a",1]}
-            // const weightsAndClassesTemp={Person:person,User:user};
-            // let weightsTemp=new Map();
-            // weightsTemp.set("Integrity",{
-            //     type:"range",
-            //     values:[0,1],
-            //     defaultValue:0.5
-            // })
-            // let labelsAndValues={a:1,b:2,c:3,d:4}
-            // weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
+            const person={Integrity:0.65,Consistency:["c",3]}
+            const user={Integrity:0.9,Consistency:["a",1]}
+            const weightsAndClassesTemp={Person:person,User:user};
+            let weightsTemp=new Map();
+            weightsTemp.set("Integrity",{
+                type:"range",
+                values:[0,1],
+                defaultValue:0.5
+            })
+            let labelsAndValues={a:1,b:2,c:3,d:4}
+            weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
 
-            if(props.id){
-                // let response1={data:{nfrEditor: weightsAndClassesTemp,Weights:Object.fromEntries(weightsTemp)}}
-                let response= await axios.get(serverAddress+`/editors/loadEditor`,{params:{id:props.id}});
-                if(response.status!==200){
-                    navigate(`/error`)
-                    return
-                }
+            if(id){
+                let response={data:{undecipheredJson: weightsAndClassesTemp,weights:Object.fromEntries(weightsTemp)}}
+                // let response= await axios.get(serverAddress+`/editors/loadEditor`,{params:{"ID":props.id}});
+                // if(response.status!==200){
+                //     navigate(`/error`)
+                //     return
+                // }
                 createNfr.current=false
-                let weightsValuesMap=new Map(Object.entries(response.data.nfrEditor))
+                let weightsValuesMap=new Map(Object.entries(response.data.undecipheredJson))
                 weightsValuesMap.forEach((value,key,map)=>{
                     map.set(key,new Map(Object.entries(value)))
                 })
                 createPreviousState(weightsValuesMap)
-                updateNFRWeights(response.data.Weights)
+                updateNFRWeights(response.data.weights)
                 updateWeightsValues(weightsValuesMap);
-            }
+             }
             else{
-                // let getWeights={data:Object.fromEntries(weightsTemp)}
-                let getWeights=await axios.get(serverAddress+`/editors/getWeights`)
-                if(getWeights.status!==200){
-                    navigate(`/error`)
-                    return
-                }
+                let getWeights={data:Object.fromEntries(weightsTemp)}
+                // let getWeights=await axios.get(serverAddress+`/editors/getNFRWeights`)
+                // if(getWeights.status!==200){
+                //     navigate(`/error`)
+                //     return
+                // }
                 let weightsMap=updateNFRWeights(getWeights.data)
                 let classesArray=props.classes
                 let weightClassMap=new Map();
@@ -60,7 +61,7 @@ export default function NFREditor(props){
                     })
                 }
                 updateWeightsValues(weightClassMap);
-            }
+             }
 
         }
         getDataFromServer();
@@ -105,13 +106,13 @@ export default function NFREditor(props){
         weightsValues.get(key).forEach((value,weightName)=>{
             if(weights.get(weightName).type==="range"){//create range input
                 rowArr.push(<td key={key+weightName}><div><input readOnly={!editable} type={"number"} min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}
-                           step={0.01} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(e.target.value,key,weightName)}/>
+                           step={0.01} value={weightsValues.get(key).get(weightName)} onChange={e=>onChange(parseFloat(e.target.value),key,weightName)}/>
                 <br/>
                     <Form.Text> min={weights.get(weightName).values[0]} max={weights.get(weightName).values[1]}</Form.Text></div>
                 </td>)
             }
             else{
-                rowArr.push(<td key={key+weightName}><select disabled={!editable} value={weightsValues.get(key).get(weightName)[1]} onChange={e=>onChange(e.target.value,key,weightName,e.target.innerText)}>
+                rowArr.push(<td key={key+weightName}><select disabled={!editable} value={weightsValues.get(key).get(weightName)[1]} onChange={e=>onChange(parseFloat(e.target.value),key,weightName,e.target.options[e.target.selectedIndex].text)}>
                     {//create select for each value
                         //weights.get(weightName).values.map((value,index)=><option key={index} value={value[1]}>{value[0]}</option>)
                         createSelectRow(weights.get(weightName).values)
@@ -155,25 +156,22 @@ export default function NFREditor(props){
         for(let key in weightsValuesObject){
             weightsValuesObject[key]=Object.fromEntries(weightsValuesObject[key])
         }
-
-        if(props.id){
-            let dataToSend={
-              jsonFile:weightsValuesObject,
-              EditorID:props.id
-            }
+        let dataToSend={
+            "jsonFile":weightsValuesObject,
+            "projectID":props.projectId
+        }
+        if(id){
+            dataToSend.EditorID=id
             let response=await axios.post(serverAddress+`/editors/updateNFREditor`,dataToSend)
-            if(response.status!==201){
+            if(response.status!==200){
                 navigate(`/error`)
             }
         }
         else{
-            let dataToSend={
-                jsonFile:weightsValuesObject,
-                projectID:props.projectId
-            }
             let response=await axios.post(serverAddress+`/editors/saveNFREditor`,dataToSend)
-            if(response.status===201){
-                props.updateEditorId(response.data.id,3)
+            if(response.status===200){
+                props.updateEditorId(response.data,3)
+                updateId(response.data)
             }
             else{
                 navigate(`/error`)

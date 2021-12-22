@@ -77,7 +77,7 @@ export default function EditorsTabs(props){
                     <SqlEditor id={sqlEditorId} projectId={projectId} classes={classes.current} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor id={nfrEditorId} projectId={projectId} editibale={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
+                    <NFREditor id={nfrEditorId} projectId={projectId} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
 
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>

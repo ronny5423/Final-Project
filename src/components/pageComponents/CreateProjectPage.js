@@ -14,10 +14,10 @@ function CreateProjectPage(props){
         let objToSend={projectName:name,projectDescription:description}
         // let response=await axios.post(serverAddress+`/createProject`,objToSend)
         // if(response.status===201){
-        //     localStorage.setItem("currentProjectIndex",response.data.index)
-        //     history("/editorsTabs")
+        //  //   localStorage.setItem("currentProjectIndex",response.data.index)
+        //     history(`/editorsTabs/${response.data.index}`)
         // }
-       history("/editorsTabs")
+       history(`/editorsTabs/1`)
      }
 
     return(

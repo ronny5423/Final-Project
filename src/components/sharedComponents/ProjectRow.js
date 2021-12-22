@@ -21,7 +21,7 @@ export default function ProjectRow(props){
     }
 
     function moveToProjectsEditors(){
-        history(`/editorsTabs/${props.umlEditor}/${props.sqlEditor}/${props.nfrEditor}/${props.ahpEditor}`)
+        history(`/editorsTabs/${props.projectId}/${props.umlEditor}/${props.sqlEditor}/${props.nfrEditor}/${props.ahpEditor}`)
     }
 
     function moveToAddRemoveUsers(){
