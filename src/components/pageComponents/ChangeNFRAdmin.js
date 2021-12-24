@@ -5,11 +5,14 @@ import {faPlus, faSave, faTrash} from "@fortawesome/fontawesome-free-solid";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
+import AddNFRAdmin from "../sharedComponents/AddNFRAdmin";
 
 export default function ChangeNFRAdmin(){
     const [nfr,updateNfr]=useState([])
     const [showError,updateShowError]=useState(false)
     const errorMessage=useRef([])
+    const [showAddNFR,updateShowAddNFR]=useState(false)
+    const nfrNamesSet=useRef(new Set())
     let navigate=useNavigate()
 
     useEffect(_=>{
@@ -33,6 +36,7 @@ export default function ChangeNFRAdmin(){
             let nfrWeights=response.data.nfrWeights
             let arr=[]
             for(let nfrName in response.data.nfrAHP){
+                nfrNamesSet.current.add(nfrName)
                 nfrWeights[nfrName].ahp=response.data.nfrAHP[nfrName]
                 let obj={}
                 obj[nfrName]=nfrWeights[nfrName]
@@ -59,6 +63,8 @@ export default function ChangeNFRAdmin(){
 
     function changeNFRName(oldName,newName,index){
         let clonedNfrObject=JSON.parse(JSON.stringify(nfr))
+        nfrNamesSet.current.delete(oldName)
+        nfrNamesSet.current.add(newName)
         let value=clonedNfrObject[index][oldName]
         let obj={}
         obj[newName]=value
@@ -87,9 +93,18 @@ export default function ChangeNFRAdmin(){
         updateNfr(clonedNfrObject)
     }
 
-    function deleteValue(nfrName,index,indexInSelect){
+    function deleteValue(nfrName,index,indexInSelect,selectName){
         let clonedNfrObject=JSON.parse(JSON.stringify(nfr))
         clonedNfrObject[index][nfrName].values.splice(indexInSelect,1)
+        if(clonedNfrObject[index][nfrName].defaultValue[0]===selectName){
+            if(clonedNfrObject[index][nfrName].values.length>0){
+                clonedNfrObject[index][nfrName].defaultValue[0]=Object.keys(clonedNfrObject[index][nfrName].values[0])[0]
+                clonedNfrObject.defaultValue[1]=Object.values(clonedNfrObject[index][nfrName].values[0])[0]
+            }
+            else{
+                clonedNfrObject[index][nfrName].defaultValue=[]
+            }
+        }
         updateNfr(clonedNfrObject)
     }
 
@@ -110,6 +125,7 @@ export default function ChangeNFRAdmin(){
     function deleteNFR(index){
         let clonedNfrObject=JSON.parse(JSON.stringify(nfr))
         clonedNfrObject.splice(index,1)
+        nfrNamesSet.current.delete(Object.keys(clonedNfrObject[index])[0])
         updateNfr(clonedNfrObject)
     }
 
@@ -168,7 +184,7 @@ export default function ChangeNFRAdmin(){
                        data.values.map((obj,indexInSelect)=><tr>
                            <td><input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/></td>
                             <td><input value={Object.values(obj)[0]} type={"number"} onChange={e=>changeSelectValue(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/> </td>
-                           <td><ProjectRowTooltip icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect)}/></td>
+                           <td><ProjectRowTooltip icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>
                        </tr>)
                    }
                    </tbody>
@@ -218,22 +234,28 @@ export default function ChangeNFRAdmin(){
             let key=Object.keys(nfr[index])[0]
             let value=Object.values(nfr[index])[0]
             if(value.type==="select box"){
-               if(checkSelectBoxNFR(value.values)){
+               if(checkSelectBoxNFR(value.values,key)){
                    wasError=true
                    }
+               else if(value.defaultValue===[]){
+                   value.defaultValue.push(Object.keys(value.values[0])[0])
+                   value.defaultValue.push(Object.values(value.values[0])[0])
+               }
             }
             else{
-                if(checkRangeNFR(value)){
+                if(checkRangeNFR(value,key)){
                     wasError=true
                     }
             }
             if(isNaN(value.ahp)){
-                errorMessage.current.push("ahp value must be a number")
+                errorMessage.current.push(`ahp value must be a number in ${key} NFR`)
                 wasError=true
-
+            }
+            if(value.ahp<=0){
+                errorMessage.current.push(`ahp value cannot be less or equal to 0 in ${key} NFR`)
             }
             if(nfrNamesSet.has(key)){
-                errorMessage.current.push("nfr names must be unique")
+                errorMessage.current.push(`nfr names must be unique in ${key} NFR`)
                 wasError=true
             }
             nfrNamesSet.add(key)
@@ -243,7 +265,7 @@ export default function ChangeNFRAdmin(){
             wasError=true
           }
         if(!wasError){
-            errorMessage.current=""
+            errorMessage.current=[]
            let response=await axios.post(serverAddress+`/admin/updateNFR`,nfr)
             //check for response status
         }
@@ -252,46 +274,57 @@ export default function ChangeNFRAdmin(){
         }
     }
 
-    function checkSelectBoxNFR(data){
+    function addNewNFR(newNFR){
+        let clonedNfrs=JSON.parse(JSON.stringify(nfr))
+        clonedNfrs.push(newNFR)
+        nfrNamesSet.current.add(Object.keys(newNFR)[0])
+        updateNfr(clonedNfrs)
+    }
+
+    function checkSelectBoxNFR(data,nfrName){
         let selectNamesSet=new Set()
         for(let index in data){
             let key=Object.keys(data[index])[0]
             let value=Object.values(data[index])[0]
             if(key==="" || isNaN(value)){
-                errorMessage.current.push("Please fill all values of select box nfr")
+                errorMessage.current.push(`Please fill all values of ${nfrName} nfr`)
                 return true
             }
             if(selectNamesSet.has(key)){
-                errorMessage.current.push("Select names must be unique")
+                errorMessage.current.push(`Select names must be unique in ${nfrName} nfr`)
+                return true
+            }
+            if(value<0){
+                errorMessage.current.push(`Value cannot be negative in ${nfrName} nfr`)
                 return true
             }
             selectNamesSet.add(key)
         }
         if(data.length===0){
-            errorMessage.current.push("NFR select Weights must have at least one value")
+            errorMessage.current.push(`NFR select Weights must have at least one value in ${nfrName}`)
             return true;
         }
         return false
     }
 
-    function checkRangeNFR(data){
+    function checkRangeNFR(data,nfrName){
         if(isNaN(data.values[0]) || isNaN(data.values[1]) || isNaN(data.defaultValue)){
-            errorMessage.current.push("numeric values cannot be empty")
+            errorMessage.current.push(`numeric values cannot be empty in ${nfrName}`)
             return true
         }
         if(data.values[0]>=data.values[1]){
-            errorMessage.current.push("Minimum value must be less than maximum")
+            errorMessage.current.push(`Minimum value must be less than maximum in ${nfrName}`)
             return true
         }
         if(data.defaultValue<data.values[0] || data.defaultValue>data.values[1]){
-            errorMessage.current.push("default value must be in range")
+            errorMessage.current.push(`default value must be in range in ${nfrName}`)
+            return true
+        }
+        if(data.values[0]<0 || data.values[1]<0 || data.defaultValue<0){
+            errorMessage.current.push(`Values cannot be negative in ${nfrName}`)
             return true
         }
         return false
-    }
-
-    function addNFR(){
-
     }
 
     return(
@@ -308,7 +341,7 @@ export default function ChangeNFRAdmin(){
                 <th>
                     <div>
                         <ProjectRowTooltip message={"save changes"} icon={faSave} onClick={saveChanges}/>
-                        <ProjectRowTooltip message={"add new nfr"} icon={faPlus} onClick={addNFR}/>
+                        <ProjectRowTooltip message={"add new nfr"} icon={faPlus} onClick={_=>updateShowAddNFR(true)}/>
                     </div>
                 </th>
             </tr>
@@ -317,6 +350,7 @@ export default function ChangeNFRAdmin(){
             {createTableRow()}
             </tbody>
         </Table>
+            <AddNFRAdmin show={showAddNFR} addNewNFR={addNewNFR} hide={_=>updateShowAddNFR(false)} names={nfrNamesSet.current}/>
             <Modal show={showError} centered onHide={_=>updateShowError(false)}>
                 <Modal.Header closeButton/>
                 <Modal.Body>{errorMessage.current.map((message,index)=><p key={index}>{message}</p>)}</Modal.Body>
