@@ -53,6 +53,16 @@ class DataBase:
         for line in objectsFromDB:
             convertedData.append(User(line['Username'], line['Password']))
         return convertedData
+    
+    def getUsernamesByIndexes(self, indexes):
+        objectsFromDB = self.db.db.Users.aggregate([
+                {'$skip': indexes[0]},
+                {'$limit': indexes[1]-indexes[0]}
+            ])
+        convertedData = []
+        for line in objectsFromDB:
+            convertedData.append(line['Username'])
+        return convertedData
 
     def getOneEditor(self, data):
         objectFromDB = self.db.db.Editors.find_one(data)
@@ -76,6 +86,16 @@ class DataBase:
         convertedData = []
         for line in objectsFromDB:
             convertedData.append(Project(line))
+        return convertedData
+    
+    def getProjectsByIndexes(self, indexes):
+        objectsFromDB = self.db.db.Projects.aggregate([
+                {'$skip': indexes[0]},
+                {'$limit': indexes[1]-indexes[0]}
+            ])
+        convertedData = []
+        for line in objectsFromDB:
+            convertedData.append([line['ProjectID'], line['Name'], line['Owner']])
         return convertedData
     
     def getNFRWeights(self):

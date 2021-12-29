@@ -26,9 +26,11 @@ app.register_blueprint(auth, url_prefix='/auth')
 from routes.editors import editors
 from routes.projects import projects
 from routes.users import users
+from routes.admin import admin
 app.register_blueprint(editors, url_prefix='/editors')
 app.register_blueprint(projects, url_prefix='/projects')
 app.register_blueprint(users, url_prefix='/users')
+app.register_blueprint(admin, url_prefix='/admin')
 
 @app.route("/")
 def default():
