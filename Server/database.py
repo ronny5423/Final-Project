@@ -2,6 +2,7 @@ from flask_pymongo import PyMongo
 import json
 
 import pymongo
+from pymongo import results
 
 # Import modules
 from modules.User import User
@@ -116,6 +117,35 @@ class DataBase:
     def getManyObject(self, loadFrom, data):
         objectsFromDB = self.db.db[loadFrom].find(data)
         # create classes from the return data
+    
+    def get_editors_project(self, project_id):
+        # return array of the editors of the same project
+        result = {}
+        editors_arr = self.db.db.Editors.aggregate([
+                   {
+                       '$match': {
+                           'ProjectID': project_id
+                       }
+                   }, {
+                       '$lookup': {
+                           'from': 'Editors',
+                           'localField': 'ProjectID',
+                           'foreignField': 'ProjectID',
+                           'as': 'editors'
+                       }
+                   }, {
+                       '$project': {
+                           'editors': 1,
+                           '_id': 0
+                       }
+                   }, {
+                       '$limit': 1
+                   }
+        ])
+
+        result['result'] = list(editors_arr)
+
+        return result['result']
 
     def insertOneObject(self,saveTo, objectToSave):
         self.db.db[saveTo].insert_one(objectToSave.__dict__)
