@@ -3,10 +3,9 @@ from database import *
 
 
 def changePassword(data):
-    username = data.get('Username')
-    newPass = data.get('password')
-    userToUpdate = User(username, newPass)
-    db.updateOneUser(userToUpdate)
+    userToUpdate = data.cookies.get('LoggedUser')
+    newPass = data.json.get('password')
+    db.updateOneUser(userToUpdate, newPass)
     
 def getUserProjects(data):
     queryData = data.args

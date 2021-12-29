@@ -51,14 +51,10 @@ def updateProjectEditors_in_DB(updated_editors):
         editor = updated_editors["NFR"]
         data = {'jsonFile': editor["undecipheredJson"], "projectID": editor["ProjectID"], "EditorID": editor["EditorID"]}
         updateEditor(data, "NFR")
-
-def getProjectsWeights():
+        
+def getNFRWeights():
     return db.getNFRWeights()
     
-    
-
-
-
 # Helper Functions
 
 def editorSwitch(data, editorType):
@@ -135,6 +131,4 @@ def updateNFReditor(nfr_editor, del_set, add_set):
             new_class[w_name] = w_val["defaultValue"]
         nfr_json[cls] = new_class
     nfr_editor["undecipheredJson"] = nfr_json
-
-
 

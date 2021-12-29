@@ -80,10 +80,10 @@ def load_Editor():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/getWeights", methods=['GET'])
+@editors.route("/getNFRWeights", methods=['GET'])
 def get_weigths():
     try:
-        weights = getProjectsWeights()
-        return Response(json.dump(weights), status=200, mimetype='application/json')
+        weights = getNFRWeights()
+        return Response(json.dumps(weights), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

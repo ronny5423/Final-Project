@@ -13,8 +13,7 @@ from modules.utils.user_utils import *
 @users.route('/updatePassword', methods=['POST'])
 def updatePassword():
     try:
-        data = request.json
-        changePassword(data)
+        changePassword(request)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

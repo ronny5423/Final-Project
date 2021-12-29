@@ -41,5 +41,17 @@ def remove_members(projectID, member):
     
 @projects.route("/addMember", methods = ["POST"])
 def add_Member():
-    #TODO add projectID to user's project list
-    pass
+    try:
+        addProjectMember(request)
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+@projects.route("/getWeights/<projectID>", methods=['GET'])
+def get_weights(projectID):
+    #TODO: get project weights from DB
+    try:
+        weights = getProjectWeights(projectID)
+        return Response(json.dumps(weights), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
