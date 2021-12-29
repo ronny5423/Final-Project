@@ -12,8 +12,6 @@ from modules.UML_editor import UMLEditor
 from modules.NFR_editor import NFREditor
 from modules.SQL_editor import SQLEditor
 
-#TODO update editors - check editorID and remove projectID
-
 @editors.route("/saveUMLEditor", methods = ["POST"])
 def saveUMLEditor():
     try:

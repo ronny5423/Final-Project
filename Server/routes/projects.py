@@ -18,11 +18,28 @@ def save_Project():
 @projects.route("/loadProject/<projectID>", methods=["GET"])
 def load_Project(projectID):
     try:
-        project = loadProject(projectID)
-        return Response(json.dumps(project.__dict__), status=200, mimetype='application/json')
+        project = loadProject(int(projectID))
+        return Response(json.dumps(project), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
+@projects.route("/calculate", methods=["POST"])
+def calculate_results():
+    try:
+        data = request.json
+        clacResults = calculateResults(data.get('projectID'), data.get('number'))
+        return Response(json.dumps(clacResults), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@projects.route("/getResults/<projectID>", methods=["GET"])
+def get_results(projectID):
+    try:
+        clacResults = getResults(int(projectID))
+        return Response(json.dumps(clacResults), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')    
+
 @projects.route("/getMembers/<projectID>", methods=["GET"])
 def project_members(projectID):
     try:
@@ -49,7 +66,6 @@ def add_Member():
 
 @projects.route("/getWeights/<projectID>", methods=['GET'])
 def get_weights(projectID):
-    #TODO: get project weights from DB
     try:
         weights = getProjectWeights(projectID)
         return Response(json.dumps(weights), status=200, mimetype='application/json')

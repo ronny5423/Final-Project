@@ -164,28 +164,19 @@ def get_dist_dict_of_each_cluster_to_db(cluster_to_db_vectors):
 
 
 def calculate_algorithm(projectID):
-#     sql = db.getOneEditor({"EditorID": sql_id})
-#     nfr = db.getOneEditor({"EditorID": nfr_id})
-#     uml = db.getOneEditor({"EditorID": uml_id})
-#     ahp = {}
-#     if ahp is None:
-#         ahp = db.getAHPWeights()
-#     else:
-#         ahp = db.getOneEditor({"EditorID": ahp_id})  # TODO change when ill know hot to load ahp
-
     if projectID is None:
         return
 
     project = db.getOneProject({"ProjectID": projectID})
 
-    if project.Weights is None:
+    if not hasattr(project, 'Weights'):
         ahp = db.getAHPWeights()
     else:
         ahp = project.Weights
 
     editors = db.get_editors_project(projectID)
 
-    sql, nfr, uml = {}
+    sql, nfr, uml = {}, {}, {}
     for editor in editors:
         if editor['type'] == 'UML':
             uml = editor
@@ -208,6 +199,6 @@ def calculate_algorithm(projectID):
 
     cluster_to_db_distances = get_dist_dict_of_each_cluster_to_db(dist_vec_obj)
 
-    return {'final_clusters': final_clusters, 'DB_distance': cluster_to_db_distances}
+    return {'final_clusters': json.dumps(final_clusters), 'DB_distance': json.dumps(cluster_to_db_distances)}
 
 

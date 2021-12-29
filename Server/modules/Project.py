@@ -15,8 +15,8 @@ class Project:
         self.Owner = Owner
         self.Members = Members
     
-    def __init__(self, projectID, data):
-        self.ProjectID = projectID
+    def __init__(self, data):
+        self.ProjectID = data.get('ProjectID')
         self.name = data.get('name')
         self.Discription = data.get('Discription')
         self.UMLEditorID = data.get('UMLEditorID')
@@ -28,35 +28,22 @@ class Project:
             self.Members = data.get('Members')
         else:
             self.Members = []
+        if data.get('Weights') is not None:
+            self.Weights = data.get('Weights')
     
     def project_preview(self):
         proj = self.__dict__
         del proj['Members']
+        if hasattr(self, 'Results'):
+            del proj['Results']
         return proj
     
     @property
     def getMembers(self):
         return self.Members
-        
-    # def __dict__(self):
-    #     return {
-    #         'ProjectID': self.ProjectID,
-    #         'Discribtion': self.Discribtion,
-    #         'UMLEditorID': self.UMLEditorID,
-    #         'SQLEditorID': self.SQLEditorID,
-    #         'NFREditorID': self.NFREditorID,
-    #         'AHPEditorID': self.AHPEditorID,
-    #         'Owner': self.Owner,
-    #     }
-
-    # def getProjectUML(self):
-    #     return loadEditor(self.UMLEditorID)
-        
-    # def getProjectSQL(self):
-    #     return loadEditor(self.SQLEditorID)
-
-    # def getProjectNFR(self):
-    #     return loadEditor(self.NFREditorID)
+    
+    def setWeights(self, w):
+        self.Weights = w
 
     def calc(self):
         pass

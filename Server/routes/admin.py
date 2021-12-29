@@ -7,11 +7,20 @@ admin = Blueprint('admin', __name__)
 # Import Utils
 from modules.utils.admin_utils import *
 
-@admin.route("/changeWeights", methods=['POST'])
-def change_weights():
+@admin.route("/updateAHP", methods=['POST'])
+def update_ahp():
     try:
-        
-        return Response(status=200, mimetype='application/json')
+        data = request.json
+        updateAHP(data)
+        return Response(status=200, mimetype='applica)tion/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@admin.route("/AHP", methods=['GET'])
+def get_ahp():
+    try:
+        ahp = getAHP()
+        return Response(json.dumps(ahp), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     

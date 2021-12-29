@@ -76,7 +76,7 @@ def SQL_parser_editors(sql):
 
 def NFR_parser_editors(nfr):
     proj = db.getOneProject({'ProjectID': nfr.ProjectID})
-    ahp = db.getAHP_NFRWeights()
+    ahp = db.getNFRWeights()
     return (loadEditor(proj.UMLEditorID), ahp)
 
 

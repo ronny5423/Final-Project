@@ -46,7 +46,7 @@ class DataBase:
     def getOneUser(self, data):
         objectFromDB = self.db.db.Users.find_one(data)
         if objectFromDB:
-            return User(objectFromDB['Username'], objectFromDB['Password'])
+            return User(objectFromDB['Username'], objectFromDB['Password'], objectFromDB['Projects'])
 
     def getManyUsers(self, data):
         objectsFromDB = self.db.db.Users.find(data)
@@ -83,7 +83,7 @@ class DataBase:
             return Project(objectFromDB['ProjectID'], objectFromDB)
         
     def getManyProjects(self, data):
-        objectsFromDB = self.db.db.Projects.find(data)
+        objectsFromDB = self.db.db.Projects.find({"ProjectID": {'$in': data}})
         convertedData = []
         for line in objectsFromDB:
             convertedData.append(Project(line))
@@ -94,21 +94,35 @@ class DataBase:
                 {'$skip': indexes[0]},
                 {'$limit': indexes[1]-indexes[0]}
             ])
+        size = self.db.db.Projects.count({})
         convertedData = []
         for line in objectsFromDB:
-            convertedData.append([line['ProjectID'], line['Name'], line['Owner']])
-        return convertedData
+            convertedData.append(Project(line))
+        return {'Projects': convertedData, 'size': size}
     
     def getNFRWeights(self):
-        weights = self.db.db.Constants.find_one({"Constant": "NFRWeights"})
+        weights = self.db.db.Constants.find_one({"Constant": "NFRWeights"}, {"Integrity": 1, "Consistency": 1})
         del weights["_id"]
         return weights
+    
+    def updateNFRWeights(self, data):
+        self.db.db.Constants.find_one({"Constant": "NFRWeights"}, {
+            '$set': {
+                'Integrity': data['Integrity'],
+                'Consistency': data['Consistency']
+            }
+        })
 
     def getAHPWeights(self):
         weights = self.db.db.Constants.find_one({"Constant": "AHPWeights"})
-        del weights["_id"]
-        del weights["Constant"]
-        return weights
+        return weights['Weights']
+    
+    def updateAHPWeights(self, data):
+        self.db.db.Constants.update_one({"Constant": "AHPWeights"}, {
+            '$set': {
+                'Weights': data
+            }
+        })
     
     def getOneObject(self, loadFrom, data):
         objectFromDB = self.db.db[loadFrom].find_one(data)
@@ -145,7 +159,7 @@ class DataBase:
 
         result['result'] = list(editors_arr)
 
-        return result['result']
+        return result['result'][0]['editors']
 
     def insertOneObject(self,saveTo, objectToSave):
         self.db.db[saveTo].insert_one(objectToSave.__dict__)
@@ -158,7 +172,7 @@ class DataBase:
         self.db.db[saveTo].insert_many(dictObjects)
         
     def updateOneUser(self, userToUpdate, newPass):
-        self.db.db.Editors.update_one({'Username': userToUpdate}, {
+        self.db.db.Users.update_one({'Username': userToUpdate}, {
             '$set': {
                 'password': newPass
             }
@@ -177,6 +191,13 @@ class DataBase:
         self.db.db.Projects.update_one({'ProjectID': editor.ProjectID}, {
             '$set': {
                 field: editor.EditorID
+            }
+        })
+        
+    def updateProjectWeights(self, projectID, weights):
+        self.db.db.Projects.update_one({'ProjectID': projectID}, {
+            '$set': {
+                'Weights': weights
             }
         })
         
@@ -207,8 +228,17 @@ class DataBase:
             }
         })
     
+    def saveCalcResults(self, projectID, results):
+        self.db.db.Projects.update_one({'ProjectID': projectID}, {
+            '$set': {
+                "Results": results
+            }
+        })
 
-
+    def getCalcResults(self, projectID):
+        calcResults =  self.db.db.Projects.find_one({'ProjectID': projectID},{'Results': 1})
+        del calcResults["_id"]
+        return calcResults
 
 # Helper Functions
 def EditorsSwitchCase(objectFromDB):

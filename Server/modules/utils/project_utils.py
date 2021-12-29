@@ -2,6 +2,7 @@ from database import *
 
 # Import Modules
 from modules.Project import *
+from modules.parsers.Algorithm import calculate_algorithm
 
 def saveProject(data):
     jsonData = data.json
@@ -10,7 +11,10 @@ def saveProject(data):
     return newProject.ProjectID
 
 def loadProject(projectID):
-    return db.getOneProject({"ProjectID": projectID}).project_preview()
+    proj = db.getOneProject({"ProjectID": projectID})
+    if not hasattr(proj, 'Weights'):
+        proj.setWeights(db.getAHPWeights())
+    return proj.project_preview()
 
 def getProjectMembers(projectID):
     return db.getOneProject({"ProjectID": projectID}).getMembers
@@ -27,7 +31,6 @@ def addProjectMember(data):
 
 def removeProjectMembers(data, projectID, member):
     project =  db.getOneProject({"ProjectID": int(projectID)})
-    #TODO remove project ID from user's list
     if project.Owner == data.cookies.get('LoggedUser'):
         db.removeProjectMember(project, member)
     else:
@@ -35,14 +38,26 @@ def removeProjectMembers(data, projectID, member):
     
 def getProjectWeights(projectID):
     project =  db.getOneProject({"ProjectID": projectID})
-    return {'Weights': [0.3, 0.3, 0.3]}
-
+    if hasattr(project, 'Weights'):
+        return project.Weights
+    else:
+        return db.getAHPWeights()
+        
 def updateProjectWeights(data):
     jsonData = data.json
     projectID = jsonData.get('ProjectID')
     weights = jsonData.get('Weights')
     project =  db.getOneProject({"ProjectID": projectID})
     if data.cookies.get('LoggedUser') in project.Members:
-        pass
+        db.updateProjectWeights(projectID, weights)
     else:
-        raise Exception('Logged User is not the project Owner.')
+        raise Exception('Logged User is not a member of the received project.')
+    
+def calculateResults(projectID, N):
+    calcResults = calculate_algorithm(projectID)
+    db.saveCalcResults(projectID, calcResults)
+    return calcResults
+    
+def getResults(projectID):
+    return db.getCalcResults(projectID)
+    
