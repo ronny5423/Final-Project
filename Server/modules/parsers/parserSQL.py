@@ -38,6 +38,8 @@ def increment_matrix_table_cell(matrix, class_from, class_to, increase):
     i = max(class_from[1], class_to[1])
     j = min(class_from[1], class_to[1])
     matrix[i][j] += increase
+    if i != j:
+        matrix[j][i] += 1
 
 
 def get_classes_return_query(query_arr, classes_names):
@@ -289,11 +291,18 @@ def calculate_query_complexity(uml_json, query_classes, classes_names, query):
 
     return 1
 
+def update_classes_queries(classes_queries, query_classes, q_key):
+    for clas in query_classes.keys():
+        if clas in classes_queries:
+            classes_queries[clas].append(q_key)
+        else:
+            classes_queries[clas] = [q_key]
 
 def sql_parser(sql_json, uml_json):
     classes = {}
     classes_names = {}
     query_classes = {}
+    classes_queries = {}
     queries_complexity = {}
     idx = 0  # index of class in matrix
     for node in uml_json["nodeDataArray"]:
@@ -326,12 +335,14 @@ def sql_parser(sql_json, uml_json):
                 query_classes = get_classes_connect_query(query_arr, classes_names)
             else:
                 continue
+            update_classes_queries(classes_queries, query_classes, key)
             update_sql_matrix(matrix_classes, query_classes, classes, classes_names)
             complexity = calculate_query_complexity(uml_json, query_classes, classes_names, query)
             queries_complexity[key] = complexity
 
     res = {
             'classes': json.dumps(classes), 
+            'classes_queries': json.dumps(classes_queries),
             'matrix_classes': json.dumps(dict(enumerate(matrix_classes.flatten(), 1))),
             'shape': matrix_classes.shape[0], 
             'queries_complexity': queries_complexity

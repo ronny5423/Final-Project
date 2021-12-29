@@ -27,6 +27,8 @@ def increment_matrix_table_cell(matrix, class_from, class_to):
     i = max(class_from[1], class_to[1])
     j = min(class_from[1], class_to[1])
     matrix[i][j] += 1
+    if i != j:
+        matrix[j][i] += 1
 
 
 def uml_parser(uml_json):

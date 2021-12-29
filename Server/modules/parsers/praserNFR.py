@@ -71,7 +71,7 @@ def nfr_parser(nfrValues, uml_json, ahpValues):
             nfrMatrix[class1[1]][class2[1]] = nfrDimValue
             nfrMatrix[class2[1]][class1[1]] = nfrDimValue
             
-    matrix_classes = np.array([(arr[0], arr[1]) for arr in nfrMatrix])
+    matrix_classes = np.array(nfrMatrix)
     return {
             'classes': classes,
             'matrix_classes': json.dumps(dict(enumerate(matrix_classes.flatten(), 1))),

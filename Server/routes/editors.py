@@ -27,7 +27,10 @@ def saveUMLEditor():
 def updateUMLEditor():
     try:
         data = request.json
+        updated_editors = updateProjectEditors(data)
         updateEditor(data, 'UML')
+        if updated_editors is not None:
+            updateProjectEditors_in_DB(updated_editors)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
