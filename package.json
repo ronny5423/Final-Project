@@ -20,7 +20,7 @@
     "gojs": "^2.1.49",
     "gojs-react": "^1.1.0",
     "hamburger-react": "^2.4.1",
-    "mdbreact": "^5.1.0",
+    "mdbreact": "^4.6.1",
     "react": "^17.0.2",
     "react-animation-menu": "^0.1.15",
     "react-bootstrap": "^2.0.0-rc.0",
