@@ -80,7 +80,7 @@ def SQL_parser_editors(sql):
 def NFR_parser_editors(nfr):
     proj = db.getOneProject({'ProjectID': nfr.ProjectID})
     nfrWeights = db.getNFRWeights()
-    return (loadEditor(proj.UMLEditorID), nfrWeights)
+    return (loadEditor(proj.UMLEditorID), nfrWeights['Weights'])
 
 
 def get_changes_in_uml(old_uml, new_uml):

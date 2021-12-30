@@ -16,8 +16,12 @@ def loadProject(projectID):
         proj.setWeights(db.getAHPWeights())
     return proj.project_preview()
 
-def getProjectMembers(projectID):
-    return db.getOneProject({"ProjectID": projectID}).getMembers
+def updateDetails(data):
+    db.updateProjectDetails(data.get('projectID'), data.get('details'))
+
+def getProjectMembers(projectID, indexes):
+    members = db.getOneProject({"ProjectID": projectID}).getMembers
+    return { 'Members': members[indexes[0]:indexes[1]], 'size': len(members)}
 
 def addProjectMember(data):
     jsonData = data.json

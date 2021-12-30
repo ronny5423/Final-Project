@@ -3,11 +3,11 @@
 ProjectsID = 1
 
 class Project:
-    def __init__(self, ProjectID, name, Discription='', UMLEditorID=None, SQLEditorID=None, 
+    def __init__(self, ProjectID, name, Description='', UMLEditorID=None, SQLEditorID=None, 
                 NFREditorID=None, AHPEditorID=None, Owner=None, Members=[]):
         self.ProjectID = ProjectID
         self.name = name
-        self.Discription = Discription
+        self.Description = Description
         self.UMLEditorID = UMLEditorID
         self.SQLEditorID = SQLEditorID
         self.NFREditorID = NFREditorID
@@ -18,7 +18,7 @@ class Project:
     def __init__(self, data):
         self.ProjectID = data.get('ProjectID')
         self.name = data.get('name')
-        self.Discription = data.get('Discription')
+        self.Description = data.get('Description')
         self.UMLEditorID = data.get('UMLEditorID')
         self.SQLEditorID = data.get('SQLEditorID')
         self.NFREditorID = data.get('NFREditorID')

@@ -23,6 +23,15 @@ def load_Project(projectID):
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
+@projects.route("/updateDetails", methods=['POST'])
+def update_details():
+    try:
+        data = request.json
+        updateDetails(data)
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
 @projects.route("/calculate", methods=["POST"])
 def calculate_results():
     try:
@@ -40,10 +49,10 @@ def get_results(projectID):
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')    
 
-@projects.route("/getMembers/<projectID>", methods=["GET"])
-def project_members(projectID):
+@projects.route("/getMembers/<projectID>/<indexes>", methods=["GET"])
+def project_members(projectID, indexes):
     try:
-        projectMembers = getProjectMembers(int(projectID))
+        projectMembers = getProjectMembers(int(projectID), json.loads(indexes))
         return Response(json.dumps(projectMembers), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

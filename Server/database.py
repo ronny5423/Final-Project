@@ -101,7 +101,7 @@ class DataBase:
         return {'Projects': convertedData, 'size': size}
     
     def getNFRWeights(self):
-        weights = self.db.db.Constants.find_one({"Constant": "NFRWeights"}, {"Integrity": 1, "Consistency": 1})
+        weights = self.db.db.Constants.find_one({"Constant": "NFRWeights"}, {"Constant": 0})
         del weights["_id"]
         return weights
     
@@ -111,10 +111,16 @@ class DataBase:
         return attribuetes
 
     def updateNFRWeights(self, data):
-        self.db.db.Constants.find_one({"Constant": "NFRWeights"}, {
+        self.db.db.Constants.update_one({"Constant": "NFRWeights"}, {
             '$set': {
-                'Integrity': data['Integrity'],
-                'Consistency': data['Consistency']
+                'Weights': data
+            }
+        })
+        
+    def updateNFRAttributes(self, data):
+        self.db.db.Constants.update_one({"Constant": "NFRAttributes"}, {
+            '$set': {
+                'Attributes': data
             }
         })
 
@@ -244,6 +250,14 @@ class DataBase:
         calcResults =  self.db.db.Projects.find_one({'ProjectID': projectID},{'Results': 1})
         del calcResults["_id"]
         return calcResults
+    
+    def updateProjectDetails(self, projectID, data):
+        self.db.db.Projects.update_one({'ProjectID': projectID}, {
+            '$set': {
+                'name':  data['name'],
+                'Description': data['Description']
+            }
+        })
 
 # Helper Functions
 def EditorsSwitchCase(objectFromDB):
