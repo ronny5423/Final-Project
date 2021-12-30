@@ -22,5 +22,5 @@ class NFREditor(Editor):
         self.undecipheredJson = undecipheredJson
         self.parseJson()
         
-    def setWeights(self, weights):
-        self.weights = weights
+    def setAttributes(self, attributes):
+        self.attributes = attributes

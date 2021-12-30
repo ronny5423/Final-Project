@@ -32,7 +32,7 @@ def updateProjectEditors(data):
     if len(add_set) == len(del_set) == 0:
         return None
     editors_arr = db.get_editors_project(old_uml_editor.ProjectID)
-    for editor in editors_arr[0]['editors']:
+    for editor in editors_arr:
         if editor["type"] == 'SQL':
             updateSQLjson(editor, del_set)
             updated_editors["SQL"] = editor
@@ -54,6 +54,9 @@ def updateProjectEditors_in_DB(updated_editors):
         
 def getNFRWeights():
     return db.getNFRWeights()
+
+def getNFRAtrributes():
+    return db.getNFRAttributes()
     
 # Helper Functions
 
@@ -76,8 +79,8 @@ def SQL_parser_editors(sql):
 
 def NFR_parser_editors(nfr):
     proj = db.getOneProject({'ProjectID': nfr.ProjectID})
-    ahp = db.getNFRWeights()
-    return (loadEditor(proj.UMLEditorID), ahp)
+    nfrWeights = db.getNFRWeights()
+    return (loadEditor(proj.UMLEditorID), nfrWeights)
 
 
 def get_changes_in_uml(old_uml, new_uml):

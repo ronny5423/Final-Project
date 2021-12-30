@@ -80,7 +80,7 @@ class DataBase:
     def getOneProject(self, data):
         objectFromDB = self.db.db.Projects.find_one(data)
         if objectFromDB:
-            return Project(objectFromDB['ProjectID'], objectFromDB)
+            return Project(objectFromDB)
         
     def getManyProjects(self, data):
         objectsFromDB = self.db.db.Projects.find({"ProjectID": {'$in': data}})
@@ -105,6 +105,11 @@ class DataBase:
         del weights["_id"]
         return weights
     
+    def getNFRAttributes(self):
+        attribuetes = self.db.db.Constants.find_one({"Constant": "NFRAttributes"}, {"Attributes": 1})
+        del attribuetes["_id"]
+        return attribuetes
+
     def updateNFRWeights(self, data):
         self.db.db.Constants.find_one({"Constant": "NFRWeights"}, {
             '$set': {
@@ -248,7 +253,7 @@ def EditorsSwitchCase(objectFromDB):
         return SQLEditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
     elif objectFromDB['type'] == 'NFR':
         nfrEditor = NFREditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])
-        nfrEditor.setWeights(db.getNFRWeights())
+        nfrEditor.setAttributes(db.getNFRAttributes())
         return nfrEditor
     elif objectFromDB['type'] == 'UML':
         return UMLEditor(objectFromDB['undecipheredJson'], objectFromDB['ProjectID'], objectFromDB['convertedData'], objectFromDB['EditorID'])

@@ -85,3 +85,12 @@ def get_weigths():
         return Response(json.dumps(weights), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+
+@editors.route("/getNFRAttributes", methods=['GET'])
+def get_attributes():
+    try:
+        weights = getNFRAtrributes()
+        return Response(json.dumps(weights), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')

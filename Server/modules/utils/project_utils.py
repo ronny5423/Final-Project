@@ -6,7 +6,7 @@ from modules.parsers.Algorithm import calculate_algorithm
 
 def saveProject(data):
     jsonData = data.json
-    newProject = Project(db.nextProjectID, jsonData)
+    newProject = Project(jsonData)
     db.insertOneObject('Projects', newProject)
     return newProject.ProjectID
 
@@ -30,7 +30,7 @@ def addProjectMember(data):
         raise Exception('Logged User is not the project Owner.')
 
 def removeProjectMembers(data, projectID, member):
-    project =  db.getOneProject({"ProjectID": int(projectID)})
+    project = db.getOneProject({"ProjectID": int(projectID)})
     if project.Owner == data.cookies.get('LoggedUser'):
         db.removeProjectMember(project, member)
     else:
