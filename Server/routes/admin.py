@@ -24,6 +24,23 @@ def get_ahp():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
+@admin.route("/updateNFR", methods=['POST'])
+def update_nfr():
+    try:
+        data = request.json
+        updateNFR(data)
+        return Response(status=200, mimetype='applica)tion/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@admin.route("/NFR", methods=['GET'])
+def get_nfr():
+    try:
+        ahp = getNFR()
+        return Response(json.dumps(ahp), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
 @admin.route("/getUsers/<indexes>", methods=['GET'])
 def get_users(indexes):
     try:

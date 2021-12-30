@@ -6,7 +6,7 @@ from modules.parsers.Algorithm import calculate_algorithm
 
 def saveProject(data):
     jsonData = data.json
-    newProject = Project(db.nextProjectID, jsonData)
+    newProject = Project(jsonData)
     db.insertOneObject('Projects', newProject)
     return newProject.ProjectID
 
@@ -16,8 +16,12 @@ def loadProject(projectID):
         proj.setWeights(db.getAHPWeights())
     return proj.project_preview()
 
-def getProjectMembers(projectID):
-    return db.getOneProject({"ProjectID": projectID}).getMembers
+def updateDetails(data):
+    db.updateProjectDetails(data.get('projectID'), data.get('details'))
+
+def getProjectMembers(projectID, indexes):
+    members = db.getOneProject({"ProjectID": projectID}).getMembers
+    return { 'Members': members[indexes[0]:indexes[1]], 'size': len(members)}
 
 def addProjectMember(data):
     jsonData = data.json
@@ -30,7 +34,7 @@ def addProjectMember(data):
         raise Exception('Logged User is not the project Owner.')
 
 def removeProjectMembers(data, projectID, member):
-    project =  db.getOneProject({"ProjectID": int(projectID)})
+    project = db.getOneProject({"ProjectID": int(projectID)})
     if project.Owner == data.cookies.get('LoggedUser'):
         db.removeProjectMember(project, member)
     else:

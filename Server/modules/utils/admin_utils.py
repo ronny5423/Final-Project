@@ -6,6 +6,13 @@ def updateAHP(data):
 def getAHP():
     return db.getAHPWeights()
 
+def updateNFR(data):
+    db.updateNFRWeights(data.get('nfrWeights'))
+    db.updateNFRAttributes(data.get('nfrAttributes'))
+
+def getNFR():
+    return {'Weights': db.getNFRWeights()['Weights'], 'Attributes': db.getNFRAttributes()['Attributes']}
+
 def getUsers(indexes):
     users = db.getUsernamesByIndexes(indexes)
     return users
