@@ -6,6 +6,8 @@ from modules.parsers.Algorithm import calculate_algorithm
 
 def saveProject(data):
     jsonData = data.json
+    jsonData['ProjectID'] = db.nextProjectID
+    jsonData['Owner'] = data.cookies.get('LoggedUser')
     newProject = Project(jsonData)
     db.insertOneObject('Projects', newProject)
     return newProject.ProjectID

@@ -232,12 +232,17 @@ class DataBase:
             }
         })
         
-        project.Members.remove(member)
-        self.db.db.Projects.update_one({'ProjectID': project.ProjectID}, {
-            '$set': {
-                'Owner':  project.Members[0]
-            }
-        })
+        if member == project.Owner:
+            project.Members.remove(member)
+            if len(project.Members) > 0:
+                newOwner = project.Members[0]
+            else:
+                newOwner = None
+            self.db.db.Projects.update_one({'ProjectID': project.ProjectID}, {
+                '$set': {
+                    'Owner':  newOwner
+                }
+            })
     
     def saveCalcResults(self, projectID, results):
         self.db.db.Projects.update_one({'ProjectID': projectID}, {
@@ -258,6 +263,12 @@ class DataBase:
                 'Description': data['Description']
             }
         })
+        
+    def isAdmin(self, username):
+        return self.db.db.Constants.find({
+            "Constant": "Admins",
+            'Admins': {'$in': [username]}
+        }).count() > 0
 
 # Helper Functions
 def EditorsSwitchCase(objectFromDB):

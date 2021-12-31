@@ -28,4 +28,8 @@ def userProjects():
     
 @users.route('/leaveProject/<projectID>', methods=['DELETE'])
 def leave_project(projectID):
-    pass
+    try:
+        leaveProject(request, projectID)
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
