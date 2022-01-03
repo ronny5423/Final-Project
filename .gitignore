@@ -25,3 +25,14 @@ yarn-debug.log*
 yarn-error.log*
 
 package-lock.json
+
+/misc.xm
+/venv
+/Server/venv
+/Server/.idea
+/.idea/Code.iml
+/.idea/misc.xml
+/.idea/inspectionProfiles/Project_Default.xml
+
+/Server/__pycache__
+!**/__pycache__/

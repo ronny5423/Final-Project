@@ -1,18 +1,16 @@
-from flask import Blueprint, render_template, session, abort, request
-from flask.wrappers import Response
 import json
+
+from flask import Blueprint, request
+from flask.wrappers import Response
+from flask_login import login_required
+
+from modules.utils.editors_utils import *
 
 editors = Blueprint('editors', __name__)
 
-# from database import db
-from modules.utils.editors_utils import *
 
-# Impost modules
-from modules.UML_editor import UMLEditor
-from modules.NFR_editor import NFREditor
-from modules.SQL_editor import SQLEditor
-
-@editors.route("/saveUMLEditor", methods = ["POST"])
+@editors.route("/saveUMLEditor", methods=["POST"])
+@login_required
 def saveUMLEditor():
     try:
         data = request.json
@@ -20,8 +18,10 @@ def saveUMLEditor():
         return Response(json.dumps(newEditorID), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
-    
-@editors.route("/updateUMLEditor", methods = ["POST"])
+
+
+@editors.route("/updateUMLEditor", methods=["POST"])
+@login_required
 def updateUMLEditor():
     try:
         data = request.json
@@ -33,7 +33,9 @@ def updateUMLEditor():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/saveNFREditor", methods = ["POST"])
+
+@editors.route("/saveNFREditor", methods=["POST"])
+@login_required
 def saveNFREditor():
     try:
         data = request.json
@@ -41,8 +43,10 @@ def saveNFREditor():
         return Response(json.dumps(newEditorID), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
-    
-@editors.route("/updateNFREditor", methods = ["POST"])
+
+
+@editors.route("/updateNFREditor", methods=["POST"])
+@login_required
 def updateNFREditor():
     try:
         data = request.json
@@ -51,7 +55,9 @@ def updateNFREditor():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/saveSQLEditor", methods = ["POST"])
+
+@editors.route("/saveSQLEditor", methods=["POST"])
+@login_required
 def saveSQLEditor():
     try:
         data = request.json
@@ -59,8 +65,10 @@ def saveSQLEditor():
         return Response(json.dumps(newEditorID), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
-    
-@editors.route("/updateSQLEditor", methods = ["POST"])
+
+
+@editors.route("/updateSQLEditor", methods=["POST"])
+@login_required
 def updateSQLEditor():
     try:
         data = request.json
@@ -69,7 +77,9 @@ def updateSQLEditor():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
-@editors.route("/loadEditor", methods = ["GET"])
+
+@editors.route("/loadEditor", methods=["GET"])
+@login_required
 def load_Editor():
     try:
         data = request.args
@@ -78,7 +88,9 @@ def load_Editor():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
 
+
 @editors.route("/getNFRWeights", methods=['GET'])
+@login_required
 def get_weigths():
     try:
         weights = getNFRWeights()
@@ -88,6 +100,7 @@ def get_weigths():
 
 
 @editors.route("/getNFRAttributes", methods=['GET'])
+@login_required
 def get_attributes():
     try:
         weights = getNFRAtrributes()
