@@ -1,106 +1,31 @@
-import React,{useState,useEffect} from "react";
-import axios from "axios"
-import {Button, Col, Form, Modal, Row} from "react-bootstrap";
+import {useEffect} from "react";
 import {serverAddress} from "../../Constants";
-import {useNavigate} from "react-router-dom";
+import changeEditorsAhpHoc from "../sharedComponents/ChangeEditorsAhpHoc";
+import axios from "axios";
 
-const weightsObj={
-    uml:0.4,
-    queries:0.3,
-    nfr:0.3
-}
-
-export function ChangeMatrixWeights(props){
-    const[weights,updateWeights]=useState(weightsObj)
-    const[disabled,updateDisabled]=useState(false)
-    const[showModal,updateShowModal]=useState(false)
-    let navigate=useNavigate()
-
-    useEffect(_=>{
-        async function getWeightsFromServer(){
-            if(props.id){
-                let response=await axios.get(serverAddress+`/editors/loadEditor`,{params:{editorID:props.id}})
-                if(response.status===200){
-                    updateWeights(response.data)
-                }
-                else{
-                    navigate(`/error`)
+function ChangeMatrixWeights(props){
+    useEffect(()=>{
+        async function fetchData(){
+            let weights
+            if(props.nfrAhp && props.umlAhp && props.sqlAhp){
+                weights={
+                    uml:props.umlAhp,
+                    sql:props.sqlAhp,
+                    nfr:props.nfrAhp
                 }
             }
             else{
-                let response=await axios.get(serverAddress+`/getDefaultAhp`)
-                if(response.status===200){
-                    updateWeights(response.data)
-                }
-                else{
-                    navigate(`/error`)
-                }
+                let response=await axios.get(serverAddress+`/projects/getWeights/${props.id}`)
+                weights=response.data
             }
-          }
-        getWeightsFromServer()
+            props.updateWeights(weights)
+            props.updateSaveRoute(serverAddress+`/projects/getWeights/${props.id}`)
+        }
+        fetchData()
     },[])
-
-    function changeValue(newValue,indexOfAttribute){
-        let newWeights={...weights}
-        switch (indexOfAttribute){
-            case 1:
-                newWeights.uml=newValue
-                break
-            case 2:
-                newWeights.queries=newValue
-                break
-            case 3:
-                newWeights.nfr=newValue
-                break
-        }
-        updateWeights(newWeights)
-    }
-
-    function submit(event){
-        event.preventDefault()
-        if(weights.uml+weights.queries+weights.nfr===1){
-            axios.post(serverAddress+``,weights).then(res=>{
-                if(res.status===201){
-                    updateDisabled(true)
-                    if(showModal){
-                        updateShowModal(false)
-                    }
-                }
-            })
-        }
-        else{
-            updateShowModal(true)
-        }
-    }
-
     return(
-        <div>
-            <Modal show={showModal} onHide={_=>updateShowModal(false)} centered>
-                <Modal.Header closeButton></Modal.Header>
-                <Modal.Body>
-                    <p>sum of weights must be equal to 1</p>
-                </Modal.Body>
-            </Modal>
-            <Form onSubmit={submit}>
-                <Row>
-                    <Col sm={2}>UML Weight:</Col>
-                    <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} value={weights.uml} step={0.001} onChange={e=>changeValue(e.target.value,1)}/></Col>
-                </Row>
-                <br/>
-                <Row>
-                    <Col sm={2}>Queries Weight:</Col>
-                    <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} step={0.001} value={weights.queries} onChange={e=>changeValue(e.target.value,2)}/></Col>
-                </Row>
-                <br/>
-                <Row>
-                    <Col sm={2}>NFR Weight:</Col>
-                    <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} value={weights.nfr} step={0.001} onChange={e=>changeValue(e.target.value,3)}/> </Col>
-                </Row>
-                {
-                    !disabled ? <Button type={"submit"} variant={"success"}>Save</Button> :
-                        <Button variant={"info"} onClick={_=>updateDisabled(false)}>Edit</Button>
-                }
-            </Form>
-        </div>
+        <div/>
     )
 }
+
+export default changeEditorsAhpHoc(ChangeMatrixWeights)

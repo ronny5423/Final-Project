@@ -6,15 +6,16 @@ import PaginationComponent from "./PaginationComponent";
 
 const spareDataNumber=5
 
-const withFetchData=(WrappedComponent,projectsArr)=>{
+const withFetchData=(WrappedComponent)=>{
     function WithFetchData(props){
-        const[dataLength,updateDataLength]=useState(projectsArr.length)
+        const[dataLength,updateDataLength]=useState(0)
         let history=useNavigate()
         const [dataToShow,updateData]=useState([])
         const spareData=useRef([])
         const dataToShowEndIndex=useRef(0)
         const otherParametersToSendToServer=useRef({})
         const fetchDataRoute=useRef(``)
+        const attributeName=useRef("")
 
         async function fetchProjectsFromServer(startIndex){
             let end
@@ -35,46 +36,51 @@ const withFetchData=(WrappedComponent,projectsArr)=>{
                     }
                 }
             }
-            // otherParametersToSendToServer.current.startIndex=startIndex
-            // otherParametersToSendToServer.current.endIndex=end
-            // let response= await axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current})
-            // if(response.status===200){
-            //     let endIndex=response.data.data.length-1
-            //     if(dataLength===0){
-            //         if(response.data.data.length>numberOfItemsInPage){
-            //             numberOfSpare=response.data.data.length-numberOfItemsInPage
-            //         }
-            //         else{
-            //             numberOfSpare=0
-            //             }
-            //     }
+            otherParametersToSendToServer.current.startIndex=startIndex
+            otherParametersToSendToServer.current.endIndex=end+1
+            let response= await axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current})
+            console.log(response.data)
+            if(response.status===200){
+                let endIndex=response.data[attributeName.current].length-1
+                if(dataLength===0){
+                    if(response.data[attributeName.current].length>numberOfItemsInPage){
+                        numberOfSpare=response.data[attributeName.current].length-numberOfItemsInPage
+                    }
+                    else{
+                        numberOfSpare=0
+                    }
+                }
+                if(numberOfSpare>0){
+                    endIndex=numberOfItemsInPage-1
+                    spareData.current=response.data[attributeName.current].slice(response.data[attributeName.current].length-numberOfSpare,response.data[attributeName.current].length)
+                }
+                else{
+                    spareData.current=[]
+                }
+                updateData(response.data[attributeName.current].slice(0,endIndex+1))
+                updateDataLength(response.data.size)
+                dataToShowEndIndex.current=end-numberOfSpare
+            }
+            else{
+                history("/error")
+            }
+
+            // else{
+            //     let newProjects=projectsArr.slice(startIndex,end+1)
+            //     let endIndex=newProjects.length-1
             //     if(numberOfSpare>0){
             //         endIndex=numberOfItemsInPage-1
-            //         spareData.current=response.data.data.slice(response.data.data.length-numberOfSpare,response.data.data.length)
+            //         spareData.current=newProjects.slice(newProjects.length-numberOfSpare,newProjects.length)
             //     }
             //     else{
             //         spareData.current=[]
             //     }
-            //     updateData(response.data.slice(0,endIndex+1))
-            //     updateDataLength(response.data.dataLength)
-            //     dataToShowEndIndex.current=end-numberOfSpare
-            // }
-            // else{
-            //     history("/error")
+            //     updateData(newProjects.slice(0,endIndex+1))
+            //     updateDataLength(projectsArr.length)
+            //     dataToShowEndIndex.current=end
             // }
 
-            let newProjects=projectsArr.slice(startIndex,end+1)
-            let endIndex=newProjects.length-1
-            if(numberOfSpare>0){
-                endIndex=numberOfItemsInPage-1
-                spareData.current=newProjects.slice(newProjects.length-numberOfSpare,newProjects.length)
-            }
-            else{
-                spareData.current=[]
-            }
-            updateData(newProjects.slice(0,endIndex+1))
-            updateDataLength(projectsArr.length)
-            dataToShowEndIndex.current=end
+
 
         }
 
@@ -86,60 +92,59 @@ const withFetchData=(WrappedComponent,projectsArr)=>{
             else{
                 end=dataLength-1
             }
-            // otherParametersToSendToServer.current.startIndex=startIndex
-            // otherParametersToSendToServer.current.endIndex=end
-            // axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current}).then(res=>{
-            //     if(res.status===200){
-            //         spareData.current=res.data.data.slice(0,res.data.data.length)
-            //     }
-            //     else{
-            //         history("/error")
-            //     }
-            // })
-            spareData.current=projectsArr.slice(startIndex,end+1)
+            otherParametersToSendToServer.current.startIndex=startIndex
+            otherParametersToSendToServer.current.endIndex=end+1
+            axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current}).then(res=>{
+                if(res.status===200){
+                    spareData.current=res.data.data.slice(0,res.data.data.length)
+                }
+                else{
+                    history("/error")
+                }
+            })
+            // spareData.current=projectsArr.slice(startIndex,end+1)
         }
 
         async function deleteDataFromArray(index,id,route){
-            // let response=await axios.delete(serverAddress+route)
-            // if(response.status===201){
-            //     let newDataArr=[...dataToShow]
-            //     projectsArr.splice(0,1)
-            //     updateDataLength(dataLength-1)
-            //     newDataArr.splice(index,1)
-            //     if(spareData.current.length>0){
-            //         newDataArr.push(spareData.current[0])
-            //         spareData.current.splice(0,1)
-            //     }
-            //     if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
-            //         fetchSpareData(dataToShowEndIndex.current+1)
-            //     }
-            //     if(dataLength===numberOfItemsInPage && newDataArr.length===0){
-            //         fetchProjectsFromServer(0)
-            //     }
-            //     else{
-            //         updateData(newDataArr)
-            //     }
-            // }
-            // else{
-            //     history(`/error`)
-            // }
-            let newDataArr=[...dataToShow]
-            projectsArr.splice(0,1)
-            updateDataLength(dataLength-1)
-            newDataArr.splice(index,1)
-            if(spareData.current.length>0){
-                newDataArr.push(spareData.current[0])
-                spareData.current.splice(0,1)
-            }
-            if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
-                fetchSpareData(dataToShowEndIndex.current+1)
-            }
-            if(dataLength===numberOfItemsInPage && newDataArr.length===0){
-                fetchProjectsFromServer(0)
+            let response=await axios.delete(serverAddress+route)
+            if(response.status===201){
+                let newDataArr=[...dataToShow]
+                updateDataLength(dataLength-1)
+                newDataArr.splice(index,1)
+                if(spareData.current.length>0){
+                    newDataArr.push(spareData.current[0])
+                    spareData.current.splice(0,1)
+                }
+                if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
+                    fetchSpareData(dataToShowEndIndex.current+1)
+                }
+                if(dataLength===numberOfItemsInPage && newDataArr.length===0){
+                    fetchProjectsFromServer(0)
+                }
+                else{
+                    updateData(newDataArr)
+                }
             }
             else{
-                updateData(newDataArr)
+                history(`/error`)
             }
+            // let newDataArr=[...dataToShow]
+            // projectsArr.splice(0,1)
+            // updateDataLength(dataLength-1)
+            // newDataArr.splice(index,1)
+            // if(spareData.current.length>0){
+            //     newDataArr.push(spareData.current[0])
+            //     spareData.current.splice(0,1)
+            // }
+            // if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
+            //     fetchSpareData(dataToShowEndIndex.current+1)
+            // }
+            // if(dataLength===numberOfItemsInPage && newDataArr.length===0){
+            //     fetchProjectsFromServer(0)
+            // }
+            // else{
+            //     updateData(newDataArr)
+            // }
         }
 
         function updateParametersToSendToServer(params=null){
@@ -152,14 +157,15 @@ const withFetchData=(WrappedComponent,projectsArr)=>{
             otherParametersToSendToServer.current={...otherParametersToSendToServer.current,...params}
         }
 
-        function updateFetchDataRoute(route){
+        function updateFetchDataRoute(route,name){
             fetchDataRoute.current=route
+            attributeName.current=name
         }
 
         function increaseDataLength(user){
             //check if can update in manage users component
             updateDataLength(dataLength+1)
-            projectsArr.push(user)
+
         }
 
         return(

@@ -5,11 +5,9 @@ import {useForm} from "react-hook-form";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import "../cssComponents/SignUp.css"
+import {serverAddress} from "../../Constants";
 
- async function submit(userDetails,updateModal){
-    let response= await axios.post(`https://localhost:5000`,userDetails)
-    return response
-}
+
 
 function SignUp(){
     const { register,getValues, handleSubmit, watch, formState: { errors } } = useForm();
@@ -28,11 +26,16 @@ function SignUp(){
                 </Modal>
 
         <Form onSubmit={handleSubmit(()=>{
-            axios.post(`https://localhost:5000`,getValues()).then(response=>{
+            let detailsArr=getValues(["Username","password"])
+            let userDetails={
+                Username:detailsArr[0],
+                password:detailsArr[1]
+            }
+            axios.post(serverAddress+`/auth/Signup`,userDetails).then(response=>{
                 switch (response.status){
-                    case 201:
-                        localStorage.setItem("cookie",response.data.cookie)
-                        history.push("/home")
+                    case 200:
+                        localStorage.setItem("username",getValues("Username"))
+                        history(`/login`)
                         break
                     case 409:
                         updateModalText("Username already taken!")
@@ -44,8 +47,8 @@ function SignUp(){
         })}>
             <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Username</Form.Label>
-                <Form.Control name="username" {...register("username",{required:true})} type="text" placeholder="Enter username"  />
-                {errors?.username?.type==='required' && <p>Please enter username</p>}
+                <Form.Control name="Username" {...register("Username",{required:true})} type="text" placeholder="Enter username"  />
+                {errors?.Username?.type==='required' && <p>Please enter username</p>}
                 </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
@@ -65,12 +68,12 @@ function SignUp(){
                 {errors.confirmPassword && <p className={"errors"}>{errors.confirmPassword.message}</p>}
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="email">
-                <Form.Label>Email</Form.Label>
-                <Form.Control {...register("email",{required:true,pattern:/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/})} type="email" placeholder="Enter Email" />
-                {errors?.email?.type==='required' && <p className={"errors"}>Please enter email</p>}
-                {errors?.email?.type==='pattern' && <p className={"errors"}>email is invalid</p>}
-            </Form.Group>
+            {/*<Form.Group className="mb-3" controlId="email">*/}
+            {/*    <Form.Label>Email</Form.Label>*/}
+            {/*    <Form.Control {...register("email",{required:true,pattern:/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/})} type="email" placeholder="Enter Email" />*/}
+            {/*    {errors?.email?.type==='required' && <p className={"errors"}>Please enter email</p>}*/}
+            {/*    {errors?.email?.type==='pattern' && <p className={"errors"}>email is invalid</p>}*/}
+            {/*</Form.Group>*/}
             <Button type="submit" variant="primary">Register</Button>
         </Form>
         </div>

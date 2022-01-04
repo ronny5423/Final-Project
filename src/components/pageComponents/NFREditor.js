@@ -15,42 +15,42 @@ export default function NFREditor(props){
 
     useEffect(()=>{
         async function getDataFromServer(){
-            const person={Integrity:0.65,Consistency:["c",3]}
-            const user={Integrity:0.9,Consistency:["a",1]}
-            const weightsAndClassesTemp={Person:person,User:user};
-            let weightsTemp=new Map();
-            weightsTemp.set("Integrity",{
-                type:"range",
-                values:[0,1],
-                defaultValue:0.5
-            })
-            let labelsAndValues={a:1,b:2,c:3,d:4}
-            weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
+            // const person={Integrity:0.65,Consistency:["c",3]}
+            // const user={Integrity:0.9,Consistency:["a",1]}
+            // const weightsAndClassesTemp={Person:person,User:user};
+            // let weightsTemp=new Map();
+            // weightsTemp.set("Integrity",{
+            //     type:"range",
+            //     values:[0,1],
+            //     defaultValue:0.5
+            // })
+            // let labelsAndValues={a:1,b:2,c:3,d:4}
+            // weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
 
             if(id){
-                let response={data:{undecipheredJson: weightsAndClassesTemp,weights:Object.fromEntries(weightsTemp)}}
-                // let response= await axios.get(serverAddress+`/editors/loadEditor`,{params:{"ID":props.id}});
-                // if(response.status!==200){
-                //     navigate(`/error`)
-                //     return
-                // }
+                // let response={data:{undecipheredJson: weightsAndClassesTemp,weights:Object.fromEntries(weightsTemp)}}
+                let response= await axios.get(serverAddress+`/editors/loadEditor`,{params:{"ID":props.id}});
+                if(response.status!==200){
+                    navigate(`/error`)
+                    return
+                }
                 createNfr.current=false
                 let weightsValuesMap=new Map(Object.entries(response.data.undecipheredJson))
                 weightsValuesMap.forEach((value,key,map)=>{
                     map.set(key,new Map(Object.entries(value)))
                 })
                 createPreviousState(weightsValuesMap)
-                updateNFRWeights(response.data.weights)
+                updateNFRWeights(response.data.attributes.Attributes)
                 updateWeightsValues(weightsValuesMap);
              }
             else{
-                let getWeights={data:Object.fromEntries(weightsTemp)}
-                // let getWeights=await axios.get(serverAddress+`/editors/getNFRWeights`)
-                // if(getWeights.status!==200){
-                //     navigate(`/error`)
-                //     return
-                // }
-                let weightsMap=updateNFRWeights(getWeights.data)
+                // let getWeights={data:Object.fromEntries(weightsTemp)}
+                let getWeights=await axios.get(serverAddress+`/editors/getNFRAttributes`)
+                if(getWeights.status!==200){
+                    navigate(`/error`)
+                    return
+                }
+                let weightsMap=updateNFRWeights(getWeights.data.Attributes)
                 let classesArray=props.classes
                 let weightClassMap=new Map();
                 for(let i=0;i<classesArray.length;i++){

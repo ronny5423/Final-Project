@@ -19,10 +19,10 @@ let project={
     ProjectID:1,
     Description:description,
     ProjectOwner:"ronny54",
-    UMLEditorID:1,
-    SQLEditorID:1,
-    NFREditorID:1,
-    AHPEditorID:1
+    UMLEditorID:4,
+    SQLEditorID:5,
+    NFREditorID:11,
+    Weights:[1,2,3]
 }
 
 let projectsArr=[]
@@ -33,13 +33,13 @@ for(let i=0;i<254;i++){
 function DashboardPage(props){
     let history=useNavigate()
     const [searchQuery,updateSearchQuery]=useState("")
-
+    //console.log(props.dataToShow)
 
     useEffect(()=>{
         let parametersToServer={
             searchQuery:searchQuery
           }
-        props.updateFetchDataRoute(`/users/getProjects`)
+        props.updateFetchDataRoute(`/users/getProjects`,"Projects")
         props.updateServerParameters(parametersToServer)
         props.fetchDataFromServer(0)
         },[])
@@ -67,9 +67,9 @@ function DashboardPage(props){
                     </thead>
                     <tbody>
                     {props.dataToShow.length>0 ?
-                        props.dataToShow.map((project,index)=><ProjectRow key={index} projectId={project.ProjectID} projectOwner={project.ProjectOwner}
+                        props.dataToShow.map((project,index)=><ProjectRow key={project.ProjectID} projectId={project.ProjectID} projectOwner={project.Owner}
                           umlEditor={project.UMLEditorID} sqlEditor={project.SQLEditorID} nfrEditor={project.NFREditorID} projectDescription={project.Description}
-                          ahpEditor={project.AHPEditorID} projectName={project.ProjectName} deleteProject={props.deleteData} index={index}
+                          ahpWeights={project.Weights} projectName={project.name} deleteProject={props.deleteData} index={index}
                         />) :
                         <tr>No projects. To add new project press on + button</tr>
                         }
@@ -80,4 +80,4 @@ function DashboardPage(props){
        )
 }
 
-export default withFetchData(DashboardPage,projectsArr)
+export default withFetchData(DashboardPage)

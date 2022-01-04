@@ -8,32 +8,51 @@ import {
 import '@szhsin/react-menu/dist/index.css';
 import Button from '@restart/ui/esm/Button';
 import '../cssComponents/UserMenu.css';
+import {Container, Dropdown, Nav, Navbar} from "react-bootstrap";
+import {Link, useNavigate} from "react-router-dom";
+import axios from "axios";
+import {serverAddress} from "../../Constants";
 
 export default function UserMenu() {
-    let isLoggedIn = false;
-    let Username = 'Username';
+    let navigate=useNavigate()
+
+    async function logout(){
+        let response=await axios.post(serverAddress+`/auth/Logout`)
+        if(response.status===200){
+            localStorage.removeItem("username")
+            localStorage.removeItem("isAdmin")
+            navigate(`/login`)
+        }
+    }
+
     return (
         <div class='UserDiv'>
-            { isLoggedIn 
+            { localStorage.getItem("username")!== null
                 ?
-                <div class='LoggedInDisplay'>
-                    <p class='UsernameDisplay'>Welcome {Username}</p>
-                    <Menu menuButton={<MenuButton class='button1'>User Menu</MenuButton>}>
-                        <MenuItem>1</MenuItem>
-                        <SubMenu label="Open">
-                            <MenuItem>1.1</MenuItem>
-                            <MenuItem>1.2</MenuItem>
-                            <MenuItem>1.3</MenuItem>
-                        </SubMenu>
-                        <MenuItem>2</MenuItem>
-                    </Menu>
-                </div>
+                <Dropdown>
+                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        {localStorage.getItem("username")}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item  href={"/"}>Change Password</Dropdown.Item>
+                        <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+
+                    </Dropdown.Menu>
+                </Dropdown>
+
                 :
-                
-                <div>
-                    <Button class='button1'>Login</Button>
-                    <Button class='button1'>Sign Up</Button>
-                </div>
+
+                <Navbar bg={"dark"} variant={"dark"}>
+                    <Container>
+
+                        <Nav className={"me-auto"}>
+                            <Link className={"nav-link"} to={"/login"}>Login</Link>
+                            <Link className={"nav-link"} to={"/register"}>Register</Link>
+
+                        </Nav>
+                    </Container>
+                </Navbar>
             }
         </div>
     );
