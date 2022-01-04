@@ -49,10 +49,11 @@ def get_results(projectID):
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')    
 
-@projects.route("/getMembers/<projectID>/<indexes>", methods=["GET"])
-def project_members(projectID, indexes):
+@projects.route("/getMembers/<projectID>", methods=["GET"])
+def project_members(projectID):
     try:
-        projectMembers = getProjectMembers(int(projectID), json.loads(indexes))
+        queryData = request.args
+        projectMembers = getProjectMembers(int(projectID), [int(queryData.get('startIndex')), int(queryData.get('endIndex'))])
         return Response(json.dumps(projectMembers), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

@@ -41,18 +41,20 @@ def get_nfr():
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
-@admin.route("/getUsers/<indexes>", methods=['GET'])
-def get_users(indexes):
+@admin.route("/getUsers", methods=['GET'])
+def get_users():
     try:
-        users = getUsers(json.loads(indexes))
+        queryData = request.args
+        users = getUsers([int(queryData.get('startIndex')), int(queryData.get('endIndex'))])
         return Response(json.dumps(users), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
-@admin.route("/getProjects/<indexes>", methods=['GET'])
-def get_projects(indexes):
+@admin.route("/getProjects", methods=['GET'])
+def get_projects():
     try:
-        users = getProjects(json.loads(indexes))
+        queryData = request.args
+        users = getProjects([int(queryData.get('startIndex')), int(queryData.get('endIndex'))])
         return Response(json.dumps(users), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')    
