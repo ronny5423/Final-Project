@@ -1,5 +1,7 @@
+from flask_login import UserMixin
 
-class User:
+
+class User(UserMixin):
     def __init__(self, Username, Password, userProjects=[]):
         self.Username = Username
         self.Password = Password
@@ -10,3 +12,7 @@ class User:
 
     def changePassword(self, newPass):
         self.Password = newPass
+
+    # override method
+    def get_id(self):
+        return self.Username
