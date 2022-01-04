@@ -516,6 +516,8 @@ export function ValidateAllQueries(queries){
     let problems = {};
 
     for (let [key, queryObj] of queries) {
+        if(!queryObj["selectable"])
+            continue
         let query = queryObj["query"];
         query = query.replace(/\s\s+/g, ' ');
         query = query.replaceAll("( ", "(");

@@ -1,5 +1,5 @@
 from database import *
-
+import json
 # Impost modules
 from modules.UML_editor import *
 from modules.NFR_editor import *
@@ -127,7 +127,7 @@ def updateNFReditor(nfr_editor, del_set, add_set):
     for cls in del_set:
         if cls in nfr_json:
             del nfr_json[cls]
-    weights = db.getNFRWeights()
+    weights = db.getNFRAttributes()['Attributes']
     for cls in add_set:
         new_class = {}
         for w_name, w_val in weights.items():

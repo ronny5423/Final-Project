@@ -14,7 +14,7 @@ app = Flask(__name__, static_url_path='')
 app.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
 app.config['SECRET_KEY'] = 'some-very-strong-confidential-mosad-bibi-netanyahu-secret-key'
 
-CORS(app)
+CORS(app, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 db.initMongoDB(app)
