@@ -26,6 +26,8 @@ yarn-error.log*
 
 package-lock.json
 
+/.idea
+
 /misc.xm
 /venv
 /Server/venv

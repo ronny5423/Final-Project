@@ -78,6 +78,11 @@ def assign_cluster(final_matrix):
     for j in clustersRange:
         final_clusters[j] = list(dist.index[np.nonzero(labels == j)[0]])
 
+    noise_classes = list(dist.index[np.nonzero(labels == -1)[0]])
+    for cls in noise_classes:
+        final_clusters[n_noise_] = [cls]
+        n_noise_ += 1
+
     return final_clusters
 
 

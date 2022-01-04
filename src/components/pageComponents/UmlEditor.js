@@ -2,7 +2,11 @@ import * as go from 'gojs';
 import { ReactDiagram, ReactPalette } from "gojs-react";
 import * as React from "react";
 import "../cssComponents/umlEditor.css";
+import {Button, Tooltip} from "react-bootstrap";
 import val from "../../Utils/UmlValidationUtill";
+import ModalComponnent from '../sharedComponents/ModalComponnent';
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { faQuestion, faBookmark } from '@fortawesome/fontawesome-free-solid'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,19 +23,35 @@ var umlJson={ "class": "GraphLinksModel",
     "nodeDataArray": [],
     "linkDataArray": []};
 
+let modalBody = <div>
+    <p>
+        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> Drag and Drop classes and links from the pallete on the left into the diagram
+        <br></br>
+        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> Click on a class and then click on the bottom left button next to it in order to create an new class attribiute
+        <br></br>
+        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> Click on the button on the rigth of a class attribuite in order to remove said attribuite from the class
+        <br></br>
+        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> Double click on any of the text in the diagram in order to edit it
+        <br></br>
+        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> In order to connect association class link to a normal association link, double click the normal link and then connect the other link to the blue dot
+    </p>
+</div>
 
+let modalHeader = <h3>How to use UML EDITOR?</h3>
 
 
 export default function UmlEditor(props){
-    let myDiagram;
-    //props.editorID = 0;
+    let [myDiagram, updateDiagram] = useState({})
+    const [editorID, updateEditorId]=useState(props.id)
+    const [modalShow, setModalShow] = React.useState(false);
+
     useEffect(()=>{
         async function fetchUmlFromServer() {
             let response = undefined;
-            // if (!props.editorID)
-            //     return;
+            if (!editorID)
+                return;
             try {
-                response = await axios.get(serverAddress+`/editors/loadEditor?ID=${0}`);
+                response = await axios.get(serverAddress+`/editors/loadEditor?ID=${editorID}`);
                 console.log(response);
             }catch (e){
                 console.log(e);
@@ -39,9 +59,12 @@ export default function UmlEditor(props){
                 //loadUml(umlJson); 
             }
             //response = await axios.get(serverAddress+`/getSql`);
-            if (response && response.data.undecipheredJson) {
+            if (response && response.data && response.data.undecipheredJson) {
                 //myDiagram = response.data.uml;
                 loadUml(response.data.undecipheredJson)
+                updateDiagram(myDiagram)
+                props.changeUmlStatus(true);
+                props.updateClasses(getClassesObject());
             }
         }
         fetchUmlFromServer()
@@ -86,10 +109,13 @@ export default function UmlEditor(props){
         // when the document is modified, add a "*" to the title and enable the "Save" button
         myDiagram.addDiagramListener("Modified", function(e) {
             var button = document.getElementById("SaveButton");
+            var loadButton = document.getElementById("LoadButton");
             if (button) button.disabled = !myDiagram.isModified;
+            if (loadButton) loadButton.disabled = !myDiagram.isModified;
             var idx = document.title.indexOf("*");
             if (myDiagram.isModified) {
                 if (idx < 0) document.title += "*";
+                props.changeUmlStatus(false);
             } else {
                 if (idx >= 0) document.title = document.title.substr(0, idx);
             }
@@ -468,7 +494,8 @@ export default function UmlEditor(props){
                     ),
                     $("PanelExpanderButton", "PROPERTIES",
                         { row: 1, column: 1, alignment: go.Spot.TopRight, visible: false },
-                        new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })),
+                        //new go.Binding("visible", "properties", function (arr) { return arr.length > 0; })
+                    ),
                     // methods
                     $(go.TextBlock, "Methods",
                         { row: 2, font: "italic 10pt sans-serif" },
@@ -757,7 +784,6 @@ export default function UmlEditor(props){
 
     function save() {
         let umlJ = JSON.parse(myDiagram.model.toJson());
-
         let problems = val(umlJ);
         if (problems.length > 0) {
             for (let problemIdx in problems) {
@@ -769,24 +795,34 @@ export default function UmlEditor(props){
         document.getElementById("mySavedModel").value = myDiagram.model.toJson();
         umlJson = myDiagram.model.toJson();
         myDiagram.isModified = false;
-        if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
-            props.changeUmlStatus();
-        saveUmlToServer().then(r => console.log("saved"));
+        updateDiagram(myDiagram)
+        saveUmlToServer().then(r => {
+            //console.log("r:" ,r)
+            if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
+                props.changeUmlStatus(true);
+            props.updateClasses(getClassesObject());
+        });
     }
 
     async function saveUmlToServer(){
         let uml = JSON.parse(myDiagram.model.toJson());
+        console.log(uml)
         let url = undefined;
         try {
-            if(false && props.editorID !== undefined){
+            if(editorID !== undefined){
                 url = serverAddress+`/editors/updateUMLEditor`;
-                let response = await axios.post(url, {'jsonFile': uml, 'EditorID': 0});
+                let response = await axios.post(url, {'jsonFile': uml, 'EditorID': editorID});
                 console.log(response);
             }
             else{
                 url = serverAddress+`/editors/saveUMLEditor`;
                 let response = await axios.post(url, {'jsonFile': uml, 'projectID': 1});
                 console.log(response);
+                if(response.status === 200){
+                    props.updateEditorId(response.data, 1)
+                    updateEditorId(response.data)
+                }
+                return response;
             }
             
         }catch (e){
@@ -796,12 +832,13 @@ export default function UmlEditor(props){
     }
 
     function load() {
-        myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+        //myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+        myDiagram.model = go.Model.fromJson(umlJson);
         loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
     }
 
-    function loadUml(umlJson) {
-        myDiagram.model = go.Model.fromJson(umlJson);
+    function loadUml(umlJ) {
+        myDiagram.model = go.Model.fromJson(umlJ);
         loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
         document.getElementById("mySavedModel").value = myDiagram.model.toJson();
         umlJson = myDiagram.model.toJson();
@@ -815,6 +852,28 @@ export default function UmlEditor(props){
         // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
         var pos = myDiagram.model.modelData.position;
         if (pos) myDiagram.initialPosition = go.Point.parse(pos);
+    }
+
+
+    function getClassesObject(){
+        let umlJ = JSON.parse(myDiagram.model.toJson());
+        let nodes = umlJ["nodeDataArray"]
+
+        let classes = {}
+
+        for (let index = 0; index < nodes.length; index++) {
+            const node = nodes[index];
+            if("name" in node){
+                classes[node["name"]] = []
+                node["properties"].forEach(prop => {
+                    if("name" in prop){
+                        classes[node["name"]].push(prop["name"])
+                    }
+                });
+            }
+        }
+
+        return classes;
     }
 
 
@@ -835,22 +894,27 @@ export default function UmlEditor(props){
             </div>
 
             <div id="sample">
-                {/* <div style={{width: "100%", display: "flex"}}>
-            <div id="myPaletteDiv" style={{width: "200px", marginRight: "2px", backgroundColor: "whitesmoke", border: "solid 1px black"}}></div>
-            <div id="myDiagramDiv" style={{flexGrow: "1", height: "620px", border: "solid 1px black"}}></div>
-        </div> */}
                 <div>
                     <div>
-                        <button id="SaveButton" onClick={() => save()}>Save</button>
-                        <button onClick={() => load()}>Load</button>
-                        Diagram Model saved in JSON format:
+                        <Button class="umlButtons" id="SaveButton" variant={"info"} onClick={save}>Save</Button>
+                        <Button class="umlButtons" id="LoadButton" variant={"danger"} onClick={load}>Cancel</Button>
+                        <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
+                        {/* <button id="SaveButton" onClick={() => save()}>Save</button>
+                        <button onClick={() => load()}>Load</button> */}
                     </div>
-                    <textarea value={JSON.stringify(umlJson)} id="mySavedModel" style={{width: "500px", height: "300px"}}>
-            </textarea>
+                    <textarea value={JSON.stringify(umlJson)} id="mySavedModel" style={{width: "500px", height: "300px"}}></textarea>
                 </div>
                 <ToastContainer />
             </div>
 
+            <div>
+            <ModalComponnent
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+                text= {modalBody}
+                header = {modalHeader}
+            />
+            </div>
         </div>
     );
 }
