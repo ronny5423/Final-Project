@@ -22,14 +22,30 @@ export default function MainMenu() {
                 <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
                 <span>Contact Us</span>
             </Link>
-            <Link id="umlEditor" className="bm-item" to="/UmlEditor" onClick={()=>setOpen(false)}>
+            {/*<Link id="umlEditor" className="bm-item" to="/UmlEditor" onClick={()=>setOpen(false)}>*/}
+            {/*    <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>*/}
+            {/*    <span>UML</span>*/}
+            {/*</Link>*/}
+            {/*<Link id="SqlEditor" className="bm-item" to="/SqlEditor" onClick={()=>setOpen(false)}>*/}
+            {/*    <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>*/}
+            {/*    <span>SQL</span>*/}
+            {/*</Link>*/}
+        { JSON.parse(localStorage.getItem("isAdmin")) &&
+            <Link to={"/admin"} onClick={()=>setOpen(false)} className="bm-item">
                 <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
-                <span>UML</span>
+                <span>Admin</span>
             </Link>
-            <Link id="SqlEditor" className="bm-item" to="/SqlEditor" onClick={()=>setOpen(false)}>
+        }
+        {
+            localStorage.getItem("username")!==null && <Link to={"/dashboard"} onClick={()=>setOpen(false)} className="bm-item">
                 <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
-                <span>SQL</span>
+                <span>Dashboard</span>
             </Link>
+        }
+        {/*<Link to={"/login"} onClick={()=>setOpen(false)} className="bm-item">*/}
+        {/*    <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>*/}
+        {/*    <span>Login</span>*/}
+        {/*</Link>*/}
     </Menu>
   )
 }

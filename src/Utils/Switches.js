@@ -13,11 +13,16 @@ import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
 import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
 import NFREditor from "../components/pageComponents/NFREditor";
+import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
+import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
+import ChangeDBProfiles from "../components/pageComponents/ChangeDBProfiles";
+import ChangeEditorsAhpAdmin from "../components/pageComponents/ChangeEditorsAhpAdmin"
+import AdminPage from "../components/pageComponents/AdminPage";
 
 export default function Switches(){
     return(
         <Routes>
-            <Route path={"/"} element={<DashboardPage/>}/>
+            <Route path={"/"} element={<Login/>}/>
 
             <Route path={"/about"} element={<About/>}/>
 
@@ -27,10 +32,18 @@ export default function Switches(){
 
             <Route path={"/createProject"} element={<CreateProjectPage/>}/>
 
-            <Route path={"/editorsTabs"} element={<EditorsTabs/>}>
-                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:projectId"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:ahpEditorId/:projectId"} element={<EditorsTabs/>}/>
+            <Route path={"/editorsTabs/:projectId"} element={<EditorsTabs/>}>
+                <Route path={":umlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:sqlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:ahpEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:sqlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
+
             </Route>
+
+            <Route path={"/dashboard"} element={<DashboardPage/>}/>
 
             <Route path={"/error"} element={<ErrorPage/>}/>
 
@@ -43,6 +56,15 @@ export default function Switches(){
             <Route path={"/login"} element={<Login/>}/>
 
             <Route path={"/register"} element={ <SignUp/>}/>
+
+            <Route path={"/admin"} element={<AdminPage/>}>
+                <Route index element={<AdminAddRemoveUsers/>}/>
+                <Route path={"addRemoveUsers"} element={<AdminAddRemoveUsers/>}/>
+                <Route path={"changeNFR"} element={<ChangeNFRAdmin/>}/>
+                <Route path={"dbProfiles"} element={<ChangeDBProfiles/>}/>
+                <Route path={"editAHP"} element={<ChangeEditorsAhpAdmin/>}/>
+                <Route path={"projects"} element={<DashboardPage/>}/>
+            </Route>
 
         </Routes>
     )

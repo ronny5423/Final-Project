@@ -3,16 +3,17 @@ import {Button, Modal, Tab, Tabs} from "react-bootstrap";
 import UmlEditor from "./UmlEditor";
 import SqlEditor from "./SqlEditor";
 import NFREditor from "./NFREditor";
-import {ChangeMatrixWeights} from "./ChangeMatrixWeights";
-import {useParams} from "react-router-dom";
+import ChangeMatrixWeights from "./ChangeMatrixWeights";
+import {useNavigate, useParams} from "react-router-dom";
 
 export default function EditorsTabs(props){
     const [key,setKey]=useState("Uml");
     const [showModal,updateShowModal]=useState(false)
     const moveToOtherTabs=useRef(false)
-    let {umlEditorId,sqlEditorId,nfrEditorId,ahpEditorId,projectId}=useParams()
+    let {umlEditorId,sqlEditorId,nfrEditorId,umlAHP,sqlAHP,nfrAHP,projectId}=useParams()
     let classes=useRef({})
     let missingEditorsError=useRef(true)
+    let navigate=useNavigate()
 
     function updateEditorId(id,editor){
         switch (editor){
@@ -25,8 +26,7 @@ export default function EditorsTabs(props){
             case 3:
                 nfrEditorId=id
                 break
-            case 4:
-              ahpEditorId=id
+
         }
     }
 
@@ -46,8 +46,8 @@ export default function EditorsTabs(props){
 
     function calculateAlgorithm(){
         if(umlEditorId && sqlEditorId && nfrEditorId){
-            //todo
-        }
+            navigate('/algorithmResults/'+ projectId)
+          }
         else{
             missingEditorsError.current=true
             updateShowModal(true)
@@ -61,7 +61,7 @@ export default function EditorsTabs(props){
     return(
         <div>
             <Modal show={showModal} onHide={_=>updateShowModal(false)} centered>
-                <Modal.Header closeButton></Modal.Header>
+                <Modal.Header closeButton/>
                 <Modal.Body>
                     {missingEditorsError.current ? <p> You must fill all editors before calculating the algorithm</p>
                         :<p>You must create and save Uml before moving to other editors or using the algorithm</p>}
@@ -77,14 +77,15 @@ export default function EditorsTabs(props){
                     <SqlEditor id={sqlEditorId} projectId={projectId} classes={classes.current} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor id={nfrEditorId} projectId={projectId} editibale={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
+                    <NFREditor id={nfrEditorId} projectId={projectId} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
 
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
-                    <ChangeMatrixWeights id={ahpEditorId} updateEditorId={updateEditorId}/>
+                    <ChangeMatrixWeights id={projectId} umlAhp={umlAHP} sqlAhp={sqlAHP} nfrAhp={nfrAHP} />
+                    <Button variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>
                 </Tab>
             </Tabs>
-            <Button variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>
+
         </div>
     )
 }

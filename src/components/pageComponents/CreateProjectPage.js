@@ -11,13 +11,12 @@ function CreateProjectPage(props){
 
    async function createProject(event){
         event.preventDefault()
-        let objToSend={projectName:name,projectDescription:description}
-        // let response=await axios.post(serverAddress+`/createProject`,objToSend)
-        // if(response.status===201){
-        //     localStorage.setItem("currentProjectIndex",response.data.index)
-        //     history("/editorsTabs")
-        // }
-       history("/editorsTabs")
+        let objToSend={name:name,Description:description}
+        let response=await axios.post(serverAddress+`/projects/saveProject`,objToSend)
+        if(response.status===200){
+            history(`/editorsTabs/${response.data}`)
+        }
+
      }
 
     return(

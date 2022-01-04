@@ -10,17 +10,22 @@ export default function AddUserToProject(props){
     let history=useNavigate()
 
    async function addUser(){
-        //send axios
-        // let response=await axios.post(serverAddress+`/projects/addMember,{projectID:id,member:username})
-        // if(response.status===201){
-        //     props.addUser()
-        // }
-        // else if(response.status===409){
-        //     updateShowErrorModal(true)
-        // }
-        // else{
-        //     history("/error")
-        // }
+        if(user.length>0){
+            //send axios
+            // let response=await axios.post(serverAddress+`/projects/addMember,{projectID:id,member:username})
+            // if(response.status===201){
+            //     props.addUser()
+            // }
+            // else if(response.status===409){
+            //     updateShowErrorModal(true)
+            // }
+            // else{
+            //     history("/error")
+            // }
+        }
+        else{
+            updateShowErrorModal(true)
+        }
        props.addUser(user)
        props.hide()
     }
@@ -44,7 +49,7 @@ export default function AddUserToProject(props){
         </Modal>
         <Modal show={showErrorModal} centered backdrop={"static"} onHide={_=>updateShowErrorModal(false)}>
             <Modal.Header closeButton/>
-            <Modal.Body>Username already in project!</Modal.Body>
+            <Modal.Body>{user.length>0 ?"Username already in project!" : "Please enter username"}</Modal.Body>
         </Modal>
         </div>
     )

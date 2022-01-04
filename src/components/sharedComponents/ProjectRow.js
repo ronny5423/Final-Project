@@ -21,7 +21,10 @@ export default function ProjectRow(props){
     }
 
     function moveToProjectsEditors(){
-        history(`/editorsTabs/${props.umlEditor}/${props.sqlEditor}/${props.nfrEditor}/${props.ahpEditor}`)
+        let umlAHP=props.ahpWeights[0]
+        let sqlAHP=props.ahpWeights[1]
+        let nfrAHP=props.ahpWeights[2]
+        history(`/editorsTabs/${props.projectId}/${props.umlEditor}/${props.sqlEditor}/${props.nfrEditor}/${umlAHP}/${sqlAHP}/${nfrAHP}`)
     }
 
     function moveToAddRemoveUsers(){
@@ -34,30 +37,29 @@ export default function ProjectRow(props){
 
     async function deleteProject(){
         //send axios request
-        // let response=await axios.delete(serverAddress+`/users/leaveProject/${props.projectId}`)
-        // if(response.status===201){
-        //     updateDeleteModal(false)
-        //     props.deleteProject(props.index,props.projectId) //delete project from array
-        // }
-        // else{
-        //     history(`/error`)
-        // }
-        updateDeleteModal(false)
-        props.deleteProject(props.index,props.projectId) //delete project from array
+        let response=await axios.delete(serverAddress+`/users/leaveProject/${props.projectId}`)
+        if(response.status===200){
+            updateDeleteModal(false)
+            props.deleteProject(props.index,props.projectId) //delete project from array
+        }
+        else{
+            history(`/error`)
+        }
+        // updateDeleteModal(false)
+        // props.deleteProject(props.index,props.projectId) //delete project from array
     }
 
    async function editNameAndDescription(){
         //send axios request
-       // let body={projectName:projectName,projectDescription:projectDescription}
-       //  let response=await axios.post(serverAddress+`/projects/updateProjectNameAndDescription/${props.projectId}`,body)
-       // if(response.status===201){
-       //     updateEditModal(false)
-       // }
-       // else{
-       //     history(`/error`)
-       // }
-        updateEditModal(false)
-    }
+       let body={details:{name:projectName,Description:projectDescription},projectID:props.projectId}
+        let response=await axios.post(serverAddress+`/projects/updateDetails`,body)
+       if(response.status===200){
+           updateEditModal(false)
+       }
+       else{
+           history(`/error`)
+       }
+     }
 
     return(
 
@@ -72,7 +74,7 @@ export default function ProjectRow(props){
                     {
                         <ProjectRowTooltip message={"Add/Remove users"} icon={faUserPlus} onClick={moveToAddRemoveUsers}/>
                     }
-                    <ProjectRowTooltip message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>
+                    {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>}
                     <ProjectRowTooltip message={"Delete project"} icon={faTrash} onClick={()=>updateDeleteModal(true)}/>
                     <ProjectRowTooltip message={"Edit project's name and description"} icon={faPen} onClick={()=>updateEditModal(true)}/>
                 </div>
