@@ -96,7 +96,7 @@ const withFetchData=(WrappedComponent)=>{
             otherParametersToSendToServer.current.endIndex=end+1
             axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current}).then(res=>{
                 if(res.status===200){
-                    spareData.current=res.data.data.slice(0,res.data.data.length)
+                    spareData.current=res.data[attributeName.current].slice(0,res.data[attributeName.current].length)
                 }
                 else{
                     history("/error")
@@ -105,9 +105,9 @@ const withFetchData=(WrappedComponent)=>{
             // spareData.current=projectsArr.slice(startIndex,end+1)
         }
 
-        async function deleteDataFromArray(index,id,route){
+        async function deleteDataFromArray(index,route){
             let response=await axios.delete(serverAddress+route)
-            if(response.status===201){
+            if(response.status===200){
                 let newDataArr=[...dataToShow]
                 updateDataLength(dataLength-1)
                 newDataArr.splice(index,1)

@@ -59,7 +59,7 @@ def nfr_parser(nfrValues, uml_json, ahpValues):
     
     nfrMatrix = [[0 for x in range(len(classes))] for y in range(len(classes))]  # fill matrix with 0
     for i, class1 in enumerate(classes):
-        nfrMatrix[class1[1]][class1[1]] = 1
+        nfrMatrix[class1[1]][class1[1]] = 1.
         for j in range(i + 1, len(classes)):
             class2 = classes[j]
             nfrDimValue = 0

@@ -9,9 +9,9 @@ function ChangeMatrixWeights(props){
             let weights
             if(props.nfrAhp && props.umlAhp && props.sqlAhp){
                 weights={
-                    uml:props.umlAhp,
-                    sql:props.sqlAhp,
-                    nfr:props.nfrAhp
+                    UML:props.umlAhp,
+                    SQL:props.sqlAhp,
+                    NFR:props.nfrAhp
                 }
             }
             else{
@@ -19,7 +19,7 @@ function ChangeMatrixWeights(props){
                 weights=response.data
             }
             props.updateWeights(weights)
-            props.updateSaveRoute(serverAddress+`/projects/getWeights/${props.id}`)
+            props.updateSaveRoute(serverAddress+`/projects/updateWeights/${props.id}`,props.id)
         }
         fetchData()
     },[])

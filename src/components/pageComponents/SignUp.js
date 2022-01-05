@@ -34,7 +34,6 @@ function SignUp(){
             axios.post(serverAddress+`/auth/Signup`,userDetails).then(response=>{
                 switch (response.status){
                     case 200:
-                        localStorage.setItem("username",getValues("Username"))
                         history(`/login`)
                         break
                     case 409:

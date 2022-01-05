@@ -21,10 +21,23 @@ export default function ProjectRow(props){
     }
 
     function moveToProjectsEditors(){
-        let umlAHP=props.ahpWeights[0]
-        let sqlAHP=props.ahpWeights[1]
-        let nfrAHP=props.ahpWeights[2]
-        history(`/editorsTabs/${props.projectId}/${props.umlEditor}/${props.sqlEditor}/${props.nfrEditor}/${umlAHP}/${sqlAHP}/${nfrAHP}`)
+        let route=`/editorsTabs/${props.projectId}`
+        if(props.umlEditor){
+            route+=`/${props.umlEditor}`
+        }
+        if(props.sqlEditor){
+            route+=`/${props.sqlEditor}`
+        }
+        if(props.nfrEditor){
+            route+=`/${props.nfrEditor}`
+        }
+        if(props.ahpWeights){
+            let umlAHP=props.ahpWeights.UML
+            let sqlAHP=props.ahpWeights.SQL
+            let nfrAHP=props.ahpWeights.NFR
+            route+=`/${umlAHP}/${sqlAHP}/${nfrAHP}`
+        }
+        history(route)
     }
 
     function moveToAddRemoveUsers(){
@@ -37,16 +50,17 @@ export default function ProjectRow(props){
 
     async function deleteProject(){
         //send axios request
-        let response=await axios.delete(serverAddress+`/users/leaveProject/${props.projectId}`)
-        if(response.status===200){
-            updateDeleteModal(false)
-            props.deleteProject(props.index,props.projectId) //delete project from array
-        }
-        else{
-            history(`/error`)
-        }
-        // updateDeleteModal(false)
-        // props.deleteProject(props.index,props.projectId) //delete project from array
+        // let response=await axios.delete(serverAddress+`/users/leaveProject/${props.projectId}`)
+        // if(response.status===200){
+        //     updateDeleteModal(false)
+        //     props.deleteProject(props.index,props.projectId) //delete project from array
+        // }
+        // else{
+        //     history(`/error`)
+        // }
+        let route=`/users/leaveProject/${props.projectId}`
+        updateDeleteModal(false)
+        props.deleteProject(props.index,route) //delete project from array
     }
 
    async function editNameAndDescription(){

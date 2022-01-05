@@ -5,6 +5,7 @@ import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
 
 export default function NFREditor(props){
+    console.log("nfr")
     const [weights,updateWeights]=useState(new Map());
     const [weightsValues,updateWeightsValues]=useState(new Map());
     const [editable,updateEditable]=useState(props.editable)
@@ -65,7 +66,7 @@ export default function NFREditor(props){
 
         }
         getDataFromServer();
-    },[])
+    },[props.classes])
 
     function updateNFRWeights(weightsArr){
         weightsArr=new Map(Object.entries(weightsArr))

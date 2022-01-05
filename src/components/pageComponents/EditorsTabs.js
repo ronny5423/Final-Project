@@ -11,6 +11,7 @@ export default function EditorsTabs(props){
     const [showModal,updateShowModal]=useState(false)
     const moveToOtherTabs=useRef(false)
     let {umlEditorId,sqlEditorId,nfrEditorId,umlAHP,sqlAHP,nfrAHP,projectId}=useParams()
+    const editorsID=useRef({})
     let classes=useRef({})
     let missingEditorsError=useRef(true)
     let navigate=useNavigate()
@@ -18,13 +19,13 @@ export default function EditorsTabs(props){
     function updateEditorId(id,editor){
         switch (editor){
             case 1:
-                umlEditorId=id
+                editorsID.current.umlID=id
                 break
             case 2:
-                sqlEditorId=id
+                editorsID.current.sqlID=id
                 break
             case 3:
-                nfrEditorId=id
+                editorsID.current.nfrID=id
                 break
 
         }
@@ -32,6 +33,7 @@ export default function EditorsTabs(props){
 
     function changeMoveToOtherTabs(shouldMove){
         moveToOtherTabs.current=shouldMove
+        console.log("move", moveToOtherTabs.current)
     }
 
     function shouldMoveToOtherTabs(key){
@@ -45,7 +47,7 @@ export default function EditorsTabs(props){
     }
 
     function calculateAlgorithm(){
-        if(umlEditorId && sqlEditorId && nfrEditorId){
+        if(editorsID.current.umlID && editorsID.current.sqlID && editorsID.current.nfrID){
             navigate('/algorithmResults/'+ projectId)
           }
         else{
@@ -71,17 +73,17 @@ export default function EditorsTabs(props){
                 <Tab title={"Uml"} id={"uml"} eventKey={"Uml"}>
 
 
-                    <UmlEditor id={umlEditorId} changeUmlStatus={changeMoveToOtherTabs} projectId={projectId} updateClasses={updateClasses} updateEditorId={updateEditorId}/>
+                    <UmlEditor id={umlEditorId===undefined ? umlEditorId : parseInt(umlEditorId)} changeUmlStatus={changeMoveToOtherTabs} projectId={parseInt(projectId)} updateClasses={updateClasses} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Queries"} eventKey={"Queries"} id={"queries"}>
-                    <SqlEditor id={sqlEditorId} projectId={projectId} classes={classes.current} updateEditorId={updateEditorId}/>
+                    <SqlEditor id={sqlEditorId===undefined ? sqlEditorId : parseInt(sqlEditorId)} projectId={parseInt(projectId)} classes={classes.current} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor id={nfrEditorId} projectId={projectId} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
+                    <NFREditor id={nfrEditorId===undefined ? nfrEditorId : parseInt(nfrEditorId)} projectId={parseInt(projectId)} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
 
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
-                    <ChangeMatrixWeights id={projectId} umlAhp={umlAHP} sqlAhp={sqlAHP} nfrAhp={nfrAHP} />
+                    <ChangeMatrixWeights id={parseInt(projectId)} umlAhp={umlAHP===undefined ? umlAHP : parseFloat(umlAHP)} sqlAhp={sqlAHP===undefined ? sqlAHP : parseFloat(sqlAHP)} nfrAhp={nfrAHP===undefined ? nfrAHP : parseFloat(nfrAHP)} />
                     <Button variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>
                 </Tab>
             </Tabs>

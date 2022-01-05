@@ -61,9 +61,11 @@ export default function UmlEditor(props){
             //response = await axios.get(serverAddress+`/getSql`);
             if (response && response.data && response.data.undecipheredJson) {
                 //myDiagram = response.data.uml;
+                console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 loadUml(response.data.undecipheredJson)
-                updateDiagram(myDiagram)
+                //updateDiagram(myDiagram)
                 props.changeUmlStatus(true);
+                console.log("true")
                 props.updateClasses(getClassesObject());
             }
         }
@@ -75,6 +77,10 @@ export default function UmlEditor(props){
 
     function initDiagram() {
         var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+        if(editorID === undefined){
+            let myDiagram = {}
+        }
 
         myDiagram =
             $(go.Diagram, // must name or refer to the DIV HTML element
@@ -113,9 +119,11 @@ export default function UmlEditor(props){
             if (button) button.disabled = !myDiagram.isModified;
             if (loadButton) loadButton.disabled = !myDiagram.isModified;
             var idx = document.title.indexOf("*");
+            //console.log("dis", myDiagram.isModified)
             if (myDiagram.isModified) {
                 if (idx < 0) document.title += "*";
-                props.changeUmlStatus(false);
+                //props.changeUmlStatus(false);
+                console.log("false")
             } else {
                 if (idx >= 0) document.title = document.title.substr(0, idx);
             }
@@ -530,6 +538,12 @@ export default function UmlEditor(props){
 
         //loadUml();
         //console.log(myDiagram.model);
+        if(editorID === undefined){
+            console.log("here1")
+            updateDiagram(myDiagram)
+        }
+        // updateDiagram(myDiagram)
+        console.log("here2")
 
         return myDiagram;
     }
@@ -816,7 +830,7 @@ export default function UmlEditor(props){
             }
             else{
                 url = serverAddress+`/editors/saveUMLEditor`;
-                let response = await axios.post(url, {'jsonFile': uml, 'projectID': 1});
+                let response = await axios.post(url, {'jsonFile': uml, 'projectID': props.projectId});
                 console.log(response);
                 if(response.status === 200){
                     props.updateEditorId(response.data, 1)
@@ -842,6 +856,7 @@ export default function UmlEditor(props){
         loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
         document.getElementById("mySavedModel").value = myDiagram.model.toJson();
         umlJson = myDiagram.model.toJson();
+        updateDiagram(myDiagram)
     }
 
     function saveDiagramProperties() {

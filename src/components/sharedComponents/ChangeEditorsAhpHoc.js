@@ -9,12 +9,14 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
         const[disabled,updateDisabled]=useState(false)
         const[showModal,updateShowModal]=useState(false)
         const saveRoute=useRef("")
+        const projectId=useRef(undefined)
 
         function updateState(state){
             updateWeights(state)
         }
-        function updateSaveRoute(route){
+        function updateSaveRoute(route,projectID=undefined){
             saveRoute.current=route
+            projectId.current=projectID
         }
 
         function changeValue(newValue,indexOfAttribute){
@@ -36,8 +38,16 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
         function submit(event){
             event.preventDefault()
             if(weights.UML+weights.SQL+weights.NFR===1){
-                axios.post(saveRoute.current,weights).then(res=>{
-                    if(res.status===201){
+                let objToSend={}
+                if(projectId===undefined){
+                    objToSend=weights
+                }
+                else{
+                    objToSend.ProjectID=projectId.current
+                    objToSend.Weights=weights
+                }
+                axios.post(saveRoute.current,objToSend).then(res=>{
+                    if(res.status===200){
                         updateDisabled(true)
                         if(showModal){
                             updateShowModal(false)
