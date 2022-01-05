@@ -80,8 +80,8 @@ def assign_cluster(final_matrix):
 
     noise_classes = list(dist.index[np.nonzero(labels == -1)[0]])
     for cls in noise_classes:
-        final_clusters[n_noise_] = [cls]
-        n_noise_ += 1
+        final_clusters[n_clusters_] = [cls]
+        n_clusters_ += 1
 
     return final_clusters
 
