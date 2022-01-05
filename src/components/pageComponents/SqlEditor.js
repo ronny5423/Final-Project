@@ -34,7 +34,7 @@ let modalHeader = <h3>How to use SQL EDITOR?</h3>
 
 
 export default function SqlEditor(props){
-    console.log("sql")
+    //console.log("sql")
     let initMap = new Map();
     initMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""});
     const[queries,updateQueries] = useState(initMap)

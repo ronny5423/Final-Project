@@ -5,7 +5,7 @@ import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
 
 export default function NFREditor(props){
-    console.log("nfr")
+    //console.log("nfr")
     const [weights,updateWeights]=useState(new Map());
     const [weightsValues,updateWeightsValues]=useState(new Map());
     const [editable,updateEditable]=useState(props.editable)

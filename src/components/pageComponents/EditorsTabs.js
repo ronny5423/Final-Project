@@ -11,7 +11,7 @@ export default function EditorsTabs(props){
     const [showModal,updateShowModal]=useState(false)
     const moveToOtherTabs=useRef(false)
     let {umlEditorId,sqlEditorId,nfrEditorId,umlAHP,sqlAHP,nfrAHP,projectId}=useParams()
-    const editorsID=useRef({})
+    const editorsID=useRef({umlID: umlEditorId, sqlID: sqlEditorId, nfrID: nfrEditorId})
     let classes=useRef({})
     let missingEditorsError=useRef(true)
     let navigate=useNavigate()
@@ -47,6 +47,7 @@ export default function EditorsTabs(props){
     }
 
     function calculateAlgorithm(){
+        console.log(editorsID.current)
         if(editorsID.current.umlID && editorsID.current.sqlID && editorsID.current.nfrID){
             navigate('/algorithmResults/'+ projectId)
           }
