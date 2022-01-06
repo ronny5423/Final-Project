@@ -86,7 +86,8 @@ def remove_members(projectID, member):
 @login_required
 def add_Member():
     try:
-        addProjectMember(request)
+        jsonData = request.json
+        addProjectMember(jsonData)
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
@@ -98,5 +99,15 @@ def get_weights(projectID):
     try:
         weights = getProjectWeights(int(projectID))
         return Response(json.dumps(weights), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+@projects.route("/updateWeights", methods=['POST'])
+@login_required
+def update_weights():
+    try:
+        jsonData = request.json
+        updateProjectWeights(jsonData)
+        return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

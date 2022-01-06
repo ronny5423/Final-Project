@@ -168,18 +168,14 @@ def get_dist_dict_of_each_cluster_to_db(cluster_to_db_vectors):
     return cluster_to_db_distances
 
 
-def calculate_algorithm(projectID):
-    if projectID is None:
+def calculate_algorithm(project, editors):
+    if project is None:
         return
-
-    project = db.getOneProject({"ProjectID": projectID})
 
     if not hasattr(project, 'Weights'):
         ahp = db.getAHPWeights()
     else:
         ahp = project.Weights
-
-    editors = db.get_editors_project(projectID)
 
     sql, nfr, uml = {}, {}, {}
     for editor in editors:

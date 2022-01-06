@@ -32,9 +32,8 @@ def getProjectMembers(projectID, indexes):
 
 
 def addProjectMember(data):
-    jsonData = data.json
-    projectID = jsonData.get('ProjectID')
-    member = jsonData.get('Member')
+    projectID = data.get('ProjectID')
+    member = data.get('Member')
     if not db.getOneUser({'Username': member}):
         raise Exception('Received member does not exists.')
     project = db.getOneProject({"ProjectID": projectID})
@@ -63,9 +62,8 @@ def getProjectWeights(projectID):
 
 
 def updateProjectWeights(data):
-    jsonData = data.json
-    projectID = jsonData.get('ProjectID')
-    weights = jsonData.get('Weights')
+    projectID = data.get('ProjectID')
+    weights = data.get('Weights')
     project = db.getOneProject({"ProjectID": projectID})
     if current_user.Username in project.Members:
         db.updateProjectWeights(projectID, weights)
@@ -74,8 +72,10 @@ def updateProjectWeights(data):
 
 
 def calculateResults(projectID, N):
-    calcResults = calculate_algorithm(projectID)
-    db.saveCalcResults(projectID, calcResults)
+    project = db.getOneProject({"ProjectID": projectID})
+    editors = db.get_editors_project(projectID)
+    calcResults = calculate_algorithm(project, editors)
+    db.saveCalcResults(projectID, calcResults, editors)
     return calcResults
 
 

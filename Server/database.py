@@ -244,12 +244,23 @@ class DataBase:
                 }
             })
 
-    def saveCalcResults(self, projectID, results):
+    def saveCalcResults(self, projectID, results, editors):
         self.db.db.Projects.update_one({'ProjectID': projectID}, {
             '$set': {
                 "Results": results
             }
         })
+        # Save for research
+        data = {
+            editors[0]['type']: {'undecipheredJson': editors[0]['undecipheredJson'],
+                    'convertedData': editors[0]['convertedData']},
+            editors[1]['type']: {'undecipheredJson': editors[1]['undecipheredJson'],
+                    'convertedData': editors[1]['convertedData']},
+            editors[2]['type']: {'undecipheredJson': editors[2]['undecipheredJson'],
+                    'convertedData': editors[2]['convertedData']},
+            'Results': results
+        }
+        self.db.db.Research.insert_one(data)
 
     def getCalcResults(self, projectID):
         calcResults = self.db.db.Projects.find_one({'ProjectID': projectID}, {'Results': 1})
