@@ -13,6 +13,7 @@ from routes.users import users
 app = Flask(__name__, static_url_path='')
 app.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
 app.config['SECRET_KEY'] = 'some-very-strong-confidential-mosad-bibi-netanyahu-secret-key'
+app.config['SERVR_NAME'] = 'https://rps.ise.bgu.ac.il/njsw27'
 
 CORS(app, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -47,4 +48,4 @@ def testArea():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=443, ssl_context='adhoc')
