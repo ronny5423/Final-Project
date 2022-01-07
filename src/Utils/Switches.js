@@ -22,7 +22,10 @@ import DashboardPage from "../components/pageComponents/DashboardPage";
 export default function Switches(){
     return(
         <Routes>
-            <Route path={"/"} element={<Login/>}/>
+            {localStorage.getItem("username")===null ?
+                <Route path={"/"} element={<Login/>}/>
+                : <Route path={"/"} element={<DashboardPage/>}/>
+            }
 
             <Route path={"/about"} element={<About/>}/>
 
@@ -33,10 +36,9 @@ export default function Switches(){
             <Route path={"/createProject"} element={<CreateProjectPage/>}/>
 
             <Route path={"/editorsTabs/:projectId"} element={<EditorsTabs/>}>
+                <Route path={":umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
                 <Route path={":umlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
                 <Route path={":umlEditorId/:sqlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:ahpEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
                 <Route path={":umlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
                 <Route path={":umlEditorId/:sqlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
                 <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>

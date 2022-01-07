@@ -13,14 +13,14 @@ export default function Login() {
   let navigate=useNavigate()
 
   async function submit(){
-    let response=await axios.post(serverAddress+`/auth/Login`,getValues())
-    if(response.status===401){
-      updateShowErrorModal(true)
-    }
-    else{
+    try{
+      let response=await axios.post(serverAddress+`/auth/Login`,getValues())
       localStorage.setItem("username",getValues("Username"))
       localStorage.setItem("isAdmin",JSON.stringify(response.data))
       navigate(`/dashboard`)
+    }
+    catch (error){
+      updateShowErrorModal(true)
     }
   }
 

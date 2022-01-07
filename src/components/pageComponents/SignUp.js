@@ -16,6 +16,26 @@ function SignUp(){
     const history=useNavigate()
     password.current = watch("password", "");
 
+    async function submit(){
+        let detailsArr=getValues(["Username","password"])
+        let userDetails={
+            Username:detailsArr[0],
+            password:detailsArr[1]
+        }
+        try{
+            let response=await axios.post(serverAddress+`/auth/Signup`,userDetails)
+            history(`/login`)
+        }
+        catch (error){
+            if(error.response.status===409){
+                updateModalText("Username already taken!")
+            }
+            else{
+                updateModalText("Something went wrong. Please try again")
+            }
+        }
+    }
+
     return(
         <div>
            <Modal show={modalText!==""} onHide={_=>updateModalText("")} centered>
@@ -25,25 +45,7 @@ function SignUp(){
                     </Modal.Body>
                 </Modal>
 
-        <Form onSubmit={handleSubmit(()=>{
-            let detailsArr=getValues(["Username","password"])
-            let userDetails={
-                Username:detailsArr[0],
-                password:detailsArr[1]
-            }
-            axios.post(serverAddress+`/auth/Signup`,userDetails).then(response=>{
-                switch (response.status){
-                    case 200:
-                        history(`/login`)
-                        break
-                    case 409:
-                        updateModalText("Username already taken!")
-                        break
-                    default:
-                       updateModalText("Something went wrong. Please try again")
-                }
-            })
-        })}>
+        <Form onSubmit={handleSubmit(submit)}>
             <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Username</Form.Label>
                 <Form.Control name="Username" {...register("Username",{required:true})} type="text" placeholder="Enter username"  />
