@@ -12,16 +12,16 @@ export default function AddUserToProject(props){
    async function addUser(){
         if(user.length>0){
             //send axios
-            // let response=await axios.post(serverAddress+`/projects/addMember,{projectID:id,member:username})
-            // if(response.status===201){
-            //     props.addUser()
-            // }
-            // else if(response.status===409){
-            //     updateShowErrorModal(true)
-            // }
-            // else{
-            //     history("/error")
-            // }
+            let response=await axios.post(serverAddress+`/projects/addMember`,{ProjectID:parseInt(props.projectId),Member:user})
+            if(response.status===200){
+                props.addUser()
+            }
+            else if(response.status===400){
+                updateShowErrorModal(true)
+            }
+            else{
+                history("/error")
+            }
         }
         else{
             updateShowErrorModal(true)
