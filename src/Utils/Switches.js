@@ -11,7 +11,7 @@ import ErrorPage from "../components/pageComponents/ErrorPage";
 import AlgorithmResult from "../components/pageComponents/AlgorithmResult";
 import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
-// import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
+import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
 // import NFREditor from "../components/pageComponents/NFREditor";
 // import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
 // import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
@@ -38,11 +38,6 @@ export default function Switches(){
             <Route path={"/editorsTabs/:projectId"} element={<EditorsTabs/>}>
                 <Route path={":umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
                 <Route path={":umlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:sqlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:sqlEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-                <Route path={":umlEditorId/:sqlEditorId/:nfrEditorId/:umlAHP/:sqlAHP/:nfrAHP"} element={<EditorsTabs/>}/>
-
             </Route>
 
             <Route path={"/dashboard"} element={<DashboardPage/>}/>
@@ -51,7 +46,7 @@ export default function Switches(){
 
             <Route path={"/algorithmResults/:projectId"} element={<AlgorithmResult/>}/>
 
-            {/*<Route path={"/manageUsers/:projectId"} element={<ManageProjectUsers/>}/>*/}
+            <Route path={"/manageUsers/:projectId"} element={<ManageProjectUsers/>}/>
 
             <Route path={"/home"} element={<HomePage/>}/>
 

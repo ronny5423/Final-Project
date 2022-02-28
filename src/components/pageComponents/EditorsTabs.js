@@ -10,8 +10,8 @@ export default function EditorsTabs(props){
     const [key,setKey]=useState("Uml");
     const [showModal,updateShowModal]=useState(false)
     const moveToOtherTabs=useRef(false)
-    let {umlEditorId,sqlEditorId,nfrEditorId,umlAHP,sqlAHP,nfrAHP,projectId}=useParams()
-    const editorsID=useRef({umlID: umlEditorId, sqlID: sqlEditorId, nfrID: nfrEditorId})
+    let {umlEditorId,umlAHP,sqlAHP,nfrAHP,projectId}=useParams()
+    const editorsID=useRef({umlID: umlEditorId, sqlID: localStorage.getItem("sqlId"), nfrID: localStorage.getItem("nfrId")})
     let classes=useRef({})
     let missingEditorsError=useRef(true)
     let navigate=useNavigate()
@@ -74,13 +74,13 @@ export default function EditorsTabs(props){
                 <Tab title={"Uml"} id={"uml"} eventKey={"Uml"}>
 
 
-                    <UmlEditor id={umlEditorId===undefined ? umlEditorId : parseInt(umlEditorId)} changeUmlStatus={changeMoveToOtherTabs} projectId={parseInt(projectId)} updateClasses={updateClasses} updateEditorId={updateEditorId}/>
+                    <UmlEditor id={(umlEditorId===undefined || umlEditorId===null) ? undefined : parseInt(umlEditorId)} changeUmlStatus={changeMoveToOtherTabs} projectId={parseInt(projectId)} updateClasses={updateClasses} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Queries"} eventKey={"Queries"} id={"queries"}>
-                    <SqlEditor id={sqlEditorId===undefined ? sqlEditorId : parseInt(sqlEditorId)} projectId={parseInt(projectId)} classes={classes.current} updateEditorId={updateEditorId}/>
+                    <SqlEditor id={(editorsID.current.sqlID===undefined || editorsID.current.sqlID===null) ? undefined : parseInt(editorsID.current.sqlID)} projectId={parseInt(projectId)} classes={classes.current} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor id={nfrEditorId===undefined ? nfrEditorId : parseInt(nfrEditorId)} projectId={parseInt(projectId)} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
+                    <NFREditor id={(editorsID.current.nfrID===undefined || editorsID.current.nfrID===null) ? undefined : parseInt(editorsID.current.nfrID)} projectId={parseInt(projectId)} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
 
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
