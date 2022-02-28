@@ -176,7 +176,7 @@ const withFetchData=(WrappedComponent)=>{
             <div>
             <WrappedComponent deleteData={deleteDataFromArray} updateServerParameters={updateParametersToSendToServer}
             dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength}
-            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute}
+            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute} {...props}
             />
         {
             numberOfItemsInPage<dataLength && <PaginationComponent fetchData={fetchProjectsFromServer} numberOfElements={dataLength}/>

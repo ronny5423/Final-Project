@@ -17,27 +17,28 @@ export default function ChangeNFRAdmin(){
 
     useEffect(_=>{
         async function fetchNFRFromServer(){
-            let weightsTemp=new Map();
-            weightsTemp.set("Integrity",{
-                type:"range",
-                values:[0,1],
-                defaultValue:0.5
-            })
-            let labelsAndValues={a:1,b:2,c:3,d:4}
-            weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
-            let weightsObj= Object.fromEntries(weightsTemp)
-            let ahp={"Integrity":0.2,"Consistency":0.8}
-            let response={data:{nfrWeights:weightsObj,nfrAHP:ahp}}
-            // let response=await axios.get(serverAddress+`/admin/getNFRWeights`)
-            // if(response.status!==200){
-            //     navigate(`/error`)
-            //     return
-            // }
-            let nfrWeights=response.data.nfrWeights
+            // let weightsTemp=new Map();
+            // weightsTemp.set("Integrity",{
+            //     type:"range",
+            //     values:[0,1],
+            //     defaultValue:0.5
+            // })
+            // let labelsAndValues={a:1,b:2,c:3,d:4}
+            // weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
+            // let weightsObj= Object.fromEntries(weightsTemp)
+            // let ahp={"Integrity":0.2,"Consistency":0.8}
+            // let response={data:{Attributes:weightsObj,Weights:ahp}}
+            let response=await axios.get(serverAddress+`/admin/NFR`)
+            console.log(response.data)
+            if(response.status!==200){
+                navigate(`/error`)
+                return
+            }
+            let nfrWeights=response.data.Attributes
             let arr=[]
-            for(let nfrName in response.data.nfrAHP){
+            for(let nfrName in response.data.Weights){
                 nfrNamesSet.current.add(nfrName)
-                nfrWeights[nfrName].ahp=response.data.nfrAHP[nfrName]
+                nfrWeights[nfrName].ahp=response.data.Weights[nfrName]
                 let obj={}
                 obj[nfrName]=nfrWeights[nfrName]
                 arr.push(obj)
@@ -99,7 +100,7 @@ export default function ChangeNFRAdmin(){
         if(clonedNfrObject[index][nfrName].defaultValue[0]===selectName){
             if(clonedNfrObject[index][nfrName].values.length>0){
                 clonedNfrObject[index][nfrName].defaultValue[0]=Object.keys(clonedNfrObject[index][nfrName].values[0])[0]
-                clonedNfrObject.defaultValue[1]=Object.values(clonedNfrObject[index][nfrName].values[0])[0]
+                clonedNfrObject[index][nfrName].defaultValue[1]=Object.values(clonedNfrObject[index][nfrName].values[0])[0]
             }
             else{
                 clonedNfrObject[index][nfrName].defaultValue=[]
@@ -124,8 +125,8 @@ export default function ChangeNFRAdmin(){
 
     function deleteNFR(index){
         let clonedNfrObject=JSON.parse(JSON.stringify(nfr))
-        clonedNfrObject.splice(index,1)
         nfrNamesSet.current.delete(Object.keys(clonedNfrObject[index])[0])
+        clonedNfrObject.splice(index,1)
         updateNfr(clonedNfrObject)
     }
 
@@ -221,8 +222,8 @@ export default function ChangeNFRAdmin(){
                     </tbody>
                 </Table>
             </td>
-            <td><input value={data.ahp} type={"number"} step={0.01} onChange={e=>changeAHP(nfrName,parseFloat(e.target.value),index)}/> </td>
             <td><input value={data.defaultValue} type={"number"} step={0.01} onChange={e=>changeRangeDefaultValue(nfrName,parseFloat(e.target.value),index)}/> </td>
+            <td><input value={data.ahp} type={"number"} step={0.01} onChange={e=>changeAHP(nfrName,parseFloat(e.target.value),index)}/> </td>
             <td><ProjectRowTooltip message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
         </tr>
     }
@@ -266,7 +267,27 @@ export default function ChangeNFRAdmin(){
           }
         if(!wasError){
             errorMessage.current=[]
-           let response=await axios.post(serverAddress+`/admin/updateNFR`,nfr)
+            let ahp={}
+            let nfrWeights={}
+            for(let index in nfr){
+                let key=Object.keys(nfr[index])[0]
+                let value=Object.values(nfr[index])[0]
+                if(value.type==="select box"){
+                    let valuesObj={}
+                    for(let index in value.values){
+                        valuesObj={...valuesObj,...value.values[index]}
+                    }
+                    value.values=valuesObj
+                }
+                ahp[key]=value.ahp
+                delete value.ahp
+                nfrWeights[key]=value
+            }
+            let objToSend={
+                nfrAttributes:nfrWeights,
+                nfrWeights:ahp
+            }
+           let response=await axios.post(serverAddress+`/admin/updateNFR`,objToSend)
             //check for response status
         }
         else{

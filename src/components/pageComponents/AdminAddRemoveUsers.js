@@ -7,11 +7,6 @@ import withFetchData from "../sharedComponents/WithFetchData";
 import AdminDeleteUserModal from "../sharedComponents/AdminDeleteUserModal";
 import DeleteConfirmationModal from "../sharedComponents/DeleteConfirmationModal";
 
-let users=[]
-for(let i=0;i<50;i++){
-    users.push("yotam")
-}
-
 function AdminAddRemoveUsers(props){
     let navigate=useNavigate()
     const [showDeleteModal,updateShowDeleteModal]=useState(false)
@@ -19,12 +14,12 @@ function AdminAddRemoveUsers(props){
     const clickedUser=useRef([])
 
     useEffect(_=>{
-        props.updateFetchDataRoute(`/admin/getUsers`)
+        props.updateFetchDataRoute(`/admin/getUsers`,"Users")
         props.fetchDataFromServer(0)
     },[])
 
     function deleteUser(){
-        props.deleteData(clickedUser.current[0],clickedUser.current[1],`/admin/removeUsers/${clickedUser.current[1]}`)
+        props.deleteData(clickedUser.current[0],`/admin/removeUsers/${clickedUser.current[1]}`)
     }
     function checkUser(user){
         for(let index in props.dataToShow){
@@ -56,8 +51,7 @@ function AdminAddRemoveUsers(props){
                     <tr key={index}>
                         <td>{user}</td>
                         <td><ProjectRowTooltip message={"Delete user"} icon={faTrash} onClick={_=>{
-                            let clicked=[index,user]
-                            clickedUser.current=clicked
+                            clickedUser.current=[index, user]
                             updateShowConfirmation(true)
                         }}/></td>
                     </tr>
@@ -71,4 +65,4 @@ function AdminAddRemoveUsers(props){
     )
 }
 
-export default withFetchData(AdminAddRemoveUsers,users)
+export default withFetchData(AdminAddRemoveUsers)

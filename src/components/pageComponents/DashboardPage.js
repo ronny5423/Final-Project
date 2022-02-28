@@ -39,7 +39,14 @@ function DashboardPage(props){
         let parametersToServer={
             searchQuery:searchQuery
           }
-        props.updateFetchDataRoute(`/users/getProjects`,"Projects")
+        let route
+        if(props.isAdmin){
+            route=`/admin`
+        }
+        else{
+            route=`/users`
+        }
+        props.updateFetchDataRoute(route+`/getProjects`,"Projects")
         props.updateServerParameters(parametersToServer)
         props.fetchDataFromServer(0)
         },[])

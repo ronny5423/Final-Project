@@ -40,8 +40,8 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
             event.preventDefault()
             if(weights.UML+weights.SQL+weights.NFR===1){
                 let objToSend={}
-                if(projectId===undefined){
-                    objToSend=weights
+                if(projectId.current===undefined){
+                    objToSend.AHP=weights
                 }
                 else{
                     objToSend.ProjectID=projectId.current
@@ -70,7 +70,7 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
                         <p>sum of weights must be equal to 1</p>
                     </Modal.Body>
                 </Modal>
-                <Form onSubmit={submit}>
+                <Form >
                     <Row>
                         <Col sm={2}>UML Weight:</Col>
                         <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} value={weights.UML} step={0.001} onChange={e=>changeValue(e.target.value,1)}/></Col>
@@ -86,7 +86,7 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
                         <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} value={weights.NFR} step={0.001} onChange={e=>changeValue(e.target.value,3)}/> </Col>
                     </Row>
                     {
-                        !disabled ? <Button type={"submit"} variant={"success"}>Save</Button> :
+                        !disabled ? <Button onClick={submit} variant={"success"}>Save</Button> :
                             <Button variant={"info"} onClick={_=>updateDisabled(false)}>Edit</Button>
                     }
                 </Form>
