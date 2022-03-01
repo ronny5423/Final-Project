@@ -18,7 +18,7 @@ def getUserProjects(data):
     for p in projects:
         if not hasattr(p, 'Weights'):
             p.setWeights(db.getAHPWeights())
-        proj.append(p.project_preview())
+        proj.insert(user.Projects.index(p.ProjectID)-int(queryData.get('startIndex')), p.project_preview())
 
     return {"Projects": proj, "size": len(user.Projects)}
 
