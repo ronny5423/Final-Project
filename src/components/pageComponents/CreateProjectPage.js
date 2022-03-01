@@ -14,6 +14,13 @@ function CreateProjectPage(props){
         let objToSend={name:name,Description:description}
         let response=await axios.post(serverAddress+`/projects/saveProject`,objToSend)
         if(response.status===200){
+            //remove previous editor's id from local storage
+            if(localStorage.getItem("sqlId")){
+                localStorage.removeItem("sqlId")
+            }
+            if(localStorage.getItem("nfrId")){
+                localStorage.removeItem("nfrId")
+            }
             history(`/editorsTabs/${response.data}`)
         }
 
@@ -33,7 +40,10 @@ function CreateProjectPage(props){
                     <Form.Control onChange={event=>updateDescription(event.target.value)} as="textarea" placeholder="Description" style={{height:"50px"}} />
                 </FloatingLabel>
             </div>
-            <Button type={"submit"} onClick={createProject} variant={"success"}>Create Project</Button>
+            <div>
+                <Button type={"submit"} onClick={createProject} variant={"success"}>Create Project</Button>
+                <Button variant={"danger"} onClick={_=>history("/dashboard")}>Cancel</Button>
+            </div>
         </Form>
     )
 }

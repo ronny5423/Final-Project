@@ -14,12 +14,12 @@ for(let i=0;i<50;i++){
     const[showAddUser,updateAddUser]=useState(false)
 
     useEffect(()=>{
-        props.updateFetchDataRoute(`/projects/getMembers/${projectId}`)
+        props.updateFetchDataRoute(`/projects/getMembers/${projectId}`,"Members")
         props.fetchDataFromServer(0)
     },[])
 
      function deleteUser(index,user){
-        props.deleteData(index,user,`/projects/removeMembers/${projectId}/${user}`)
+        props.deleteData(index,`/projects/removeMembers/${projectId}/${user}`)
      }
 
     return(
@@ -49,4 +49,4 @@ for(let i=0;i<50;i++){
     )
 }
 
-export default withFetchData(ManageProjectUsers,users)
+export default withFetchData(ManageProjectUsers)
