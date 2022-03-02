@@ -192,9 +192,7 @@ def calculate_algorithm(project, editors):
 
     clusters_profiles = calculate_clusters_profiles(final_clusters, sql, nfr)
 
-    # TODO change to load DB profiles when can
-    db_profiles = {'RDBMS': {'Query Complexity': 3, 'Integrity': 2, 'Consistency': ['b', 2]},
-                   'Document': {'Query Complexity': 4, 'Integrity': 1, 'Consistency': ['a', 1]}}
+    db_profiles = db.getDBProfiles()
 
     dist_vec_obj = calculate_distance_from_clusters_to_db_profiles(clusters_profiles, db_profiles)
 

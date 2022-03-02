@@ -13,10 +13,14 @@ def updateNFR(data):
     db.updateNFRWeights(data.get('nfrWeights'))
     db.updateNFRAttributes(data.get('nfrAttributes'))
 
+def getNFRWeights():
+    return db.getNFRWeights()['Weights']
+
+def getNFRAttributes():
+    return db.getNFRAttributes()['Attributes']
 
 def getNFR():
-    return {'Weights': db.getNFRWeights()['Weights'], 'Attributes': db.getNFRAttributes()['Attributes']}
-
+    return {'Weights': getNFRWeights(), 'Attributes': getNFRAttributes()}
 
 def getUsers(indexes):
     users = db.getUsernamesByIndexes(indexes)
@@ -32,3 +36,9 @@ def getProjects(indexes):
         proj.append(p.project_preview())
     projects['Projects'] = proj
     return projects
+
+def getDBProfiles():
+    return db.getDBProfiles()
+
+def updateDBProfiles(profiles):
+    db.updateDBProfile(profiles)

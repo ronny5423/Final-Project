@@ -76,3 +76,25 @@ def get_projects():
         return Response(json.dumps(users), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@admin.route("/DBProfiles", methods=["GET"])
+@login_required
+@admin_required
+def get_dbprofiles():
+    try:
+        profiles = getDBProfiles()
+        nfrAttr = getNFRAttributes()
+        return Response(json.dumps({"DBProfiles": profiles, "NFRAttributes": nfrAttr}), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+@admin.route("/updateDBProfiles", methods=["POST"])
+@login_required
+@admin_required
+def update_dbprofiles():
+    try:
+        profiles = request.json
+        updateDBProfiles(profiles)
+        return Response(status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
