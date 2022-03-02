@@ -46,7 +46,7 @@ export default function Switches(){
 
             <Route path={"/algorithmResults/:projectId"} element={<AlgorithmResult/>}/>
 
-            <Route path={"/manageUsers/:projectId"} element={<ManageProjectUsers/>}/>
+            <Route path={"/manageUsers/:projectId/:projectOwner"} element={<ManageProjectUsers/>}/>
 
             <Route path={"/home"} element={<HomePage/>}/>
 

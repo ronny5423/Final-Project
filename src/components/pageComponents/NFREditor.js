@@ -3,6 +3,8 @@ import axios from "axios"
 import {Button,Form, Table} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
+import LoadingSpinner from "../sharedComponents/LoadingSpinner";
+import SavingSpinner from "../sharedComponents/SavingSpinner";
 
 export default function NFREditor(props){
     //console.log("nfr")
@@ -13,6 +15,8 @@ export default function NFREditor(props){
     const createNfr=useRef(true)
     let navigate=useNavigate()
     const[id,updateId]=useState(props.id)
+    const [loading,updateLoading]=useState(true)
+    const [saving,updateSaving]=useState(false)
 
     useEffect(()=>{
         async function getDataFromServer(){
@@ -63,7 +67,7 @@ export default function NFREditor(props){
                 }
                 updateWeightsValues(weightClassMap);
              }
-
+            updateLoading(false)
         }
         getDataFromServer();
     },[props.classes])
@@ -147,7 +151,7 @@ export default function NFREditor(props){
         return restOfTable
     }
 
-    async function sendNFRToServer(e){
+    function sendNFRToServer(e){
         e.preventDefault()
         if(createNfr.current){
             createNfr.current=false
@@ -161,23 +165,31 @@ export default function NFREditor(props){
             "jsonFile":weightsValuesObject,
             "projectID":props.projectId
         }
+        updateSaving(true)
         if(id){
             dataToSend.EditorID=id
-            let response=await axios.post(serverAddress+`/editors/updateNFREditor`,dataToSend)
-            if(response.status!==200){
-                navigate(`/error`)
-            }
+           axios.post(serverAddress+`/editors/updateNFREditor`,dataToSend).then(response=>{
+               if(response.status!==200){
+                   navigate(`/error`)
+               }
+               updateSaving(false)
+           })
+
         }
         else{
-            let response=await axios.post(serverAddress+`/editors/saveNFREditor`,dataToSend)
-            if(response.status===200){
-                props.updateEditorId(response.data,3)
-                updateId(response.data)
-            }
-            else{
-                navigate(`/error`)
-            }
+            axios.post(serverAddress+`/editors/saveNFREditor`,dataToSend).then(response=>{
+                if(response.status===200){
+                    props.updateEditorId(response.data,3)
+                    updateId(response.data)
+                }
+                else{
+                    navigate(`/error`)
+                }
+                updateSaving(false)
+            })
+
         }
+
     }
 
     function cancelChanges(){
@@ -186,32 +198,39 @@ export default function NFREditor(props){
     }
 
     return(
-        <Form data-testid={"NFREditor"} onSubmit={sendNFRToServer}>
-            <Table responsive>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        {
-                           createWeightsRow()
+        <div>
+        {loading ? <LoadingSpinner/> :
+                    <div>
+                    <Form data-testid={"NFREditor"} onSubmit={sendNFRToServer}>
+                        <Table responsive>
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                {
+                                    createWeightsRow()
+                                }
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                createRestOfTable()
+                            }
+                            </tbody>
+                        </Table>
+                        {editable ? <div id={"editButtons"}>
+                                <Button variant={"success"} type={"submit"}>Save</Button>
+                                { !createNfr.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button>}
+                            </div>:
+                            <Button onClick={_=>{
+                                createPreviousState(weightsValues)
+                                createNfr.current=false
+                                updateEditable(true)
+                            }}>Edit</Button>
                         }
-                    </tr>
-                </thead>
-                <tbody>
-                {
-                    createRestOfTable()
-                    }
-                </tbody>
-            </Table>
-            {editable ? <div id={"editButtons"}>
-                    <Button variant={"success"} type={"submit"}>Save</Button>
-                { !createNfr.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button>}
-                </div>:
-            <Button onClick={_=>{
-                createPreviousState(weightsValues)
-                createNfr.current=false
-                updateEditable(true)
-            }}>Edit</Button>
-            }
-        </Form>
+                    </Form>
+                        {saving && <SavingSpinner/>}
+                    </div>
+        }
+        </div>
     )
 }

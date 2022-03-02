@@ -5,12 +5,14 @@ import {useNavigate} from "react-router-dom";
 import {Button, Form, Modal, Table} from "react-bootstrap";
 import ProjectRowTooltip from "../sharedComponents/ProjectRowTooltip"
 import {faPlus, faTrash} from "@fortawesome/fontawesome-free-solid";
+import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
 export default function ChangeDBProfiles(){
     const [nfrWeights,updateNFRWeights]=useState({})
     const [dbProfiles,updateDBProfiles]=useState([])
     const [showErrorModal,updateShowErrorModal]=useState(false)
     let navigate=useNavigate()
+    const[loading,updateLoading]=useState(true)
 
     useEffect(()=>{
         async function fetchDataFromServer(){
@@ -44,6 +46,7 @@ export default function ChangeDBProfiles(){
             response.data.NFRWeights.queryComplexity={type:"range",values:[1,5],defaultValue:3}
             updateNFRWeights(response.data.NFRWeights)
             updateDBProfiles(dbProfilesArr)
+            updateLoading(false)
         }
         fetchDataFromServer()
     },[])
@@ -145,6 +148,7 @@ export default function ChangeDBProfiles(){
     }
 
     async function sendDbProfilesToServer(event){
+        //add spinner
         event.preventDefault()
         let set=new Set()
         let objToSend={}
@@ -161,24 +165,28 @@ export default function ChangeDBProfiles(){
 
     return(
         <div>
-        <Form onSubmit={sendDbProfilesToServer}>
-        <Table>
-            <thead>
-            <tr>
-                <th>DB Name</th>
-                {createNFRWeightsRow()}
-            </tr>
-            </thead>
-            <tbody>
-            {createTableBody()}
-            </tbody>
-        </Table>
-            <Button type={"submit"} variant={"success"}>Save</Button>
-        </Form>
-        <Modal show={showErrorModal} onHide={_=>updateShowErrorModal(false)} centered>
-            <Modal.Header closeButton/>
-            <Modal.Body>DB names must be unique</Modal.Body>
-        </Modal>
+            {loading ? <LoadingSpinner /> :
+                <div>
+                    <Form onSubmit={sendDbProfilesToServer}>
+                        <Table>
+                            <thead>
+                            <tr>
+                                <th>DB Name</th>
+                                {createNFRWeightsRow()}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {createTableBody()}
+                            </tbody>
+                        </Table>
+                        <Button type={"submit"} variant={"success"}>Save</Button>
+                    </Form>
+                    <Modal show={showErrorModal} onHide={_=>updateShowErrorModal(false)} centered>
+                        <Modal.Header closeButton/>
+                        <Modal.Body>DB names must be unique</Modal.Body>
+                    </Modal>
+                </div>
+            }
         </div>
     )
 }

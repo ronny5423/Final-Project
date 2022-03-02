@@ -6,6 +6,9 @@ import axios from "axios";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
 import AddNFRAdmin from "../sharedComponents/AddNFRAdmin";
+import LoadingSpinner from "../sharedComponents/LoadingSpinner";
+import Spinner from "react-bootstrap/Spinner";
+import SavingSpinner from "../sharedComponents/SavingSpinner";
 
 export default function ChangeNFRAdmin(){
     const [nfr,updateNfr]=useState([])
@@ -13,6 +16,8 @@ export default function ChangeNFRAdmin(){
     const errorMessage=useRef([])
     const [showAddNFR,updateShowAddNFR]=useState(false)
     const nfrNamesSet=useRef(new Set())
+    const[loading,updateLoading]=useState(true)
+    const[save,updateSave]=useState(false)
     let navigate=useNavigate()
 
     useEffect(_=>{
@@ -29,7 +34,6 @@ export default function ChangeNFRAdmin(){
             // let ahp={"Integrity":0.2,"Consistency":0.8}
             // let response={data:{Attributes:weightsObj,Weights:ahp}}
             let response=await axios.get(serverAddress+`/admin/NFR`)
-            console.log(response.data)
             if(response.status!==200){
                 navigate(`/error`)
                 return
@@ -47,6 +51,7 @@ export default function ChangeNFRAdmin(){
                     nfrWeights[nfrName].values=selectArr
                 }
             }
+            updateLoading(false)
            updateNfr(arr)
         }
         fetchNFRFromServer()
@@ -227,7 +232,7 @@ export default function ChangeNFRAdmin(){
             <td><ProjectRowTooltip message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
         </tr>
     }
-    async function saveChanges(){
+    function saveChanges(){
         let nfrNamesSet=new Set()
         errorMessage.current=[]
         let wasError=false
@@ -271,7 +276,7 @@ export default function ChangeNFRAdmin(){
             let nfrWeights={}
             for(let index in nfr){
                 let key=Object.keys(nfr[index])[0]
-                let value=Object.values(nfr[index])[0]
+                let value={...Object.values(nfr[index])[0]}
                 if(value.type==="select box"){
                     let valuesObj={}
                     for(let index in value.values){
@@ -287,7 +292,11 @@ export default function ChangeNFRAdmin(){
                 nfrAttributes:nfrWeights,
                 nfrWeights:ahp
             }
-           let response=await axios.post(serverAddress+`/admin/updateNFR`,objToSend)
+            updateSave(true)
+          axios.post(serverAddress+`/admin/updateNFR`,objToSend).then(response=>{
+              updateSave(false)
+          })
+
             //check for response status
         }
         else{
@@ -350,32 +359,37 @@ export default function ChangeNFRAdmin(){
 
     return(
         <div>
-        <Table>
-            <thead>
-            <tr>
-                <th>Index</th>
-                <th>NFR</th>
-                <th>Type</th>
-                <th>Values</th>
-                <th>Default Value</th>
-                <th>AHP Value</th>
-                <th>
-                    <div>
-                        <ProjectRowTooltip message={"save changes"} icon={faSave} onClick={saveChanges}/>
-                        <ProjectRowTooltip message={"add new nfr"} icon={faPlus} onClick={_=>updateShowAddNFR(true)}/>
-                    </div>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            {createTableRow()}
-            </tbody>
-        </Table>
-            <AddNFRAdmin show={showAddNFR} addNewNFR={addNewNFR} hide={_=>updateShowAddNFR(false)} names={nfrNamesSet.current}/>
-            <Modal show={showError} centered onHide={_=>updateShowError(false)}>
-                <Modal.Header closeButton/>
-                <Modal.Body>{errorMessage.current.map((message,index)=><p key={index}>{message}</p>)}</Modal.Body>
-            </Modal>
+            {loading ? <LoadingSpinner/> :
+                <div>
+                    <Table>
+                        <thead>
+                        <tr>
+                            <th>Index</th>
+                            <th>NFR</th>
+                            <th>Type</th>
+                            <th>Values</th>
+                            <th>Default Value</th>
+                            <th>AHP Value</th>
+                            <th>
+                                <div>
+                                    <ProjectRowTooltip message={"save changes"} icon={faSave} onClick={saveChanges}/>
+                                    <ProjectRowTooltip message={"add new nfr"} icon={faPlus} onClick={_=>updateShowAddNFR(true)}/>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {createTableRow()}
+                        </tbody>
+                    </Table>
+                    <AddNFRAdmin show={showAddNFR} addNewNFR={addNewNFR} hide={_=>updateShowAddNFR(false)} names={nfrNamesSet.current}/>
+                    <Modal show={showError} centered onHide={_=>updateShowError(false)}>
+                        <Modal.Header closeButton/>
+                        <Modal.Body>{errorMessage.current.map((message,index)=><p key={index}>{message}</p>)}</Modal.Body>
+                    </Modal>
+                    {save && <SavingSpinner/>}
+                </div>
+            }
         </div>
     )
 }

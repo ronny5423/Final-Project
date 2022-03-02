@@ -3,26 +3,32 @@ import {Button, FloatingLabel, Form} from "react-bootstrap";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
+import ButtonWithSpinner from "../sharedComponents/ButtonWithSpinner";
+import SavingSpinner from "../sharedComponents/SavingSpinner";
 
 function CreateProjectPage(props){
     const[name,updateName]=useState("")
     const[description,updateDescription]=useState("")
+    const[save,updateSave]=useState(false)
     let history=useNavigate()
 
-   async function createProject(event){
+   function createProject(event){
         event.preventDefault()
         let objToSend={name:name,Description:description}
-        let response=await axios.post(serverAddress+`/projects/saveProject`,objToSend)
-        if(response.status===200){
-            //remove previous editor's id from local storage
-            if(localStorage.getItem("sqlId")){
-                localStorage.removeItem("sqlId")
+        updateSave(true)
+        axios.post(serverAddress+`/projects/saveProject`,objToSend).then(response=>{
+            if(response.status===200){
+                //remove previous editor's id from local storage
+                if(localStorage.getItem("sqlId")){
+                    localStorage.removeItem("sqlId")
+                }
+                if(localStorage.getItem("nfrId")){
+                    localStorage.removeItem("nfrId")
+                }
+                history(`/editorsTabs/${response.data}`)
             }
-            if(localStorage.getItem("nfrId")){
-                localStorage.removeItem("nfrId")
-            }
-            history(`/editorsTabs/${response.data}`)
-        }
+        })
+
 
      }
 
@@ -43,6 +49,7 @@ function CreateProjectPage(props){
             <div>
                 <Button type={"submit"} onClick={createProject} variant={"success"}>Create Project</Button>
                 <Button variant={"danger"} onClick={_=>history("/dashboard")}>Cancel</Button>
+                {save && <SavingSpinner/>}
             </div>
         </Form>
     )

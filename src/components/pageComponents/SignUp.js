@@ -6,6 +6,7 @@ import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import "../cssComponents/SignUp.css"
 import {serverAddress} from "../../Constants";
+import ButtonWithSpinner from "../sharedComponents/ButtonWithSpinner";
 
 
 
@@ -15,6 +16,7 @@ function SignUp(){
     const[modalText,updateModalText]=useState("")
     const history=useNavigate()
     password.current = watch("password", "");
+    const [logging,updatelogging]=useState(false)
 
     async function submit(){
         let detailsArr=getValues(["Username","password"])
@@ -22,10 +24,13 @@ function SignUp(){
             Username:detailsArr[0],
             password:detailsArr[1]
         }
+        updatelogging(true)
         try{
-            let response=await axios.post(serverAddress+`/auth/Signup`,userDetails)
-            history(`/login`)
-        }
+            axios.post(serverAddress+`/auth/Signup`,userDetails).then(response=>{
+                updatelogging(false)
+                history(`/login`)
+            })
+         }
         catch (error){
             if(error.response.status===409){
                 updateModalText("Username already taken!")
@@ -33,7 +38,9 @@ function SignUp(){
             else{
                 updateModalText("Something went wrong. Please try again")
             }
+            updatelogging(false)
         }
+
     }
 
     return(
@@ -75,7 +82,7 @@ function SignUp(){
             {/*    {errors?.email?.type==='required' && <p className={"errors"}>Please enter email</p>}*/}
             {/*    {errors?.email?.type==='pattern' && <p className={"errors"}>email is invalid</p>}*/}
             {/*</Form.Group>*/}
-            <Button type="submit" variant="primary">Register</Button>
+            {logging ? <ButtonWithSpinner variant={"primary"} label={"Register"}/> : <Button type="submit" variant="primary">Register</Button>}
         </Form>
         </div>
     )
