@@ -10,6 +10,8 @@ import ModalComponnent from "../sharedComponents/ModalComponnent";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LoadingSpinner from "../sharedComponents/LoadingSpinner";
+import SavingSpinner from "../sharedComponents/SavingSpinner";
 
 
 let modalBody = <div>
@@ -44,6 +46,8 @@ export default function SqlEditor(props){
     const previousState = useRef(new Map());
     const[id,updateId]=useState(props.id)
     const [modalShow, setModalShow] = React.useState(false);
+    const [loading,updateLoading]=useState(true)
+    const [saving,updateSaving]=useState(false)
 
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
@@ -79,6 +83,7 @@ export default function SqlEditor(props){
                 previousState.current = new Map(convertMapKeys)
             }
             SqlHelper.addUmlClasses(props.classes);
+            updateLoading(false)
         }
         fetchSQLQueriesFromServer()
     },[props.classes])
@@ -202,29 +207,37 @@ export default function SqlEditor(props){
         const obj = Object.fromEntries(queries);
         console.log(obj);
         let url = undefined;
+        updateSaving(true)
         try {
             if(id !== undefined){
                 url = serverAddress+`/editors/updateSQLEditor`;
-                let response = await axios.post(url, {'jsonFile': obj, 'EditorID': id, 'projectID': props.projectId});
-                console.log(response);
-                if(response.status !== 400){
-                    toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
-                }
+                axios.post(url, {'jsonFile': obj, 'EditorID': id, 'projectID': props.projectId}).then(response=>{
+                    console.log(response);
+                    updateSaving(false)
+                    if(response.status !== 400){
+                        toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
+                    }
+                })
+
             }
             else{
                 url = serverAddress+`/editors/saveSQLEditor`;
-                let response = await axios.post(url, {'jsonFile': obj, 'projectID': props.projectId});
-                console.log(response);
-                if(response.status !== 400){
-                    props.updateEditorId(response.data,2)
-                    updateId(response.data)
-                    toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
-                }
+               axios.post(url, {'jsonFile': obj, 'projectID': props.projectId}).then(response=>{
+                   console.log(response);
+                   props.updateEditorId(response.data,2)
+                   updateId(response.data)
+                   updateSaving(false)
+                   if(response.status !== 400){
+                       toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
+                   }
+               })
+
             }
             
         }catch (e){
             console.log(e);
             console.trace();
+            updateSaving(false)
         }
     }
 
@@ -273,43 +286,50 @@ export default function SqlEditor(props){
 
 
     return (
-        <Form data-testid={"SqlEditor"} style={{width:"100%"}} onSubmit={handleSubmit}>
-        <div id={"tableAndTextAreaDiv"}>
-            <Table selectable responsive>
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Query name</th>
-                    <th>Query tpm</th>
-                    <th>Select</th>
-                    <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                    createTable()
-                }
-                </tbody>
-            </Table>
-            <textarea disabled={disabled} cols={40} placeholder={"Enter your query here"} value={queries.get(currentRowIndex)["query"]} onChange={e=>changeValue(currentRowIndex,"query",e.target.value)}></textarea>
-            <ToastContainer />
-            <ModalComponnent
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                text= {modalBody}
-                header = {modalHeader}
-            />
-        </div>
-            {
-                disabled ? <Button variant={"success"} onClick={editDetails}>Edit</Button> :
-                <div id={"buttonsDiv"}>
-                    <Button variant={"info"} onClick={addQuery}>Add Query</Button>
-                    <Button type={"submit"} variant={"success"} >Save</Button>
-                    {edit.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button> }
+        <div>
+            {loading ? <LoadingSpinner/> :
+                <div>
+                    <Form data-testid={"SqlEditor"} style={{width:"100%"}} onSubmit={handleSubmit}>
+                        <div id={"tableAndTextAreaDiv"}>
+                            <Table selectable responsive>
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Query name</th>
+                                    <th>Query tpm</th>
+                                    <th>Select</th>
+                                    <th>Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {
+                                    createTable()
+                                }
+                                </tbody>
+                            </Table>
+                            <textarea disabled={disabled} cols={40} placeholder={"Enter your query here"} value={queries.get(currentRowIndex)["query"]} onChange={e=>changeValue(currentRowIndex,"query",e.target.value)}></textarea>
+                            <ToastContainer />
+                            <ModalComponnent
+                                show={modalShow}
+                                onHide={() => setModalShow(false)}
+                                text= {modalBody}
+                                header = {modalHeader}
+                            />
+                        </div>
+                        {
+                            disabled ? <Button variant={"success"} onClick={editDetails}>Edit</Button> :
+                                <div id={"buttonsDiv"}>
+                                    <Button variant={"info"} onClick={addQuery}>Add Query</Button>
+                                    <Button type={"submit"} variant={"success"} >Save</Button>
+                                    {edit.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button> }
+                                </div>
+                        }
+                        <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
+                        <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
+                    </Form>
+                    {saving && <SavingSpinner/>}
                 </div>
             }
-            <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
-            <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
-        </Form>
+        </div>
     )
 }

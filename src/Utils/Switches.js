@@ -13,12 +13,12 @@ import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
 import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
 import EditorMatrix from "../components/pageComponents/EditorMatrix";
-// import NFREditor from "../components/pageComponents/NFREditor";
-// import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
-// import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
-// import ChangeDBProfiles from "../components/pageComponents/ChangeDBProfiles";
-// import ChangeEditorsAhpAdmin from "../components/pageComponents/ChangeEditorsAhpAdmin"
-// import AdminPage from "../components/pageComponents/AdminPage";
+import NFREditor from "../components/pageComponents/NFREditor";
+import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
+import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
+import ChangeDBProfiles from "../components/pageComponents/ChangeDBProfiles";
+import ChangeEditorsAhpAdmin from "../components/pageComponents/ChangeEditorsAhpAdmin"
+import AdminPage from "../components/pageComponents/AdminPage";
 
 export default function Switches(){
     return(
@@ -47,7 +47,7 @@ export default function Switches(){
 
             <Route path={"/algorithmResults/:projectId"} element={<AlgorithmResult/>}/>
 
-            <Route path={"/manageUsers/:projectId"} element={<ManageProjectUsers/>}/>
+            <Route path={"/manageUsers/:projectId/:projectOwner"} element={<ManageProjectUsers/>}/>
 
             <Route path={"/home"} element={<HomePage/>}/>
 
@@ -55,16 +55,15 @@ export default function Switches(){
 
             <Route path={"/register"} element={ <SignUp/>}/>
 
+            <Route path={"/admin"} element={<AdminPage/>}>
+                <Route index element={<AdminAddRemoveUsers/>}/>
+                <Route path={"addRemoveUsers"} element={<AdminAddRemoveUsers/>}/>
+                <Route path={"changeNFR"} element={<ChangeNFRAdmin/>}/>
+                <Route path={"dbProfiles"} element={<ChangeDBProfiles/>}/>
+                <Route path={"editAHP"} element={<ChangeEditorsAhpAdmin/>}/>
+                <Route path={"projects"} element={<DashboardPage isAdmin={true}/>}/>
+            </Route>
             <Route path={"/MatrixEditor"} element={<EditorMatrix/>}/>
-
-            {/*<Route path={"/admin"} element={<AdminPage/>}>*/}
-            {/*    <Route index element={<AdminAddRemoveUsers/>}/>*/}
-            {/*    <Route path={"addRemoveUsers"} element={<AdminAddRemoveUsers/>}/>*/}
-            {/*    <Route path={"changeNFR"} element={<ChangeNFRAdmin/>}/>*/}
-            {/*    <Route path={"dbProfiles"} element={<ChangeDBProfiles/>}/>*/}
-            {/*    <Route path={"editAHP"} element={<ChangeEditorsAhpAdmin/>}/>*/}
-            {/*    <Route path={"projects"} element={<DashboardPage/>}/>*/}
-            {/*</Route>*/}
 
         </Routes>
     )

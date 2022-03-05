@@ -3,31 +3,36 @@ import { Button, Form, Modal} from "react-bootstrap";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
+import SavingSpinner from "./SavingSpinner";
 
 export default function AddUserToProject(props){
     const [user,updateUser]=useState("")
     const [showErrorModal,updateShowErrorModal]=useState(false)
     let history=useNavigate()
+    const[saving,updateSaving]=useState(false)
 
-   async function addUser(){
+  function addUser(){
         if(user.length>0){
             //send axios
-            let response=await axios.post(serverAddress+`/projects/addMember`,{ProjectID:parseInt(props.projectId),Member:user})
-            if(response.status===200){
-                props.addUser()
-            }
-            else if(response.status===400){
-                updateShowErrorModal(true)
-            }
-            else{
-                history("/error")
-            }
-        }
+            updateSaving(true)
+            axios.post(serverAddress+`/projects/addMember`,{ProjectID:parseInt(props.projectId),Member:user}).then(response=>{
+                if(response.status===200){
+                    props.addUser(user)
+                    props.hide()
+                }
+                else if(response.status===400){
+                    updateShowErrorModal(true)
+                }
+                else{
+                    history("/error")
+                }
+                updateSaving(false)
+            })
+          }
         else{
             updateShowErrorModal(true)
         }
-       props.addUser(user)
-       props.hide()
+
     }
 
     return(
@@ -51,6 +56,7 @@ export default function AddUserToProject(props){
             <Modal.Header closeButton/>
             <Modal.Body>{user.length>0 ?"Username already in project!" : "Please enter username"}</Modal.Body>
         </Modal>
+            {saving && <SavingSpinner/>}
         </div>
     )
 }

@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {numberOfItemsInPage, serverAddress} from "../../Constants";
 import PaginationComponent from "./PaginationComponent";
+import SavingSpinner from "./SavingSpinner";
 
 const spareDataNumber=5
 
@@ -16,6 +17,7 @@ const withFetchData=(WrappedComponent)=>{
         const otherParametersToSendToServer=useRef({})
         const fetchDataRoute=useRef(``)
         const attributeName=useRef("")
+        const[saving,updateSaving]=useState(false)
 
         async function fetchProjectsFromServer(startIndex){
             let end
@@ -105,29 +107,33 @@ const withFetchData=(WrappedComponent)=>{
             // spareData.current=projectsArr.slice(startIndex,end+1)
         }
 
-        async function deleteDataFromArray(index,route){
-            let response=await axios.delete(serverAddress+route)
-            if(response.status===200){
-                let newDataArr=[...dataToShow]
-                newDataArr.splice(index,1)
-                if(spareData.current.length>0){
-                    newDataArr.push(spareData.current[0])
-                    spareData.current.splice(0,1)
-                }
-                if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength-1){
-                    fetchSpareData(dataToShowEndIndex.current+1)
-                }
-                if(dataLength-1===numberOfItemsInPage && newDataArr.length===0){
-                    fetchProjectsFromServer(0)
+        function deleteDataFromArray(index,route){
+            updateSaving(true)
+            axios.delete(serverAddress+route).then(response=>{
+                if(response.status===200){
+                    let newDataArr=[...dataToShow]
+                    newDataArr.splice(index,1)
+                    if(spareData.current.length>0){
+                        newDataArr.push(spareData.current[0])
+                        spareData.current.splice(0,1)
+                    }
+                    if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength-1){
+                        fetchSpareData(dataToShowEndIndex.current+1)
+                    }
+                    if(dataLength-1===numberOfItemsInPage && newDataArr.length===0){
+                        fetchProjectsFromServer(0)
+                    }
+                    else{
+                        updateData(newDataArr)
+                    }
+                    updateDataLength(dataLength-1)
                 }
                 else{
-                    updateData(newDataArr)
+                    history(`/error`)
                 }
-                updateDataLength(dataLength-1)
-            }
-            else{
-                history(`/error`)
-            }
+                updateSaving(false)
+            })
+
             // let newDataArr=[...dataToShow]
             // projectsArr.splice(0,1)
             // updateDataLength(dataLength-1)
@@ -176,8 +182,9 @@ const withFetchData=(WrappedComponent)=>{
             <div>
             <WrappedComponent deleteData={deleteDataFromArray} updateServerParameters={updateParametersToSendToServer}
             dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength}
-            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute}
+            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute} {...props}
             />
+                {saving && <SavingSpinner/>}
         {
             numberOfItemsInPage<dataLength && <PaginationComponent fetchData={fetchProjectsFromServer} numberOfElements={dataLength}/>
         }

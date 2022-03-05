@@ -26,7 +26,7 @@ export default function PaginationComponent(props){
             }
             updatePagesArr(newPagesArr)
         }
-        else if(numberOfPages.current>pagesArr.length){
+        else if(numberOfPages.current>pagesArr.length && numberOfPages.current<=numberOfPages){
             let newPagesArr=[...pagesArr]
             newPagesArr.push(pagesArr.length+1)
             updatePagesArr(newPagesArr)
@@ -42,7 +42,7 @@ export default function PaginationComponent(props){
         await props.fetchData((numberOfPages.current-1)*numberOfItemsInPage)
         let newPagesArr=[]
         let start=numberOfPages.current
-        if(numberOfPages.current-numberOfPagesToShow>=0){
+        if(numberOfPages.current-numberOfPagesToShow>0 && (numberOfPages.current % numberOfPagesToShow)!==0){
             start=numberOfPages.current % numberOfPagesToShow
         }
 
