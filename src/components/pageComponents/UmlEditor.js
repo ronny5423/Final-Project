@@ -61,11 +61,9 @@ export default function UmlEditor(props){
             //response = await axios.get(serverAddress+`/getSql`);
             if (response && response.data && response.data.undecipheredJson) {
                 //myDiagram = response.data.uml;
-                console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 loadUml(response.data.undecipheredJson)
                 //updateDiagram(myDiagram)
                 props.changeUmlStatus(true);
-                console.log("true")
                 props.updateClasses(getClassesObject());
             }
         }
@@ -810,7 +808,7 @@ export default function UmlEditor(props){
         umlJson = myDiagram.model.toJson();
         myDiagram.isModified = false;
         updateDiagram(myDiagram)
-        saveUmlToServer().then(r => {
+        saveUmlToServer().then((r) => {
             //console.log("r:" ,r)
             if (props !== undefined && typeof props.changeUmlStatus !== "undefined")
                 props.changeUmlStatus(true);
@@ -827,6 +825,9 @@ export default function UmlEditor(props){
                 url = serverAddress+`/editors/updateUMLEditor`;
                 let response = await axios.post(url, {'jsonFile': uml, 'EditorID': editorID});
                 console.log(response);
+                if(response.status !== 400){
+                    toast.success("UML was saved successfully", {position: toast.POSITION.TOP_CENTER})
+                }
             }
             else{
                 url = serverAddress+`/editors/saveUMLEditor`;
@@ -835,6 +836,7 @@ export default function UmlEditor(props){
                 if(response.status === 200){
                     props.updateEditorId(response.data, 1)
                     updateEditorId(response.data)
+                    toast.success("UML was saved successfully", {position: toast.POSITION.TOP_CENTER})
                 }
                 return response;
             }
@@ -892,6 +894,47 @@ export default function UmlEditor(props){
     }
 
 
+    async function getMatrixData(){
+        // let data = {"convertedData": {
+        //     "classes": {"-1": ["Class B", 0], "-2": ["Class A", 1], "-4": ["Association Class", 2]},
+        //         "matrix_classes": {"1": 1.0, "2": 0.8, "3": 0.35999999999999993, "4": 0.8, "5": 1.0, "6": 0.5599999999999999, "7": 0.35999999999999993, "8": 0.5599999999999999, "9": 1.0},
+        //         "shape": 3
+        // }}
+        // return data;
+        try {
+            let response = await axios.get(`/editors/matrix/${editorID}`);
+            if (response && response.data && response.data.convertedData){
+                return response.data.convertedData;
+            }
+            else {
+                toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
+            }
+        }
+        catch (e){
+            toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
+            console.log(e);
+            console.trace();
+        }
+
+        return null;
+    }
+
+
+    function redirectToMatrixPage(){
+        if(!editorID){
+            toast.error("Editor wasn't yet saved to the server", {position: toast.POSITION.TOP_CENTER})
+            return
+        }
+
+        getMatrixData().then((convertedData) => {
+            let matrixData = {'type': 'UML', 'convertedData': convertedData['convertedData']}
+            localStorage.setItem("matrixData", JSON.stringify(matrixData))
+            window.open("/MatrixEditor", "_blank")
+        })
+
+    }
+
+
     return (
         <div id="wrapper">
             <script src="../../../uml_editor_resources/release/go.js"></script>
@@ -913,6 +956,7 @@ export default function UmlEditor(props){
                     <div>
                         <Button class="umlButtons" id="SaveButton" variant={"info"} onClick={save}>Save</Button>
                         <Button class="umlButtons" id="LoadButton" variant={"danger"} onClick={load}>Cancel</Button>
+                        <Button class="umlButtons" disabled={!editorID} id="MatrixButton" variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                         <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
                         {/* <button id="SaveButton" onClick={() => save()}>Save</button>
                         <button onClick={() => load()}>Load</button> */}

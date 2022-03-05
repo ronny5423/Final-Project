@@ -11,6 +11,7 @@ import ErrorPage from "../components/pageComponents/ErrorPage";
 import AlgorithmResult from "../components/pageComponents/AlgorithmResult";
 import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
+import EditorMatrix from "../components/pageComponents/EditorMatrix"
 // import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
 // import NFREditor from "../components/pageComponents/NFREditor";
 // import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
@@ -32,6 +33,8 @@ export default function Switches(){
             <Route path={"/contact"} element={<ContactForm/>}/>
 
             <Route path={"/UmlEditor"} element={<UmlEditor/>}/>
+
+            <Route path={"/MatrixEditor"} element={<EditorMatrix/>}/>
 
             <Route path={"/createProject"} element={<CreateProjectPage/>}/>
 

@@ -1,0 +1,18 @@
+#matrix{
+    margin-top: 15%;
+    margin-left: 15%;
+    width: 80%;
+    font-family: Georgia;
+    font-size: x-large;
+}
+
+#matrix td, #matrix th{
+    border: 3px solid #3dd5f3;
+    padding: 0.5rem;
+    border-radius: 10px
+}
+
+.hover {
+    background: yellow;
+}
+

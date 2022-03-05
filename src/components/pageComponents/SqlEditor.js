@@ -207,19 +207,66 @@ export default function SqlEditor(props){
                 url = serverAddress+`/editors/updateSQLEditor`;
                 let response = await axios.post(url, {'jsonFile': obj, 'EditorID': id, 'projectID': props.projectId});
                 console.log(response);
+                if(response.status !== 400){
+                    toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
+                }
             }
             else{
                 url = serverAddress+`/editors/saveSQLEditor`;
                 let response = await axios.post(url, {'jsonFile': obj, 'projectID': props.projectId});
                 console.log(response);
-                props.updateEditorId(response.data,2)
-                updateId(response.data)
+                if(response.status !== 400){
+                    props.updateEditorId(response.data,2)
+                    updateId(response.data)
+                    toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
+                }
             }
             
         }catch (e){
             console.log(e);
             console.trace();
         }
+    }
+
+
+    async function getMatrixData(){
+        // let data = {"convertedData": {
+        //         "classes": {"-1": ["Class B", 0], "-2": ["Class A", 1], "-4": ["Association Class", 2]},
+        //         "matrix_classes": {"1": 1.0, "2": 0.8, "3": 0.35999999999999993, "4": 0.8, "5": 1.0, "6": 0.5599999999999999, "7": 0.35999999999999993, "8": 0.5599999999999999, "9": 1.0},
+        //         "shape": 3
+        //     }}
+        // return data;
+        try {
+            let response = await axios.get(`/editors/matrix/${id}`);
+            if (response && response.data && response.data.convertedData){
+                return response.data.convertedData;
+            }
+            else {
+                toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
+            }
+        }
+        catch (e){
+            toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
+            console.log(e);
+            console.trace();
+        }
+
+        return null;
+    }
+
+
+    function redirectToMatrixPage(){
+        if(!id){
+            toast.error("Editor wasn't yet saved to the server", {position: toast.POSITION.TOP_CENTER})
+            return
+        }
+
+        getMatrixData().then((convertedData) => {
+            let matrixData = {'type': 'SQL', 'convertedData': convertedData['convertedData']}
+            localStorage.setItem("matrixData", JSON.stringify(matrixData))
+            window.open("/MatrixEditor", "_blank")
+        })
+
     }
 
 
@@ -259,6 +306,7 @@ export default function SqlEditor(props){
                     {edit.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button> }
                 </div>
             }
+            <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
             <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
         </Form>
     )
