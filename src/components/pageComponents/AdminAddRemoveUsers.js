@@ -44,7 +44,7 @@ function AdminAddRemoveUsers(props){
                             <th>
                                 <div>
                                     <Button variant={"success"} onClick={_=>navigate(`/register`)}>Add user to system</Button>
-                                    <Button variant={"danger"} onClick={_=>updateShowDeleteModal(true)}>Delete user</Button>
+                                    {/*<Button variant={"danger"} onClick={_=>updateShowDeleteModal(true)}>Delete user</Button>*/}
                                 </div>
                             </th>
                         </tr>
@@ -54,10 +54,12 @@ function AdminAddRemoveUsers(props){
                             props.dataToShow.map((user,index)=>
                                 <tr key={index}>
                                     <td>{user}</td>
-                                    <td><ProjectRowTooltip message={"Delete user"} icon={faTrash} onClick={_=>{
-                                        clickedUser.current=[index, user]
-                                        updateShowConfirmation(true)
-                                    }}/></td>
+                                    <td>
+                                    {/*    <ProjectRowTooltip message={"Delete user"} icon={faTrash} onClick={_=>{*/}
+                                    {/*    clickedUser.current=[index, user]*/}
+                                    {/*    updateShowConfirmation(true)*/}
+                                    {/*}}/>*/}
+                                    </td>
                                 </tr>
                             )
                         }
