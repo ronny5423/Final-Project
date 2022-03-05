@@ -21,6 +21,7 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
 
         function changeValue(newValue,indexOfAttribute){
             let newWeights={...weights}
+            newValue=parseFloat(newValue)
             switch (indexOfAttribute){
                 case 1:
                     newWeights.UML=newValue

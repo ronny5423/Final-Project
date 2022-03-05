@@ -198,7 +198,7 @@ export default function NFREditor(props){
         //     }}
         // return data;
         try {
-            let response = await axios.get(`/editors/matrix/${id}`);
+            let response = await axios.get(`/editors/matrix?ID=${id}`);
             if (response && response.data && response.data.convertedData){
                 return response.data.convertedData;
             }

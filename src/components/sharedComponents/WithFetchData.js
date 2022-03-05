@@ -109,21 +109,21 @@ const withFetchData=(WrappedComponent)=>{
             let response=await axios.delete(serverAddress+route)
             if(response.status===200){
                 let newDataArr=[...dataToShow]
-                updateDataLength(dataLength-1)
                 newDataArr.splice(index,1)
                 if(spareData.current.length>0){
                     newDataArr.push(spareData.current[0])
                     spareData.current.splice(0,1)
                 }
-                if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
+                if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength-1){
                     fetchSpareData(dataToShowEndIndex.current+1)
                 }
-                if(dataLength===numberOfItemsInPage && newDataArr.length===0){
+                if(dataLength-1===numberOfItemsInPage && newDataArr.length===0){
                     fetchProjectsFromServer(0)
                 }
                 else{
                     updateData(newDataArr)
                 }
+                updateDataLength(dataLength-1)
             }
             else{
                 history(`/error`)
@@ -164,9 +164,13 @@ const withFetchData=(WrappedComponent)=>{
 
         function increaseDataLength(user){
             //check if can update in manage users component
+            if(dataLength+1<=numberOfItemsInPage){
+                let newDataToShow=[...dataToShow]
+                newDataToShow.push(user)
+                updateData(newDataToShow)
+            }
             updateDataLength(dataLength+1)
-
-        }
+            }
 
         return(
             <div>

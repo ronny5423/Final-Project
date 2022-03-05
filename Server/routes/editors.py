@@ -107,3 +107,14 @@ def get_attributes():
         return Response(json.dumps(weights), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+
+@editors.route("/matrix", methods=['GET'])
+@login_required
+def get_converted_matrix():
+    try:
+        data = request.args
+        matrix = loadEditor(data.get('ID'))
+        return Response(json.dumps(matrix.convertedData), status=200, mimetype='application/json')
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    

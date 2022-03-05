@@ -19,7 +19,7 @@ function ChangeMatrixWeights(props){
                 weights=response.data
             }
             props.updateWeights(weights)
-            props.updateSaveRoute(serverAddress+`/projects/updateWeights/${props.id}`,props.id)
+            props.updateSaveRoute(serverAddress+`/projects/updateWeights`,props.id)
         }
         fetchData()
     },[])

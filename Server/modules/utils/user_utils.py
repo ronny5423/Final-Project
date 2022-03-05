@@ -14,11 +14,11 @@ def getUserProjects(data):
     username = current_user.Username
     user = db.getOneUser({'Username': username})
     projects = db.getManyProjects(user.Projects[int(queryData.get('startIndex')):int(queryData.get('endIndex'))])
-    proj = []
+    proj = [0]*len(projects)
     for p in projects:
         if not hasattr(p, 'Weights'):
             p.setWeights(db.getAHPWeights())
-        proj.append(p.project_preview())
+        proj[user.Projects.index(p.ProjectID)-int(queryData.get('startIndex'))] = p.project_preview()
 
     return {"Projects": proj, "size": len(user.Projects)}
 

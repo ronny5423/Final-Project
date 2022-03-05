@@ -21,22 +21,28 @@ export default function ProjectRow(props){
     }
 
     function moveToProjectsEditors(){
+        //remove previous editor's id from local storage
+        if(localStorage.getItem("sqlId")){
+            localStorage.removeItem("sqlId")
+        }
+        if(localStorage.getItem("nfrId")){
+            localStorage.removeItem("nfrId")
+        }
+        if(props.sqlEditor){
+            localStorage.setItem("sqlId",props.sqlEditor)
+        }
+        if(props.nfrEditor){
+            localStorage.setItem("nfrId",props.nfrEditor)
+        }
         let route=`/editorsTabs/${props.projectId}`
         if(props.umlEditor){
             route+=`/${props.umlEditor}`
         }
-        if(props.sqlEditor){
-            route+=`/${props.sqlEditor}`
-        }
-        if(props.nfrEditor){
-            route+=`/${props.nfrEditor}`
-        }
-        if(props.ahpWeights){
-            let umlAHP=props.ahpWeights.UML
-            let sqlAHP=props.ahpWeights.SQL
-            let nfrAHP=props.ahpWeights.NFR
-            route+=`/${umlAHP}/${sqlAHP}/${nfrAHP}`
-        }
+
+        let umlAHP=props.ahpWeights.UML
+        let sqlAHP=props.ahpWeights.SQL
+        let nfrAHP=props.ahpWeights.NFR
+        route+=`/${umlAHP}/${sqlAHP}/${nfrAHP}`
         history(route)
     }
 

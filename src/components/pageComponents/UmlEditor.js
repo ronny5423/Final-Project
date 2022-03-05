@@ -902,7 +902,7 @@ export default function UmlEditor(props){
         // }}
         // return data;
         try {
-            let response = await axios.get(`/editors/matrix/${editorID}`);
+            let response = await axios.get(`/editors/matrix?ID=${editorID}`);
             if (response && response.data && response.data.convertedData){
                 return response.data.convertedData;
             }

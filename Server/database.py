@@ -280,6 +280,19 @@ class DataBase:
             "Constant": "Admins",
             'Admins': {'$in': [username]}
         }).count() > 0
+        
+    def getDBProfiles(self):
+        profiles = self.db.db.Constants.find_one({
+            "Constant": "DBProfiles"
+        })
+        return profiles['Profiles']
+        
+    def updateDBProfile(self, profiles):
+        self.db.db.Constants.update_one({"Constant": "DBProfiles"}, {
+            '$set': {
+                "Profiles": profiles
+            }
+        })
 
 
 # Helper Functions
