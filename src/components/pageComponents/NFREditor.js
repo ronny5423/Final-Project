@@ -198,9 +198,9 @@ export default function NFREditor(props){
         //     }}
         // return data;
         try {
-            let response = await axios.get(`/editors/matrix?ID=${id}`);
-            if (response && response.data && response.data.convertedData){
-                return response.data.convertedData;
+            let response = await axios.get(serverAddress+`/editors/matrix?ID=${id}`);
+            if (response && response.data && response.data){
+                return response.data;
             }
             else {
                 toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
@@ -223,7 +223,8 @@ export default function NFREditor(props){
         }
 
         getMatrixData().then((convertedData) => {
-            let matrixData = {'type': 'NFR', 'convertedData': convertedData['convertedData']}
+            convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
+            let matrixData = {'type': 'UML', 'convertedData': convertedData}
             localStorage.setItem("matrixData", JSON.stringify(matrixData))
             window.open("/MatrixEditor", "_blank")
         })

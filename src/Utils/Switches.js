@@ -12,6 +12,7 @@ import AlgorithmResult from "../components/pageComponents/AlgorithmResult";
 import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
 import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
+import EditorMatrix from "../components/pageComponents/EditorMatrix";
 // import NFREditor from "../components/pageComponents/NFREditor";
 // import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
 // import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
@@ -53,6 +54,8 @@ export default function Switches(){
             <Route path={"/login"} element={<Login/>}/>
 
             <Route path={"/register"} element={ <SignUp/>}/>
+
+            <Route path={"/MatrixEditor"} element={<EditorMatrix/>}/>
 
             {/*<Route path={"/admin"} element={<AdminPage/>}>*/}
             {/*    <Route index element={<AdminAddRemoveUsers/>}/>*/}
