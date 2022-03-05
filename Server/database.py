@@ -282,10 +282,11 @@ class DataBase:
         }).count() > 0
         
     def getDBProfiles(self):
-        return self.db.db.Constants.find({
+        profiles = self.db.db.Constants.find_one({
             "Constant": "DBProfiles"
-        })['Profiles']
-    
+        })
+        return profiles['Profiles']
+        
     def updateDBProfile(self, profiles):
         self.db.db.Constants.update_one({"Constant": "DBProfiles"}, {
             '$set': {
