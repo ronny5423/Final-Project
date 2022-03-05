@@ -12,6 +12,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 import SavingSpinner from "../sharedComponents/SavingSpinner";
+import {useNavigate} from "react-router-dom";
 
 
 let modalBody = <div>
@@ -48,6 +49,7 @@ export default function SqlEditor(props){
     const [modalShow, setModalShow] = React.useState(false);
     const [loading,updateLoading]=useState(true)
     const [saving,updateSaving]=useState(false)
+    let navigate = useNavigate()
 
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
@@ -279,7 +281,8 @@ export default function SqlEditor(props){
             convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
             let matrixData = {'type': 'UML', 'convertedData': convertedData}
             localStorage.setItem("matrixData", JSON.stringify(matrixData))
-            window.open("/MatrixEditor", "_blank")
+            //window.open("/MatrixEditor", "_blank")
+            navigate("/MatrixEditor")
         })
 
     }
@@ -317,14 +320,17 @@ export default function SqlEditor(props){
                             />
                         </div>
                         {
-                            disabled ? <Button variant={"success"} onClick={editDetails}>Edit</Button> :
+                            disabled ? <div>
+                                    <Button variant={"success"} onClick={editDetails}>Edit</Button>
+                                    <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
+                                </div>
+                                 :
                                 <div id={"buttonsDiv"}>
                                     <Button variant={"info"} onClick={addQuery}>Add Query</Button>
                                     <Button type={"submit"} variant={"success"} >Save</Button>
                                     {edit.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button> }
                                 </div>
                         }
-                        <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                         <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
                     </Form>
                     {saving && <SavingSpinner/>}

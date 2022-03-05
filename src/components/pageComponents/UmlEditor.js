@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
+import {useNavigate} from "react-router-dom";
 
 
 var umlJson={ "class": "GraphLinksModel",
@@ -44,6 +45,7 @@ export default function UmlEditor(props){
     let [myDiagram, updateDiagram] = useState({})
     const [editorID, updateEditorId]=useState(props.id)
     const [modalShow, setModalShow] = React.useState(false);
+    let navigate = useNavigate()
 
     useEffect(()=>{
         async function fetchUmlFromServer() {
@@ -114,8 +116,10 @@ export default function UmlEditor(props){
         myDiagram.addDiagramListener("Modified", function(e) {
             var button = document.getElementById("SaveButton");
             var loadButton = document.getElementById("LoadButton");
+            var matrixButton = document.getElementById("MatrixButton");
             if (button) button.disabled = !myDiagram.isModified;
             if (loadButton) loadButton.disabled = !myDiagram.isModified;
+            if (matrixButton) matrixButton.disabled = myDiagram.isModified;
             var idx = document.title.indexOf("*");
             //console.log("dis", myDiagram.isModified)
             if (myDiagram.isModified) {
@@ -931,7 +935,8 @@ export default function UmlEditor(props){
             convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
             let matrixData = {'type': 'UML', 'convertedData': convertedData}
             localStorage.setItem("matrixData", JSON.stringify(matrixData))
-            window.open("/MatrixEditor", "_blank")
+            //window.open("/MatrixEditor", "_blank")
+            navigate("/MatrixEditor")
         })
 
     }

@@ -15,7 +15,7 @@ export default function NFREditor(props){
     const [editable,updateEditable]=useState(props.editable)
     const oldWeightsBeforeEdit=useRef(new Map())
     const createNfr=useRef(true)
-    let navigate=useNavigate()
+    let navigate = useNavigate()
     const [id,updateId] = useState(props.id)
     const [loading,updateLoading]=useState(true)
     const [saving,updateSaving]=useState(false)
@@ -238,7 +238,8 @@ export default function NFREditor(props){
             convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
             let matrixData = {'type': 'UML', 'convertedData': convertedData}
             localStorage.setItem("matrixData", JSON.stringify(matrixData))
-            window.open("/MatrixEditor", "_blank")
+            //window.open("/MatrixEditor", "_blank")
+            navigate("/MatrixEditor")
         })
 
     }
@@ -268,13 +269,16 @@ export default function NFREditor(props){
                                 <Button variant={"success"} type={"submit"}>Save</Button>
                                 { !createNfr.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button>}
                             </div>:
-                            <Button onClick={_=>{
-                                createPreviousState(weightsValues)
-                                createNfr.current=false
-                                updateEditable(true)
-                            }}>Edit</Button>
+                            <div>
+                                <Button onClick={_=>{
+                                    createPreviousState(weightsValues)
+                                    createNfr.current=false
+                                    updateEditable(true)
+                                }}>Edit</Button>
+                                <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
+                            </div>
+
                         }
-                        <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                     </Form>
                         {saving && <SavingSpinner/>}
                     </div>
