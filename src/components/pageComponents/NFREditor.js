@@ -3,6 +3,8 @@ import axios from "axios"
 import {Button,Form, Table} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 import SavingSpinner from "../sharedComponents/SavingSpinner";
 
@@ -14,7 +16,7 @@ export default function NFREditor(props){
     const oldWeightsBeforeEdit=useRef(new Map())
     const createNfr=useRef(true)
     let navigate=useNavigate()
-    const[id,updateId]=useState(props.id)
+    const [id,updateId] = useState(props.id)
     const [loading,updateLoading]=useState(true)
     const [saving,updateSaving]=useState(false)
 
@@ -172,6 +174,8 @@ export default function NFREditor(props){
                if(response.status!==200){
                    navigate(`/error`)
                }
+               else
+                   toast.success("NFR was saved successfully", {position: toast.POSITION.TOP_CENTER})
                updateSaving(false)
            })
 
@@ -181,6 +185,7 @@ export default function NFREditor(props){
                 if(response.status===200){
                     props.updateEditorId(response.data,3)
                     updateId(response.data)
+                    toast.success("NFR was saved successfully", {position: toast.POSITION.TOP_CENTER})
                 }
                 else{
                     navigate(`/error`)
@@ -193,8 +198,49 @@ export default function NFREditor(props){
     }
 
     function cancelChanges(){
-    updateWeightsValues(oldWeightsBeforeEdit.current)
-    updateEditable(false)
+        updateWeightsValues(oldWeightsBeforeEdit.current)
+        updateEditable(false)
+    }
+
+    async function getMatrixData(){
+        // let data = {"convertedData": {
+        //         "classes": [["Class B", 0], ["Class A", 1], ["Association Class", 2]],
+        //         "matrix_classes": {"1": 1.0, "2": 0.8, "3": 0.35999999999999993, "4": 0.8, "5": 1.0, "6": 0.5599999999999999, "7": 0.35999999999999993, "8": 0.5599999999999999, "9": 1.0},
+        //         "shape": 3
+        //     }}
+        // return data;
+        try {
+            let response = await axios.get(serverAddress+`/editors/matrix?ID=${id}`);
+            if (response && response.data && response.data){
+                return response.data;
+            }
+            else {
+                toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
+            }
+        }
+        catch (e){
+            toast.error("Matrix isn't available at the moment", {position: toast.POSITION.TOP_CENTER})
+            console.log(e);
+            console.trace();
+        }
+
+        return null;
+    }
+
+
+    function redirectToMatrixPage(){
+        if(!id){
+            toast.error("Editor wasn't yet saved to the server", {position: toast.POSITION.TOP_CENTER})
+            return
+        }
+
+        getMatrixData().then((convertedData) => {
+            convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
+            let matrixData = {'type': 'UML', 'convertedData': convertedData}
+            localStorage.setItem("matrixData", JSON.stringify(matrixData))
+            window.open("/MatrixEditor", "_blank")
+        })
+
     }
 
     return(
@@ -217,6 +263,7 @@ export default function NFREditor(props){
                             }
                             </tbody>
                         </Table>
+                        <ToastContainer />
                         {editable ? <div id={"editButtons"}>
                                 <Button variant={"success"} type={"submit"}>Save</Button>
                                 { !createNfr.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button>}
@@ -227,6 +274,7 @@ export default function NFREditor(props){
                                 updateEditable(true)
                             }}>Edit</Button>
                         }
+                        <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                     </Form>
                         {saving && <SavingSpinner/>}
                     </div>

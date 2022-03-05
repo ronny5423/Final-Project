@@ -12,6 +12,7 @@ import AlgorithmResult from "../components/pageComponents/AlgorithmResult";
 import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
 import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
+import EditorMatrix from "../components/pageComponents/EditorMatrix";
 import NFREditor from "../components/pageComponents/NFREditor";
 import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
 import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
@@ -62,6 +63,7 @@ export default function Switches(){
                 <Route path={"editAHP"} element={<ChangeEditorsAhpAdmin/>}/>
                 <Route path={"projects"} element={<DashboardPage isAdmin={true}/>}/>
             </Route>
+            <Route path={"/MatrixEditor"} element={<EditorMatrix/>}/>
 
         </Routes>
     )
