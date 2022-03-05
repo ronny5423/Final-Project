@@ -47,7 +47,7 @@ export default function ProjectRow(props){
     }
 
     function moveToAddRemoveUsers(){
-        history(`/manageUsers/${props.projectId}`)
+        history(`/manageUsers/${props.projectId}/${props.projectOwner}`)
     }
 
     function moveToResults(){

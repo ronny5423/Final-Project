@@ -3,10 +3,12 @@ import {Button, Table, Tooltip} from "react-bootstrap";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
 import {useNavigate, useParams} from "react-router-dom";
+import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
 export default function AlgorithmResult(){
     const[algorithmResult, updateAlgorithmResult] = useState({})
     let {projectId} = useParams()
+    const[loading,updateLoading]=useState(true)
 
     useEffect(()=>{
         async function fetchAlgorithmResult(){
@@ -22,6 +24,7 @@ export default function AlgorithmResult(){
                 updateAlgorithmResult(results)
             }
             //console.log(algorithmResult)
+            updateLoading(false)
         }
         fetchAlgorithmResult()
     },[])
@@ -114,26 +117,30 @@ export default function AlgorithmResult(){
 
     return(
         <div>
-            <h1>Results</h1>
-            <Table responsive>
+            {loading ? <LoadingSpinner /> :
+                <div>
+                <h1>Results</h1>
+                <Table responsive>
                 <thead>
-                    <tr>
-                        {   
-                            createTableHead()
-                        }
-                    </tr>
-                    <tr>
-                        {
-                            createTableSecondRow()
-                        }
-                    </tr>
+                <tr>
+            {
+                createTableHead()
+            }
+                </tr>
+                <tr>
+            {
+                createTableSecondRow()
+            }
+                </tr>
                 </thead>
                 <tbody>
-                {
-                    createTableData()
-                }
+            {
+                createTableData()
+            }
                 </tbody>
-            </Table>
+                </Table>
+                </div>
+            }
         </div>
     )
 }

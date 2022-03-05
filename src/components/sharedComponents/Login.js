@@ -6,20 +6,25 @@ import {Link, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
+import ButtonWithSpinner from "./ButtonWithSpinner";
 
 export default function Login() {
   const { register,getValues, handleSubmit, watch, formState: { errors } } = useForm();
   const [showErrorModal,updateShowErrorModal]=useState(false)
   let navigate=useNavigate()
+  const[loggingIn,updateLogIn]=useState(false)
 
   async function submit(){
+    updateLogIn(true)
     try{
       let response=await axios.post(serverAddress+`/auth/Login`,getValues())
       localStorage.setItem("username",getValues("Username"))
       localStorage.setItem("isAdmin",JSON.stringify(response.data))
+      updateLogIn(false)
       navigate(`/dashboard`)
     }
     catch (error){
+      updateLogIn(false)
       updateShowErrorModal(true)
     }
   }
@@ -45,10 +50,7 @@ export default function Login() {
           />
           {errors?.password?.type==='required' && <p className={"errors"}>Please enter password</p>}
         </Form.Group>
-        <Button block size="lg" type="submit"
-        >
-          Login
-        </Button>
+        {loggingIn ? <ButtonWithSpinner variant={"primary"} label={"Login"}/> : <Button block size="lg" type="submit">Login</Button>}
       </Form>
       <p>Don't have an account ?</p>
       <Link to={"/register"}>Sign Up</Link>
