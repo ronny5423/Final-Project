@@ -931,6 +931,7 @@ export default function UmlEditor(props){
         }
 
         getMatrixData().then((convertedData) => {
+            console.log(convertedData)
             convertedData['classes'] = JSON.parse(convertedData['classes'])
             convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
             let matrixData = {'type': 'UML', 'convertedData': convertedData}

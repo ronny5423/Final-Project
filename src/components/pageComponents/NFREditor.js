@@ -81,6 +81,13 @@ export default function NFREditor(props){
     }
 
 
+    function editDetails(){
+        createPreviousState(weightsValues)
+        createNfr.current=false
+        updateEditable(true)
+    }
+
+
     function createPreviousState(map){
         oldWeightsBeforeEdit.current=new Map()
         for(const [className,value] of map.entries()){
@@ -269,16 +276,9 @@ export default function NFREditor(props){
                                 <Button variant={"success"} type={"submit"}>Save</Button>
                                 { !createNfr.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button>}
                             </div>:
-                            <div>
-                                <Button onClick={_=>{
-                                    createPreviousState(weightsValues)
-                                    createNfr.current=false
-                                    updateEditable(true)
-                                }}>Edit</Button>
-                                <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
-                            </div>
-
+                            <Button variant={"info"} onClick={editDetails}>Edit</Button>
                         }
+                        <Button id="MatrixButton" disabled={!id || editable} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                     </Form>
                         {saving && <SavingSpinner/>}
                     </div>
