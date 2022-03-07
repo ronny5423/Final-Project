@@ -35,6 +35,11 @@ export default function AddNFRAdmin(props){
             updateShowErrorModal(true)
             return;
         }
+        if(parseFloat(selectDataValue)<0){
+            errorMessage.current.push("Select value must be 0 or greater")
+            updateShowErrorModal(true)
+            return;
+        }
         let obj={...selectData}
         obj.values[selectDataName]=parseFloat(selectDataValue)
         updateSelectDataName("")
@@ -111,11 +116,8 @@ export default function AddNFRAdmin(props){
     }
 
     function checkAHP(){
-        if(isNaN(ahp)){
-            errorMessage.current.push("AHP value cannot be empty")
-        }
-        if(parseFloat(ahp)<=0){
-            errorMessage.current.push("AHP value must be greater than 0")
+        if(isNaN(ahp) || ahp==="" || parseFloat(ahp)<0){
+            errorMessage.current.push("AHP value cannot be empty or negative")
         }
     }
 
@@ -231,7 +233,7 @@ export default function AddNFRAdmin(props){
                     }
                     <Form.Group>
                         <Form.Label>AHP Value</Form.Label>
-                        <Form.Control type={"number"} value={ahp} onChange={e=>updateAhp(e.target.value)}/>
+                        <Form.Control  type={"number"} value={ahp} onChange={e=>updateAhp(e.target.value)}/>
                     </Form.Group>
                 </Form>
             </Modal.Body>
