@@ -35,14 +35,12 @@ export default function EditorMatrix(props){
 
     function loadData(){
         let stringifyData = localStorage.getItem("matrixData");
-        console.log(stringifyData)
         //localStorage.removeItem("matrixData");
 
         if (!stringifyData){
             return
         }
         let matrixData = JSON.parse(stringifyData);
-        console.log(matrixData)
 
         if(!('type' in matrixData) || !('convertedData' in matrixData)){
             return;
@@ -50,7 +48,6 @@ export default function EditorMatrix(props){
 
         //updateType(matrixData['type'])
         type = matrixData['type']
-        console.log(type)
         convertedData = matrixData['convertedData']
         if(type === 'UML' || type === 'SQL'){
             convertedData['classes'] = Object.values(convertedData['classes'])
@@ -146,8 +143,7 @@ export default function EditorMatrix(props){
                         if(index == 0 || this.parentNode.rowIndex == 0)
                             return;
 
-                        console.log("col " + index)
-                        console.log("row " + this.parentNode.rowIndex)
+
 
                         let thRowCells = rows[0].getElementsByTagName("th");
                         thRowCells[index]

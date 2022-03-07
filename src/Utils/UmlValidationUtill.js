@@ -4,7 +4,6 @@ function checkAllLinksAreConnected(umlObj){
     for(let i = 0; i < linksDataArray.length; i++){
         let link = linksDataArray[i];
         if(link["to"] === undefined || link["from"] === undefined){
-            console.log("checkAllLinksAreConnected");
             return "Not all links are connected";
         }
     }
@@ -38,7 +37,6 @@ function checkLinkClassAssociateConnectToLinkAssociateAndClassAssociate(umlObj){
             }
 
             if(!(linkCon && classCon)){
-                console.log("checkLinkClassAssociateConnectToLinkAssociateAndClassAssociate");
                 return "LinkClassAssociation isn't connected to an Association class or Association link";
             }
         }
@@ -69,7 +67,6 @@ function checkAscClassNotAscWithSelf(umlObj){
                             let to = linksDataArray[k]["to"];
                             let from = linksDataArray[k]["from"];
                             if(to === linkTo || to === linkFrom || from === linkTo || from === linkFrom){
-                                console.log("checkAscClassNotAscWithSelf");
                                 return "Association class can't associate with itself";
                             }
                         }

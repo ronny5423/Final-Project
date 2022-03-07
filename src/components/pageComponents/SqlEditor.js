@@ -54,12 +54,10 @@ export default function SqlEditor(props){
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
             let response = undefined;
-            console.log(id)
             //let classesDict = {"Class": ["Name"], "Class1": ["UserName", "Password"], "NamedModelElement": ["name"]};
             try {
                 if(id){
                     response = await axios.get(serverAddress+`/editors/loadEditor?ID=${id}`);
-                    console.log(response);
                 }
             }catch (e){
                 let map=new Map();
@@ -171,8 +169,6 @@ export default function SqlEditor(props){
         edit.current=false
         updateDisabled(true)
         if(currentRowIndex >= previousState.current.size){
-            console.log(currentRowIndex)
-            console.log(previousState.current.size)
             updateRowIndex(previousState.current.size - 1);
         }
         updateQueries(previousState.current)
@@ -207,14 +203,12 @@ export default function SqlEditor(props){
 
     async function saveSqlToServer(){
         const obj = Object.fromEntries(queries);
-        console.log(obj);
         let url = undefined;
         updateSaving(true)
         try {
             if(id !== undefined){
                 url = serverAddress+`/editors/updateSQLEditor`;
                 axios.post(url, {'jsonFile': obj, 'EditorID': id, 'projectID': props.projectId}).then(response=>{
-                    console.log(response);
                     updateSaving(false)
                     if(response.status !== 400){
                         toast.success("SQL was saved successfully", {position: toast.POSITION.TOP_CENTER})
@@ -225,7 +219,6 @@ export default function SqlEditor(props){
             else{
                 url = serverAddress+`/editors/saveSQLEditor`;
                axios.post(url, {'jsonFile': obj, 'projectID': props.projectId}).then(response=>{
-                   console.log(response);
                    props.updateEditorId(response.data,2)
                    updateId(response.data)
                    updateSaving(false)

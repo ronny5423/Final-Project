@@ -40,7 +40,6 @@ function mockData(addThirdAttribute){
 function createServer(addThirdAttribute){
     const getSql = rest.get(serverAddress+`/getSql`,(req,res,ctx)=>{
         let data = mockData(addThirdAttribute)
-        console.log("ive been called")
         return res(ctx.json(data),)
     })
     const sendSql = rest.post(serverAddress+`/sendSql`,(req,res,ctx)=>{
