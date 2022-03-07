@@ -1,3 +1,4 @@
+from flask import session
 from flask_login import current_user
 
 from database import *
@@ -23,7 +24,9 @@ def loadProject(projectID):
 
 
 def updateDetails(data):
-    db.updateProjectDetails(data.get('projectID'), data.get('details'))
+    project = db.getOneProject({"ProjectID": data.get('projectID')})
+    if project.Owner == current_user.Username or session['admin']:
+        db.updateProjectDetails(data.get('projectID'), data.get('details'))
 
 
 def getProjectMembers(projectID, indexes):
@@ -37,7 +40,7 @@ def addProjectMember(data):
     if not db.getOneUser({'Username': member}):
         raise Exception('Received member does not exists.')
     project = db.getOneProject({"ProjectID": projectID})
-    if project.Owner == current_user.Username:
+    if project.Owner == current_user.Username or session['admin']:
         db.addProjectMember(projectID, member)
     else:
         raise Exception('Logged User is not the project Owner.')
@@ -45,7 +48,7 @@ def addProjectMember(data):
 
 def removeProjectMembers(projectID, member):
     project = db.getOneProject({"ProjectID": projectID})
-    if project.Owner == current_user.Username:
+    if project.Owner == current_user.Username or session['admin']:
         if member not in project.Members:
             raise Exception('Received User is not part of the received project.')
         db.removeProjectMember(project, member)
@@ -65,7 +68,7 @@ def updateProjectWeights(data):
     projectID = data.get('ProjectID')
     weights = data.get('Weights')
     project = db.getOneProject({"ProjectID": projectID})
-    if current_user.Username in project.Members:
+    if current_user.Username in project.Members or session['admin']:
         db.updateProjectWeights(projectID, weights)
     else:
         raise Exception('Logged User is not a member of the received project.')
