@@ -236,6 +236,8 @@ export default function ChangeNFRAdmin(){
         let nfrNamesSet=new Set()
         errorMessage.current=[]
         let wasError=false
+        let ahpSum=0
+        let missingAhp=false
         for(let index in nfr){
             let key=Object.keys(nfr[index])[0]
             let value=Object.values(nfr[index])[0]
@@ -255,10 +257,11 @@ export default function ChangeNFRAdmin(){
             }
             if(isNaN(value.ahp)){
                 errorMessage.current.push(`ahp value must be a number in ${key} NFR`)
+                missingAhp=true
                 wasError=true
             }
-            if(value.ahp<=0){
-                errorMessage.current.push(`ahp value cannot be less or equal to 0 in ${key} NFR`)
+            else{
+                ahpSum+=value.ahp
             }
             if(nfrNamesSet.has(key)){
                 errorMessage.current.push(`nfr names must be unique in ${key} NFR`)
@@ -270,6 +273,10 @@ export default function ChangeNFRAdmin(){
             errorMessage.current.push("There must be at least one nfr")
             wasError=true
           }
+        if(!missingAhp && ahpSum!==1){
+            wasError=true
+            errorMessage.current.push("Sum of AHP must be equal to 1")
+        }
         if(!wasError){
             errorMessage.current=[]
             let ahp={}
