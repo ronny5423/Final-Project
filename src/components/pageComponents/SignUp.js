@@ -25,13 +25,10 @@ function SignUp(){
             password:detailsArr[1]
         }
         updatelogging(true)
-        try{
-            axios.post(serverAddress+`/auth/Signup`,userDetails).then(response=>{
-                updatelogging(false)
-                history(`/login`)
-            })
-         }
-        catch (error){
+        axios.post(serverAddress+`/auth/Signup`,userDetails).then(response=>{
+            updatelogging(false)
+            history(`/login`)
+        }).catch(error=>{
             if(error.response.status===409){
                 updateModalText("Username already taken!")
             }
@@ -39,7 +36,7 @@ function SignUp(){
                 updateModalText("Something went wrong. Please try again")
             }
             updatelogging(false)
-        }
+        })
 
     }
 

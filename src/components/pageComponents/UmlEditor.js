@@ -54,7 +54,6 @@ export default function UmlEditor(props){
                 return;
             try {
                 response = await axios.get(serverAddress+`/editors/loadEditor?ID=${editorID}`);
-                console.log(response);
             }catch (e){
                 console.log(e);
                 console.trace();
@@ -125,7 +124,6 @@ export default function UmlEditor(props){
             if (myDiagram.isModified) {
                 if (idx < 0) document.title += "*";
                 //props.changeUmlStatus(false);
-                console.log("false")
             } else {
                 if (idx >= 0) document.title = document.title.substr(0, idx);
             }
@@ -541,11 +539,9 @@ export default function UmlEditor(props){
         //loadUml();
         //console.log(myDiagram.model);
         if(editorID === undefined){
-            console.log("here1")
             updateDiagram(myDiagram)
         }
         // updateDiagram(myDiagram)
-        console.log("here2")
 
         return myDiagram;
     }
@@ -822,13 +818,11 @@ export default function UmlEditor(props){
 
     async function saveUmlToServer(){
         let uml = JSON.parse(myDiagram.model.toJson());
-        console.log(uml)
         let url = undefined;
         try {
             if(editorID !== undefined){
                 url = serverAddress+`/editors/updateUMLEditor`;
                 let response = await axios.post(url, {'jsonFile': uml, 'EditorID': editorID});
-                console.log(response);
                 if(response.status !== 400){
                     toast.success("UML was saved successfully", {position: toast.POSITION.TOP_CENTER})
                 }
@@ -836,7 +830,6 @@ export default function UmlEditor(props){
             else{
                 url = serverAddress+`/editors/saveUMLEditor`;
                 let response = await axios.post(url, {'jsonFile': uml, 'projectID': props.projectId});
-                console.log(response);
                 if(response.status === 200){
                     props.updateEditorId(response.data, 1)
                     updateEditorId(response.data)

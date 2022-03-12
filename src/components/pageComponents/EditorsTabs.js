@@ -27,13 +27,13 @@ export default function EditorsTabs(props){
             case 3:
                 editorsID.current.nfrID=id
                 break
-
+            default:
+                break
         }
     }
 
     function changeMoveToOtherTabs(shouldMove){
         moveToOtherTabs.current=shouldMove
-        console.log("move", moveToOtherTabs.current)
     }
 
     function shouldMoveToOtherTabs(key){
@@ -47,7 +47,6 @@ export default function EditorsTabs(props){
     }
 
     function calculateAlgorithm(){
-        console.log(editorsID.current)
         if(editorsID.current.umlID && editorsID.current.sqlID && editorsID.current.nfrID){
             navigate('/algorithmResults/'+ projectId)
           }
@@ -80,7 +79,7 @@ export default function EditorsTabs(props){
                     <SqlEditor id={(editorsID.current.sqlID===undefined || editorsID.current.sqlID===null) ? undefined : parseInt(editorsID.current.sqlID)} projectId={parseInt(projectId)} classes={classes.current} updateEditorId={updateEditorId}/>
                 </Tab>
                 <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
-                    <NFREditor id={(editorsID.current.nfrID===undefined || editorsID.current.nfrID===null) ? undefined : parseInt(editorsID.current.nfrID)} projectId={parseInt(projectId)} editable={true} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
+                    <NFREditor id={(editorsID.current.nfrID===undefined || editorsID.current.nfrID===null) ? undefined : parseInt(editorsID.current.nfrID)} projectId={parseInt(projectId)} editable={(editorsID.current.nfrID===undefined || editorsID.current.nfrID===null)} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
 
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
