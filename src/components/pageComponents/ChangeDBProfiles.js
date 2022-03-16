@@ -84,7 +84,7 @@ export default function ChangeDBProfiles(){
         }
         nfrMapping.current=mapping
         //weightsRow.push(<th>Query Complexity</th>)
-        weightsRow.push(<th><ProjectRowTooltip message={"Add new DB profile"} icon={faPlus} onClick={addEmptyRow}/></th>)
+        weightsRow.push(<th><ProjectRowTooltip  message={"Add new DB profile"} icon={faPlus} onClick={addEmptyRow}/></th>)
         return weightsRow
     }
 
@@ -149,7 +149,7 @@ export default function ChangeDBProfiles(){
                 {/*<td><input required type={"text"} value={dbProfiles[index][0]} onChange={e=>changeDBName(index,e.target.value)}/></td>*/}
                 <td>{!dbProfiles[index][2] ? dbProfiles[index][0] :<input required type={"text"} value={dbProfiles[index][0]} onChange={e=>changeDBName(index,e.target.value)}/> }</td>
                 {createRestOfRow(index)}
-                <td><ProjectRowTooltip message={"delete db"} icon={faTrash} onClick={_=>deleteDB(parseInt(index))}/></td>
+                <td><ProjectRowTooltip data-test-id={"deleteButton"} message={"delete db"} icon={faTrash} onClick={_=>deleteDB(parseInt(index))}/></td>
             </tr>)
         }
         return rows
@@ -177,8 +177,8 @@ export default function ChangeDBProfiles(){
     return(
         <div>
             {loading ? <LoadingSpinner /> :
-                <div>
-                    <Form onSubmit={sendDbProfilesToServer}>
+                <div data-testid={"change-db-profiles"}>
+                    <Form  onSubmit={sendDbProfilesToServer}>
                         <Table>
                             <thead>
                             <tr>
@@ -193,7 +193,7 @@ export default function ChangeDBProfiles(){
                         <Button type={"submit"} variant={"success"}>Save</Button>
                         {saving && <SavingSpinner/>}
                     </Form>
-                    <Modal show={showErrorModal} onHide={_=>updateShowErrorModal(false)} centered>
+                    <Modal data-testid={"modal"} show={showErrorModal} onHide={_=>updateShowErrorModal(false)} centered>
                         <Modal.Header closeButton/>
                         <Modal.Body>DB names must be unique</Modal.Body>
                     </Modal>

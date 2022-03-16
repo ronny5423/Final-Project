@@ -71,8 +71,8 @@ import SavingSpinner from "./SavingSpinner";
             <div>
                 <WrappedComponent updateWeights={updateState} {...props} updateSaveRoute={updateSaveRoute}/>
                 {saveRoute==="" ? <LoadingSpinner /> :
-                    <div>
-                        <Modal show={showModal} onHide={_=>updateShowModal(false)} centered>
+                    <div data-testid={"ahp"}>
+                        <Modal data-testid={"modal"} show={showModal} onHide={_=>updateShowModal(false)} centered>
                             <Modal.Header closeButton></Modal.Header>
                             <Modal.Body>
                                 <p>sum of weights must be equal to 1</p>
