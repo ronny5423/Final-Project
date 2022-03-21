@@ -118,9 +118,9 @@ export default function EditorMatrix(props){
     function mh(){
 
         var tds =
-            document.querySelectorAll("td");
+            document.querySelectorAll("#matrix td");
         var ths =
-            document.querySelectorAll("th");
+            document.querySelectorAll("#matrix th");
 
         var cells =
             Array.prototype.slice.call(tds)
@@ -129,7 +129,7 @@ export default function EditorMatrix(props){
                 );
 
         var rows =
-            document.querySelectorAll("tr");
+            document.querySelectorAll("#matrix tr");
 
 
         [].forEach.call(
@@ -142,8 +142,6 @@ export default function EditorMatrix(props){
                         var index = indexInParent(this);
                         if(index == 0 || this.parentNode.rowIndex == 0)
                             return;
-
-
 
                         let thRowCells = rows[0].getElementsByTagName("th");
                         thRowCells[index]
@@ -209,9 +207,11 @@ export default function EditorMatrix(props){
 
     return(
         <Table onMouseOver={mh} id={"matrix"} responsive={true}>
-            {
-                createTable()
-            }
+            <tbody>
+                {
+                    createTable()
+                }
+            </tbody>
         </Table>
     );
 };
