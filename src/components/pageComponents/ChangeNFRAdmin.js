@@ -171,7 +171,7 @@ export default function ChangeNFRAdmin(){
     }
 
     function createSelectBoxRow(nfrName,data,index){
-       return <tr key={index}>
+       return <tr className={"nfrRow"} key={index}>
            <td>{index+1}</td>
            <td><input value={nfrName} type={"text"} onChange={e=>changeNFRName(nfrName,e.target.value,index)}/></td>
            <td>select box</td>
@@ -181,16 +181,16 @@ export default function ChangeNFRAdmin(){
                         <tr>
                             <th/>
                             <th/>
-                            <th><ProjectRowTooltip message={"add new value"} icon={faPlus} onClick={_=>addValue(nfrName,index)}/></th>
+                            <th><ProjectRowTooltip testId={"addSelect"} message={"add new value"} icon={faPlus} onClick={_=>addValue(nfrName,index)}/></th>
                         </tr>
                    </thead>
                    <tbody>
                    {/*{createSelectBoxValuesTable(data.values,nfrName,index)}*/}
                    {
-                       data.values.map((obj,indexInSelect)=><tr>
+                       data.values.map((obj,indexInSelect)=><tr className={"selectTableRow"}>
                            <td><input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/></td>
                             <td><input value={Object.values(obj)[0]} type={"number"} onChange={e=>changeSelectValue(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/> </td>
-                           <td><ProjectRowTooltip icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>
+                           <td><ProjectRowTooltip testId={"deleteSelect"} icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>
                        </tr>)
                    }
                    </tbody>
@@ -204,32 +204,32 @@ export default function ChangeNFRAdmin(){
                }
            </select></td>
            <td><input value={data.ahp} type={"number"} step={0.01} onChange={e=>changeAHP(nfrName,parseFloat(e.target.value),index)}/> </td>
-           <td><ProjectRowTooltip message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
+           <td><ProjectRowTooltip testId={"deleteNFR"} message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
        </tr>
     }
 
     function createRangeRow(nfrName,data,index){
-        return <tr>
+        return <tr className={"nfrRow"}>
             <td>{index+1}</td>
             <td><input value={nfrName} type={"text"} onChange={e=>changeNFRName(nfrName,e.target.value,index)}/></td>
             <td>range</td>
             <td>
-                <Table>
+                <Table >
                     <tbody>
                         <tr>
                             <td>Maximum</td>
-                            <td><input value={data.values[1]} type={"number"} step={0.01} onChange={e=>changeRangeValue(nfrName,parseFloat(e.target.value),1,index)}/></td>
+                            <td><input data-testid={"max"} value={data.values[1]} type={"number"} step={0.01} onChange={e=>changeRangeValue(nfrName,parseFloat(e.target.value),1,index)}/></td>
                         </tr>
                         <tr>
                             <td>Minimum</td>
-                            <td><input value={data.values[0]} type={"number"} step={0.01} onChange={e=>changeRangeValue(nfrName,parseFloat(e.target.value),0,index)}/> </td>
+                            <td><input data-testid={"min"} value={data.values[0]} type={"number"} step={0.01} onChange={e=>changeRangeValue(nfrName,parseFloat(e.target.value),0,index)}/> </td>
                         </tr>
                     </tbody>
                 </Table>
             </td>
-            <td><input value={data.defaultValue} type={"number"} step={0.01} onChange={e=>changeRangeDefaultValue(nfrName,parseFloat(e.target.value),index)}/> </td>
+            <td><input data-testid={"defaultValue"} value={data.defaultValue} type={"number"} step={0.01} onChange={e=>changeRangeDefaultValue(nfrName,parseFloat(e.target.value),index)}/> </td>
             <td><input value={data.ahp} type={"number"} step={0.01} onChange={e=>changeAHP(nfrName,parseFloat(e.target.value),index)}/> </td>
-            <td><ProjectRowTooltip message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
+            <td><ProjectRowTooltip testId={"deleteNFR"} message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
         </tr>
     }
     function saveChanges(){
@@ -367,7 +367,7 @@ export default function ChangeNFRAdmin(){
     return(
         <div>
             {loading ? <LoadingSpinner/> :
-                <div>
+                <div data-testid={"nfrAdmin"}>
                     <Table>
                         <thead>
                         <tr>
@@ -379,8 +379,8 @@ export default function ChangeNFRAdmin(){
                             <th>AHP Value</th>
                             <th>
                                 <div>
-                                    <ProjectRowTooltip message={"save changes"} icon={faSave} onClick={saveChanges}/>
-                                    <ProjectRowTooltip message={"add new nfr"} icon={faPlus} onClick={_=>updateShowAddNFR(true)}/>
+                                    <ProjectRowTooltip testId={"save"} message={"save changes"} icon={faSave} onClick={saveChanges}/>
+                                    <ProjectRowTooltip testId={"add"} message={"add new nfr"} icon={faPlus} onClick={_=>updateShowAddNFR(true)}/>
                                 </div>
                             </th>
                         </tr>
