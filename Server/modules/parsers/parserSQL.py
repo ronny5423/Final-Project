@@ -39,7 +39,7 @@ def increment_matrix_table_cell(matrix, class_from, class_to, increase):
     j = min(class_from[1], class_to[1])
     matrix[i][j] += increase
     if i != j:
-        matrix[j][i] += 1
+        matrix[j][i] += increase
 
 
 def get_classes_return_query(query_arr, classes_names):
