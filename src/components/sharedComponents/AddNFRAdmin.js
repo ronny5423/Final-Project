@@ -23,25 +23,27 @@ export default function AddNFRAdmin(props){
     function addSelect(event){
         event.preventDefault()
         errorMessage.current=[]
+        let parsedValue=parseFloat(selectDataValue)
         for(let selectName in selectData.values){
             if(selectName===selectDataName){
                 errorMessage.current.push("Select Data Names must be unique")
                 updateShowErrorModal(true)
                 return
             }
+            if(selectData.values[selectName]===parsedValue){
+                errorMessage.current.push("Select data values must be unique")
+                updateShowErrorModal(true)
+                return;
+            }
         }
-        if(selectDataName==="" || selectDataValue===""){
-            errorMessage.current.push("Select name and values must be non empty")
-            updateShowErrorModal(true)
-            return;
-        }
-        if(parseFloat(selectDataValue)<0){
+
+        if(parsedValue<0){
             errorMessage.current.push("Select value must be 0 or greater")
             updateShowErrorModal(true)
             return;
         }
         let obj={...selectData}
-        obj.values[selectDataName]=parseFloat(selectDataValue)
+        obj.values[selectDataName]=parsedValue
         updateSelectDataName("")
         updateSelectValue("")
         updateSelectData(obj)
@@ -50,6 +52,11 @@ export default function AddNFRAdmin(props){
     function deleteValue(selectName){
         let obj={...selectData}
         delete obj.values[selectName]
+        if(obj.defaultValue[0]===selectName && obj.defaultValue.length>0){
+            let keys=Object.keys(obj.values)
+            obj.defaultValue[0]=keys[0]
+            obj.defaultValue[1]=obj.values[keys[0]]
+        }
         updateSelectData(obj)
     }
 
@@ -159,10 +166,10 @@ export default function AddNFRAdmin(props){
     function createSelectValuesTable(){
         let rows=[]
         for(let selectName in selectData.values){
-            rows.push(<tr>
+            rows.push(<tr data-testid={"selectValuesRows"}>
                 <td>{selectName}</td>
                 <td>{selectData.values[selectName]}</td>
-                <td><ProjectRowTooltip message={"delete value"} icon={faTrash} onClick={_=>deleteValue(selectName)}/></td>
+                <td><ProjectRowTooltip testId={"deleteSelect"} message={"delete value"} icon={faTrash} onClick={_=>deleteValue(selectName)}/></td>
             </tr>)
         }
         return rows
@@ -176,37 +183,37 @@ export default function AddNFRAdmin(props){
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>NFR Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter NFR name" value={nfrName} onChange={e=>updateNFRName(e.target.value)} />
+                        <Form.Control id={"nfrName"} type="text" placeholder="Enter NFR name" value={nfrName} onChange={e=>updateNFRName(e.target.value)} />
                      </Form.Group>
                     <Form.Group>
                     <Form.Label>NFR Type</Form.Label> <br/>
-                    <Form.Check type={"radio"} label={"Range"} checked={nfrType==="range"} onChange={e=>updateNFRType("range")} inline/>
-                    <Form.Check type={"radio"} label={"Select Box"} checked={nfrType==="select box"} onChange={e=>updateNFRType("select box")} inline/>
+                    <Form.Check id={"rangeRadio"} type={"radio"} label={"Range"} checked={nfrType==="range"} onChange={e=>updateNFRType("range")} inline/>
+                    <Form.Check id={"selectRadio"} type={"radio"} label={"Select Box"} checked={nfrType==="select box"} onChange={e=>updateNFRType("select box")} inline/>
                     </Form.Group>
                     {(nfrType==="range") ?
                         <Form.Group>
                         <Form.Group>
                             <Form.Label>Minimum Value:</Form.Label>
-                            <Form.Control type={"number"} value={rangeData[0]} onChange={e=>changeRangeData(parseFloat(e.target.value),0)}/>
+                            <Form.Control id={"minimum"} type={"number"} value={rangeData[0]} onChange={e=>changeRangeData(parseFloat(e.target.value),0)}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Maximum Value:</Form.Label>
-                            <Form.Control type={"number"} value={rangeData[1]} onChange={e=>changeRangeData(parseFloat(e.target.value),1)}/>
+                            <Form.Control id={"maximum"} type={"number"} value={rangeData[1]} onChange={e=>changeRangeData(parseFloat(e.target.value),1)}/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Default Value</Form.Label>
-                            <Form.Control type={"number"} value={rangeData[2]} onChange={e=>changeRangeData(parseFloat(e.target.value),2)}/>
+                            <Form.Control id={"defaultValue"} type={"number"} value={rangeData[2]} onChange={e=>changeRangeData(parseFloat(e.target.value),2)}/>
                         </Form.Group>
                         </Form.Group>
                         :
-                        <div>
+                        <div data-testid={"selectDiv"}>
                             <Form.Group>
                                 <Form.Label>Select Value Name:</Form.Label>
-                                <Form.Control type={"text"} value={selectDataName} onChange={e=>updateSelectDataName(e.target.value)}/>
+                                <Form.Control id={"selectName"} type={"text"} value={selectDataName} onChange={e=>updateSelectDataName(e.target.value)}/>
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Value:</Form.Label>
-                                <Form.Control type={"number"} value={selectDataValue} onChange={e=>updateSelectValue(e.target.value)}/>
+                                <Form.Control id={"selectValue"} type={"number"} value={selectDataValue} onChange={e=>updateSelectValue(e.target.value)}/>
                             </Form.Group>
                             <Button type={"info"} onClick={addSelect} disabled={selectDataName==="" || selectDataValue===""}>Add Select Choice</Button>
                             <Table>
@@ -225,7 +232,7 @@ export default function AddNFRAdmin(props){
                             </Table>
                             <Form.Group>
                                 <Form.Label>Default Value</Form.Label>
-                            <select value={selectData.defaultValue[1]} onChange={e=>changeSelectDefaultValue(e.target.options[e.target.selectedIndex].text,parseFloat(e.target.value))}>
+                            <select data-testid={"defaultSelect"} value={selectData.defaultValue[1]} onChange={e=>changeSelectDefaultValue(e.target.options[e.target.selectedIndex].text,parseFloat(e.target.value))}>
                                 {createSelectDefaultValue()}
                             </select>
                             </Form.Group>
@@ -233,13 +240,13 @@ export default function AddNFRAdmin(props){
                     }
                     <Form.Group>
                         <Form.Label>AHP Value</Form.Label>
-                        <Form.Control  type={"number"} value={ahp} onChange={e=>updateAhp(e.target.value)}/>
+                        <Form.Control id={"ahp"}  type={"number"} value={ahp} onChange={e=>updateAhp(e.target.value)}/>
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
                 <div>
-                    <Button variant={"success"} onClick={save}>Add</Button>
+                    <Button data-testid={"addButton"} variant={"success"} onClick={save}>Add</Button>
                     <Button variant={"info"} onClick={props.hide}>Cancel</Button>
                 </div>
             </Modal.Footer>

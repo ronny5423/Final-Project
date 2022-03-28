@@ -100,15 +100,15 @@ export default function PaginationComponent(props){
 
     return(
         <Pagination>
-            <Pagination.First onClick={clickOnFirst}/>
-            <Pagination.Prev disabled={pagesArr[0]===1} onClick={clickOnPrev}/>
+            <Pagination.First data-testid={"first"} onClick={clickOnFirst}/>
+            <Pagination.Prev data-testid={"prev"} disabled={pagesArr[0]===1} onClick={clickOnPrev}/>
             {
                 pagesArr.map((page,index)=>
-                <Pagination.Item key={index} onClick={_=>clickOnPage(page)} active={currentPage===page}>{page}</Pagination.Item>)
+                <Pagination.Item data-testid={"page"} key={index} onClick={_=>clickOnPage(page)} active={currentPage===page}>{page}</Pagination.Item>)
             }
 
-            <Pagination.Next disabled={pagesArr[pagesArr.length-1]===numberOfPages.current} onClick={clickOnNext}/>
-            <Pagination.Last onClick={clickOnLast}/>
+            <Pagination.Next data-testid={"next"} disabled={pagesArr[pagesArr.length-1]===numberOfPages.current} onClick={clickOnNext}/>
+            <Pagination.Last data-testid={"last"} onClick={clickOnLast}/>
         </Pagination>
     )
 }
