@@ -18,6 +18,7 @@ export default function AddUserToProject(props){
             axios.post(serverAddress+`/projects/addMember`,{ProjectID:parseInt(props.projectId),Member:user}).then(response=>{
                 if(response.status===200){
                     props.addUser(user)
+                    updateUser("")
                     props.hide()
                 }
                 else if(response.status===400){
@@ -49,12 +50,12 @@ export default function AddUserToProject(props){
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={addUser} variant={"success"}>Add User</Button>
+                <Button data-testid={"addButton"} onClick={addUser} variant={"success"}>Add User</Button>
             </Modal.Footer>
         </Modal>
-        <Modal show={showErrorModal} centered backdrop={"static"} onHide={_=>updateShowErrorModal(false)}>
+        <Modal className={"errorModal"} show={showErrorModal} centered backdrop={"static"} onHide={_=>updateShowErrorModal(false)}>
             <Modal.Header closeButton/>
-            <Modal.Body>{user.length>0 ?"Username already in project!" : "Please enter username"}</Modal.Body>
+            <Modal.Body>{user.length>0 ?"Username doesn't exist or already in project!" : "Please enter username"}</Modal.Body>
         </Modal>
             {saving && <SavingSpinner/>}
         </div>

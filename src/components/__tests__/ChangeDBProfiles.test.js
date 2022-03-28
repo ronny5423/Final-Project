@@ -1,51 +1,13 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import '@testing-library/jest-dom'
-import {rest} from "msw";
 import {setupServer} from "msw/node";
-import {serverAddress} from "../../Constants";
 import {BrowserRouter} from "react-router-dom";
 import ChangeDBProfiles from "../pageComponents/ChangeDBProfiles";
-
-
-function createDummyData(){
-    let weightsTemp=new Map();
-    weightsTemp.set("Integrity",{
-        type:"range",
-        values:[0,1],
-        defaultValue:0.5
-    })
-    let labelsAndValues={a:1,b:2,c:3,d:4}
-    weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
-    let weights=Object.fromEntries(weightsTemp)
-
-    const person={Integrity:0.65,Consistency:["c",3]}
-    person["Query Complexity"]=2
-    const user={Integrity:0.9,Consistency:["a",1]}
-    user["Query Complexity"]=3
-    let profiles={MongoDB:person,Oracle:user}
-
-    return {NFRAttributes: weights, DBProfiles: profiles}
-}
+import {getDBProfiles, preapareTests, saveDBProfiles} from "../../Utils/RoutersForTests";
 
 function createServer(){
-    const getDBProfiles=rest.get(serverAddress+`/admin/DBProfiles`,(req,res,ctx)=>{
-        let data=createDummyData()
-        return res(ctx.json(data),ctx.status(200))
-    })
-    const saveDBProfiles=rest.post(serverAddress+`/admin/updateDBProfiles`,(req,res,ctx)=>{
-        return res(ctx.status(200))
-    })
     const handlers=[getDBProfiles,saveDBProfiles]
     return new setupServer(...handlers)
-}
-
-function preapareTests(server){
-    beforeAll(()=>server.listen())
-    afterEach(()=>{
-        cleanup()
-        server.resetHandlers()
-    })
-    afterAll(()=>server.close())
 }
 
 async function renderComponent(){

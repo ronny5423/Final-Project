@@ -83,7 +83,7 @@ export default function ProjectRow(props){
 
     return(
 
-        <tr>
+        <tr data-testid={"projectRow"}>
             <td>{projectName}</td>
             <td style={{"width":400}}><ShowMoreText lines={2} more={"Show More"} less={"Show Less"} truncatedEndingComponent={"..."} expanded={false}>{projectDescription}</ShowMoreText></td>
             <td>{props.projectOwner}</td>

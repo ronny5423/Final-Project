@@ -41,7 +41,6 @@ const withFetchData=(WrappedComponent)=>{
             otherParametersToSendToServer.current.startIndex=startIndex
             otherParametersToSendToServer.current.endIndex=end+1
             let response= await axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current})
-            console.log(response.data)
             if(response.status===200){
                 let endIndex=response.data[attributeName.current].length-1
                 if(dataLength===0){

@@ -1,51 +1,17 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import '@testing-library/jest-dom'
-import {rest} from "msw";
 import {setupServer} from "msw/node";
-import {serverAddress} from "../../Constants";
 import {BrowserRouter} from "react-router-dom";
 import ChangeNFRAdmin from "../pageComponents/ChangeNFRAdmin";
+import {getNFRAdmin, preapareTests, updateNFRAdmin} from "../../Utils/RoutersForTests";
 
 async function renderComponent(){
     render(<BrowserRouter><ChangeNFRAdmin/></BrowserRouter>)
     return await screen.findByTestId("nfrAdmin")
 }
 
-function createDummyData(){
-    let weightsTemp=new Map();
-    weightsTemp.set("Integrity",{
-        type:"range",
-        values:[0,1],
-        defaultValue:0.5
-    })
-    let labelsAndValues={a:1,b:2,c:3,d:4}
-    weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
-    let weightsObj= Object.fromEntries(weightsTemp)
-    let ahp={"Integrity":0.2,"Consistency":0.8}
-    return {Attributes:weightsObj,Weights:ahp}
-}
-
-function preapareTests(server){
-    beforeAll(()=>server.listen())
-    afterEach(()=>{
-        cleanup()
-        server.resetHandlers()
-    })
-    afterAll(()=>server.close())
-}
-
-function createServer(){
-    const getNFR=rest.get(serverAddress+`/admin/NFR`,(req,res,ctx)=>{
-        return res(ctx.json(createDummyData()),ctx.status(200))
-    })
-    const updateNFR=rest.post(serverAddress+`/admin/updateNFR`,(req,res,ctx)=>{
-        return res(ctx.status(200))
-    })
-    return setupServer(...[getNFR,updateNFR])
-}
-
 describe("test component render",()=>{
-    const server=createServer()
+    const server=setupServer(...[getNFRAdmin,updateNFRAdmin])
     preapareTests(server)
 
     it("test that component renders",async ()=>{
@@ -83,7 +49,7 @@ describe("test component render",()=>{
 })
 
 describe("test input change",()=>{
-    const server=createServer()
+    const server=setupServer(...[getNFRAdmin,updateNFRAdmin])
     preapareTests(server)
 
     it("test change input in input tag",async()=>{

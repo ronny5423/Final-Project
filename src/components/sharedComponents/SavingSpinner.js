@@ -6,7 +6,7 @@ export default function SavingSpinner(){
     return(
         <Modal  show backdrop={"static"} centered>
             <Modal.Body>
-                <div>
+                <div data-testid={"savingSpinner"}>
                     <span>Saving </span>
                     <Spinner animation={"border"}/>
                 </div>

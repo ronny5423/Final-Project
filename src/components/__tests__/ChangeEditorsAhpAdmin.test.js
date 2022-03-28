@@ -1,10 +1,9 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import '@testing-library/jest-dom'
-import {rest} from "msw";
 import {setupServer} from "msw/node";
-import {serverAddress} from "../../Constants";
 import {BrowserRouter} from "react-router-dom";
 import ChangeEditorsAhpAdmin from "../pageComponents/ChangeEditorsAhpAdmin";
+import {getAHPAdmin, preapareTests, saveAHPAdmin} from "../../Utils/RoutersForTests";
 
 async function renderComponent(){
     render(<BrowserRouter><ChangeEditorsAhpAdmin/></BrowserRouter>)
@@ -12,26 +11,9 @@ async function renderComponent(){
 }
 
 function createServer(){
-    const getAHP=rest.get(serverAddress+`/admin/AHP`,(req,res,ctx)=>{
-        let ahp={UML:0.5,SQL:0.2,NFR:0.3}
-        return res(ctx.json(ahp),ctx.status(200))
-    })
-    const saveAHP=rest.post(serverAddress+`/admin/updateAHP`,(req,res,ctx)=>{
-        return res(ctx.status(200))
-    })
-    let handlers=[getAHP,saveAHP]
+    let handlers=[getAHPAdmin,saveAHPAdmin]
     return new setupServer(...handlers)
 }
-
-function preapareTests(server){
-    beforeAll(()=>server.listen())
-    afterEach(()=>{
-        cleanup()
-        server.resetHandlers()
-    })
-    afterAll(()=>server.close())
-}
-
 
 describe("test component render",()=>{
     let server=createServer()

@@ -30,7 +30,7 @@ export default function Login() {
   }
 
   return (
-    <div className="Login">
+    <div data-testid={"login"} className="Login">
       <Modal show={showErrorModal} centered onHide={_=>updateShowErrorModal(false)}>
         <Modal.Header closeButton/>
         <Modal.Body>
