@@ -43,11 +43,12 @@ export const updateNFRAdmin=rest.post(serverAddress+`/admin/updateNFR`,(req,res,
 })
 
 export const getProjects=rest.get(serverAddress+`/users/getProjects`,(req,res,ctx)=>{
-    let projects={Projects:dummyData.createDataForDashboard(),size:10}
+    let dummyProjects=dummyData.createDataForDashboard(parseInt(req.url.searchParams.get("startIndex")),parseInt(req.url.searchParams.get("endIndex")))
+    let projects={Projects:dummyProjects[0],size:dummyProjects[1]}
     return res(ctx.json(projects),ctx.status(200))
 })
 
-export const getProjectUsers=rest.get(serverAddress+`/projects/getMembers/1`,(req,res,ctx)=>{
+export const getProjectUsers=rest.get(serverAddress+`/projects/getMembers/:id`,(req,res,ctx)=>{
     let users=[]
     for(let i=0;i<21;i++){
         users.push("yotam")
@@ -59,7 +60,7 @@ export const addUserToProject=rest.post(serverAddress+`/projects/addMember`,(req
     return res(ctx.status(200))
 })
 
-export const removeUser=rest.delete(serverAddress+`/projects/removeMembers/1/yotam`,(req,res,ctx)=>{
+export const removeUser=rest.delete(serverAddress+`/projects/removeMembers/:projectId/:username`,(req,res,ctx)=>{
     return res(ctx.status(200))
 })
 
@@ -75,4 +76,48 @@ export const login=rest.post(serverAddress+`/auth/Login`,(req,res,ctx)=>{
         return res(ctx.status(409))
     }
     return res(ctx.json(true),ctx.status(200))
+})
+
+export const editProjectNameAndDescription=rest.post(serverAddress+`/projects/updateDetails`,(req,res,ctx)=>{
+    return res(ctx.status(200))
+})
+
+export const getWeights=rest.get(serverAddress+`/editors/getNFRAttributes`,(req,res,ctx)=>{
+    let weights=dummyData.getWeightsArr()
+    return res(ctx.json({Attributes:weights}),ctx.status(200))
+})
+
+export const getNFRAndWeights=rest.get(serverAddress+`/editors/loadEditor`,(req,res,ctx)=>{
+    let weights=dummyData.getWeightsArr()
+    let nfr=dummyData.getNFREditor()
+    let data=
+    {undecipheredJson: nfr,attributes:{Attributes:weights}}
+
+    return res(ctx.json(data),ctx.status(200))
+})
+
+export const saveNFR=rest.post(serverAddress+`/editors/saveNFREditor`,(req,res,ctx)=>{
+    let id={id:1}
+    return res(ctx.json({id}),ctx.status(201))
+})
+
+export const updateNFR=rest.post(serverAddress+`/editors/updateNFREditor`,(req,res,ctx)=>{
+    return res(ctx.status(201))
+})
+
+export const adminGetUsers=rest.get(serverAddress+`/admin/getUsers`,(req,res,ctx)=>{
+    let users=[]
+    for(let i=0;i<21;i++){
+        users.push("yotam")
+    }
+    return res(ctx.json({Users:users,size:21}),ctx.status(200))
+})
+
+export const adminRemoveUser=rest.delete(serverAddress+`/admin/removeUsers`,(req,res,ctx)=>{
+    return res(ctx.status(200))
+})
+
+export const deleteProject=rest.delete(serverAddress+`/users/leaveProject/:projectId`,(req,res,ctx)=>{
+    dummyData.deleteProject()
+    return res(ctx.status(200))
 })

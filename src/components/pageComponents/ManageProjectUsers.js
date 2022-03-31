@@ -12,7 +12,7 @@ import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
     useEffect(()=>{
         props.updateFetchDataRoute(`/projects/getMembers/${projectId}`,"Members")
-        props.fetchDataFromServer(0).then(_=>updateLoading(false))
+        props.fetchDataFromServer(0)
     },[])
 
      function deleteUser(index,user){
@@ -21,7 +21,7 @@ import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
     return(
         <div>
-            {loading ? <LoadingSpinner/> :
+            {props.draw &&
                 <div>
                     <Table data-testid={"manageProjectUsers"}>
                         <thead>

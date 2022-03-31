@@ -3,7 +3,7 @@ import '@testing-library/jest-dom'
 import PaginationComponent from "../sharedComponents/PaginationComponent";
 
 function renderComponent(){
-    render(<PaginationComponent fetchData={()=>{}} numberOfElements={500}/>)
+    render(<PaginationComponent draw={true} fetchData={()=>{}} numberOfElements={500}/>)
 }
 
 it("test that show 10 pages",()=>{

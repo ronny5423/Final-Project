@@ -1,104 +1,50 @@
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, waitForElementToBeRemoved} from "@testing-library/react";
 import '@testing-library/jest-dom'
 import NFREditor from "../pageComponents/NFREditor";
-import {rest} from "msw";
 import {setupServer} from "msw/node";
-import {serverAddress} from "../../Constants";
 import {BrowserRouter} from "react-router-dom";
+import {getNFRAndWeights, getWeights, preapareTests, saveNFR, updateNFR} from "../../Utils/RoutersForTests";
 
-function renderNFREditor(editable,renderWithEditorId=false){
+async function renderNFREditor(editable,renderWithEditorId=false){
     if(renderWithEditorId){
-        render(<BrowserRouter><NFREditor editable={editable} id={1} projectId={1} classes={["Person","User"]} updateEditorId={update}/></BrowserRouter>)
+        render(<BrowserRouter><NFREditor editable={editable} id={1} projectId={1} classes={["Person","User"]} updateEditorId={()=>{}}/></BrowserRouter>)
     }
     else{
-        render(<BrowserRouter><NFREditor editable={editable}  projectId={1} classes={["Person","User"]} updateEditorId={update}/></BrowserRouter>)
+        render(<BrowserRouter><NFREditor editable={editable}  projectId={1} classes={["Person","User"]} updateEditorId={()=>{}}/></BrowserRouter>)
     }
-}
-
-function update(id,type){
-
-}
-
-function getWeightsArr(){
-    let weightsTemp=new Map();
-    weightsTemp.set("Integrity",{
-        type:"range",
-        values:[0,1],
-        defaultValue:0.5
-    })
-    let labelsAndValues={a:1,b:2,c:3,d:4}
-    weightsTemp.set("Consistency",{type:"select box",values:labelsAndValues,defaultValue:["a",1]})
-    return Object.fromEntries(weightsTemp)
-}
-
-function getNFREditor(){
-    const person={Integrity:0.65,Consistency:["c",3]}
-    const user={Integrity:0.9,Consistency:["a",1]}
-    return {Person: person, User: user}
+    return await screen.findByTestId('NFREditor')
 }
 
 function createServer(){
-    const getWeights=rest.get(serverAddress+`/editors/getWeights`,(req,res,ctx)=>{
-        let weights=getWeightsArr()
-        return res(ctx.json(weights),ctx.status(200))
-    })
-    const getNFRAndWeights=rest.get(serverAddress+`/editors/loadEditor/?id=1`,(req,res,ctx)=>{
-        let weights=getWeightsArr()
-        let nfr=getNFREditor()
-        let data={
-            nfrEditor:nfr,
-            Weights:weights
-            }
-        return res(ctx.json(data),ctx.status(200))
-    })
-    const saveNFR=rest.post(serverAddress+`/editors/saveNFREditor`,(req,res,ctx)=>{
-        let id={id:1}
-        return res(ctx.json({id}),ctx.status(201))
-    })
-    const updateNFR=rest.post(serverAddress+`/editors/updateNFREditor`,(req,res,ctx)=>{
-        return res(ctx.status(201))
-    })
-
     const handlers=[getWeights,getNFRAndWeights,saveNFR,updateNFR]
     return new setupServer(...handlers)
 }
-function preapareTests(server){
-    beforeAll(()=>server.listen())
-    afterEach(()=>{
-        cleanup()
-        server.resetHandlers()
-    })
-    afterAll(()=>server.close())
-}
-
 
 describe("test Nfr Component render",()=>{
     const server=createServer()
     preapareTests(server)
 
-    it("test Nfr component render",()=>{
-        renderNFREditor(true)
-        const nfrComponent=screen.getByTestId('NFREditor')
-        expect(nfrComponent).toBeInTheDocument()
+    it("test Nfr component render",async()=>{
+        expect(await renderNFREditor(true)).toBeInTheDocument()
     })
 
-    it("test disabled select box",()=>{
-        renderNFREditor(false)
+    it("test disabled select box",async ()=>{
+        await renderNFREditor(false)
         const selectElement=document.getElementsByTagName("select")
         for(let item of selectElement){
             expect(item).toBeDisabled()
         }
     })
 
-    it("test read only input",()=>{
-        renderNFREditor(false)
+    it("test read only input",async()=>{
+        await renderNFREditor(false)
         const inputElement=document.getElementsByTagName("input")
         for(let item of inputElement){
             expect(item.readOnly).toBeTruthy()
         }
     })
-    it("test all inputs change to disabled and read only after click on save button",()=>{
-        renderNFREditor(true)
+    it("test all inputs change to disabled and read only after click on save button",async()=>{
+        await renderNFREditor(true)
         const buttonElement=document.getElementsByTagName("button")[0]
         fireEvent.click(buttonElement)
         const inputElements=document.getElementsByTagName("input")
@@ -108,8 +54,8 @@ describe("test Nfr Component render",()=>{
         }
     })
 
-    it("test Button change to edit after click on save",()=>{
-        renderNFREditor(true)
+    it("test Button change to edit after click on save",async()=>{
+        await renderNFREditor(true)
         const buttonElement=document.getElementsByTagName("button")[0]
         fireEvent.click(buttonElement)
         const editButton=screen.getByText("Edit")
@@ -123,18 +69,19 @@ describe("test input changing",()=>{
     preapareTests(server)
 
     async function testInputChange(oldValue,newValue){
-        renderNFREditor(true)
+        await renderNFREditor(true)
         const elements=await screen.findAllByDisplayValue(oldValue)
         fireEvent.change(elements[0],{target:{value:newValue,innerText:"b"}})
         expect(elements[0].value).toBe(newValue)
     }
 
     async function testAfterClickSave(oldValue,newValue){
-        renderNFREditor(true)
+        await renderNFREditor(true)
         const inputElements=await screen.findAllByDisplayValue(oldValue)
         fireEvent.change(inputElements[0],{target:{value:newValue,innerText:"b"}})
         const buttonElement=await screen.findByText(/Save/i)
         fireEvent.click(buttonElement)
+        await waitForElementToBeRemoved(screen.getByTestId("savingSpinner"))
         expect(inputElements[0].value).toBe(newValue)
     }
     it("test change input",async ()=>{
@@ -154,7 +101,7 @@ describe("test input changing",()=>{
     })
 
     it("test change input value after click on save and edit",async ()=>{
-        renderNFREditor(true)
+        await renderNFREditor(true)
         const inputElements=await screen.findAllByDisplayValue("0.5")
         fireEvent.change(inputElements[0],{target:{value:"0.75"}})
         const saveButton=await screen.findByText(/save/i)
@@ -173,7 +120,7 @@ describe("test previous states",()=>{
     preapareTests(server)
 
     it("test cancel changes on input",async()=>{
-        renderNFREditor(false,true)
+        await renderNFREditor(false, true)
         const editButton= await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const inputElements=await screen.findAllByDisplayValue("0.65")
@@ -184,7 +131,7 @@ describe("test previous states",()=>{
     })
 
     it("test cancel changes on select",async()=>{
-        renderNFREditor(false,true)
+        await renderNFREditor(false, true)
         const editButton=await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const selectElements=await screen.findAllByDisplayValue("a")

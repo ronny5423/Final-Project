@@ -7,6 +7,7 @@ import ShowMoreText from "react-show-more-text";
 import axios from "axios";
 import {Button, Form, Modal} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
+import SavingSpinner from "./SavingSpinner";
 
 export default function ProjectRow(props){
     let history=useNavigate()
@@ -15,6 +16,7 @@ export default function ProjectRow(props){
     const [showEditNameAndDescriptionModal,updateEditModal]=useState(false)
     const [projectName,updateProjectName]=useState(props.projectName)
     const [projectDescription,updateProjectDescription]=useState(props.projectDescription)
+    const [saving,updateSaving]=useState(false)
 
     function generatePDF(){
     //todo
@@ -72,13 +74,16 @@ export default function ProjectRow(props){
    async function editNameAndDescription(){
         //send axios request
        let body={details:{name:projectName,Description:projectDescription},projectID:props.projectId}
-        let response=await axios.post(serverAddress+`/projects/updateDetails`,body)
-       if(response.status===200){
-           updateEditModal(false)
-       }
-       else{
-           history(`/error`)
-       }
+       updateSaving(true)
+        axios.post(serverAddress+`/projects/updateDetails`,body).then(response=>{
+            if(response.status===200){
+                updateEditModal(false)
+                updateSaving(false)
+            }
+            else{
+                history(`/error`)
+            }
+        })
      }
 
     return(
@@ -89,14 +94,12 @@ export default function ProjectRow(props){
             <td>{props.projectOwner}</td>
             <td>
                 <div>
-                    <ProjectRowTooltip message={"Get report on the project"} icon={faFilePdf} onClick={generatePDF}/>
-                    <ProjectRowTooltip message={"Edit project"} icon={faEdit} onClick={moveToProjectsEditors}/>
-                    {
-                        <ProjectRowTooltip message={"Add/Remove users"} icon={faUserPlus} onClick={moveToAddRemoveUsers}/>
-                    }
-                    {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>}
-                    <ProjectRowTooltip message={"Delete project"} icon={faTrash} onClick={()=>updateDeleteModal(true)}/>
-                    <ProjectRowTooltip message={"Edit project's name and description"} icon={faPen} onClick={()=>updateEditModal(true)}/>
+                    <ProjectRowTooltip testId={"pdf"} message={"Get report on the project"} icon={faFilePdf} onClick={generatePDF}/>
+                    <ProjectRowTooltip testId={"editProjectEditors"} message={"Edit project's editors"} icon={faEdit} onClick={moveToProjectsEditors}/>
+                    <ProjectRowTooltip testId={"moveToAddRemoveUsers"} message={"Add/Remove users"} icon={faUserPlus} onClick={moveToAddRemoveUsers}/>
+                    {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip testId={"algorithmResults"} message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>}
+                    <ProjectRowTooltip testId={"DeleteProject"} message={"Delete project"} icon={faTrash} onClick={()=>updateDeleteModal(true)}/>
+                    <ProjectRowTooltip testId={"editProjectDescription"} message={"Edit project's name and description"} icon={faPen} onClick={()=>updateEditModal(true)}/>
                 </div>
             </td>
 
@@ -105,22 +108,22 @@ export default function ProjectRow(props){
                         <p>Are you sure you want to delete the project?</p>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant={"success"} onClick={deleteProject}>Yes</Button>
+                        <Button data-testid={"yesDeleteProject"} variant={"success"} onClick={deleteProject}>Yes</Button>
                         <Button variant={"info"} onClick={_=>updateDeleteModal(false)}>No</Button>
                     </Modal.Footer>
                 </Modal>
 
                 <Modal show={showEditNameAndDescriptionModal} centered backdrop={"static"}>
                     <Modal.Body>
-                        <Form>
+                        <Form data-testid={"editForm"}>
                             <Form.Group className="mb-3" >
                                 <Form.Label>Project's Name:</Form.Label>
-                                <Form.Control type="text" placeholder="Project's Name" value={projectName} onChange={event => updateProjectName(event.target.value)} />
+                                <Form.Control id={"projectName"} type="text" placeholder="Project's Name" value={projectName} onChange={event => updateProjectName(event.target.value)} />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
                                 <Form.Label>Project's Description</Form.Label>
-                                <Form.Control as={"textarea"} type="text" placeholder="Project's Description" value={projectDescription} onChange={event => updateProjectDescription(event.target.value)} />
+                                <Form.Control id={"projectDescription"} as={"textarea"} type="text" placeholder="Project's Description" value={projectDescription} onChange={event => updateProjectDescription(event.target.value)} />
                             </Form.Group>
                         </Form>
                     </Modal.Body>
@@ -129,6 +132,7 @@ export default function ProjectRow(props){
                         <Button variant={"danger"} onClick={_=>updateEditModal(false)}>Cancel</Button>
                     </Modal.Footer>
                 </Modal>
+            {saving && <SavingSpinner/>}
            </tr>
    )
 }

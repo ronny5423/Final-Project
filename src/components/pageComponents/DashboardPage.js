@@ -5,12 +5,10 @@ import ProjectRowTooltip from "../sharedComponents/ProjectRowTooltip";
 import {faPlus} from "@fortawesome/fontawesome-free-solid";
 import ProjectRow from "../sharedComponents/ProjectRow";
 import withFetchData from "../sharedComponents/WithFetchData";
-import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
 function DashboardPage(props){
     let history=useNavigate()
     const [searchQuery,updateSearchQuery]=useState("")
-    const[loading,updateLoading]=useState(true)
 
     useEffect(()=>{
         let parametersToServer={
@@ -25,12 +23,12 @@ function DashboardPage(props){
         }
         props.updateFetchDataRoute(route+`/getProjects`,"Projects")
         props.updateServerParameters(parametersToServer)
-        props.fetchDataFromServer(0).then(_=>updateLoading(false))
+        props.fetchDataFromServer(0)
         },[])
 
     return(
             <div>
-                {loading ? <LoadingSpinner/> :
+                {props.draw &&
                     <div data-testid={"dashboard"}>
                         <div id={"searchDiv"} data-testid={"searchDiv"}>
                             <input disabled={props.dataLength===0} value={searchQuery} placeholder={"Filter projects by name"} onChange={event => updateSearchQuery(event.target.value)}/>
