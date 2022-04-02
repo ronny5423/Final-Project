@@ -61,7 +61,7 @@ export default function EditorsTabs(props){
     }
 
     return(
-        <div>
+        <div data-testid={"editorsTabs"}>
             <Modal show={showModal} onHide={_=>updateShowModal(false)} centered>
                 <Modal.Header closeButton/>
                 <Modal.Body>

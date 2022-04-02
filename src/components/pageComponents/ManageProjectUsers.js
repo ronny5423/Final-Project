@@ -5,11 +5,6 @@ import AddUserToProject from "../sharedComponents/AddUserToProject";
 import withFetchData from "../sharedComponents/WithFetchData";
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
-let users=[]
-for(let i=0;i<50;i++){
-    users.push("ronny54")
-}
-
  function ManageProjectUsers(props){
     let {projectId,projectOwner}=useParams()
     const[showAddUser,updateAddUser]=useState(false)
@@ -17,7 +12,7 @@ for(let i=0;i<50;i++){
 
     useEffect(()=>{
         props.updateFetchDataRoute(`/projects/getMembers/${projectId}`,"Members")
-        props.fetchDataFromServer(0).then(_=>updateLoading(false))
+        props.fetchDataFromServer(0)
     },[])
 
      function deleteUser(index,user){
@@ -26,9 +21,9 @@ for(let i=0;i<50;i++){
 
     return(
         <div>
-            {loading ? <LoadingSpinner/> :
+            {props.draw &&
                 <div>
-                    <Table>
+                    <Table data-testid={"manageProjectUsers"}>
                         <thead>
                         <tr>
                             <th>Username</th>
@@ -41,9 +36,12 @@ for(let i=0;i<50;i++){
                         <tbody>
                         {props.dataToShow.length>0 ?
                             props.dataToShow.map((user,index) =>
-                                <tr key={index}>
+                                <tr data-testid={"user"} key={index}>
                                     <td>{user}</td>
-                                    <td><Button variant={"danger"} onClick={_=>deleteUser(index,user)}>Delete user from project</Button></td>
+                                    {(localStorage.getItem("username")===projectOwner || localStorage.getItem("isAdmin")==="true")?
+                                        <td><Button variant={"danger"} onClick={_=>deleteUser(index,user)}>Delete user from project</Button></td>
+                                        : <td/>
+                                    }
                                 </tr>
                             ) :
                             <tr>No users in project. Press Add user to project button to add users</tr>

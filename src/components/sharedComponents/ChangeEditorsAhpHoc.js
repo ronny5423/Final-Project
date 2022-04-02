@@ -71,8 +71,8 @@ import SavingSpinner from "./SavingSpinner";
             <div>
                 <WrappedComponent updateWeights={updateState} {...props} updateSaveRoute={updateSaveRoute}/>
                 {saveRoute==="" ? <LoadingSpinner /> :
-                    <div>
-                        <Modal show={showModal} onHide={_=>updateShowModal(false)} centered>
+                    <div data-testid={"ahp"}>
+                        <Modal data-testid={"modal"} show={showModal} onHide={_=>updateShowModal(false)} centered>
                             <Modal.Header closeButton></Modal.Header>
                             <Modal.Body>
                                 <p>sum of weights must be equal to 1</p>
@@ -81,17 +81,17 @@ import SavingSpinner from "./SavingSpinner";
                         <Form>
                             <Row>
                                 <Col sm={2}>UML Weight:</Col>
-                                <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} value={weights.UML} step={0.001} onChange={e=>changeValue(e.target.value,1)}/></Col>
+                                <Col sm={4}><input required readOnly={disabled} type={"number"} min={0} max={1} value={weights.UML} step={0.001} onChange={e=>changeValue(e.target.value,1)}/></Col>
                             </Row>
                             <br/>
                             <Row>
                                 <Col sm={2}>Queries Weight:</Col>
-                                <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} step={0.001} value={weights.SQL} onChange={e=>changeValue(e.target.value,2)}/></Col>
+                                <Col sm={4}><input required readOnly={disabled} type={"number"} min={0} max={1} step={0.001} value={weights.SQL} onChange={e=>changeValue(e.target.value,2)}/></Col>
                             </Row>
                             <br/>
                             <Row>
                                 <Col sm={2}>NFR Weight:</Col>
-                                <Col sm={4}><input readOnly={disabled} type={"number"} min={0} max={1} value={weights.NFR} step={0.001} onChange={e=>changeValue(e.target.value,3)}/> </Col>
+                                <Col sm={4}><input required readOnly={disabled} type={"number"} min={0} max={1} value={weights.NFR} step={0.001} onChange={e=>changeValue(e.target.value,3)}/> </Col>
                             </Row>
                             {
                                 !disabled ? <Button onClick={submit} variant={"success"}>Save</Button> :

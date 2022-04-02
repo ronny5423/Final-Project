@@ -49,11 +49,11 @@ function SignUp(){
                     </Modal.Body>
                 </Modal>
 
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form data-testid={"register"} onSubmit={handleSubmit(submit)}>
             <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Username</Form.Label>
                 <Form.Control name="Username" {...register("Username",{required:true})} type="text" placeholder="Enter username"  />
-                {errors?.Username?.type==='required' && <p>Please enter username</p>}
+                {errors?.Username?.type==='required' && <p data-testid={"userNameError"} className={"errors"}>Please enter username</p>}
                 </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">

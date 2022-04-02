@@ -4,6 +4,7 @@ import axios from "axios";
 import {numberOfItemsInPage, serverAddress} from "../../Constants";
 import PaginationComponent from "./PaginationComponent";
 import SavingSpinner from "./SavingSpinner";
+import LoadingSpinner from "./LoadingSpinner";
 
 const spareDataNumber=5
 
@@ -18,13 +19,14 @@ const withFetchData=(WrappedComponent)=>{
         const fetchDataRoute=useRef(``)
         const attributeName=useRef("")
         const[saving,updateSaving]=useState(false)
+        const [loading,updateLoading]=useState(false)
 
         async function fetchProjectsFromServer(startIndex){
             let end
             let numberOfSpare=0
             if(dataLength===0){
                 numberOfSpare=spareDataNumber
-                end=numberOfItemsInPage+spareDataNumber
+                end=numberOfItemsInPage+spareDataNumber-1
             }
             else{
                 if(startIndex+numberOfItemsInPage+spareDataNumber<=dataLength){
@@ -40,49 +42,36 @@ const withFetchData=(WrappedComponent)=>{
             }
             otherParametersToSendToServer.current.startIndex=startIndex
             otherParametersToSendToServer.current.endIndex=end+1
-            let response= await axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current})
-            if(response.status===200){
-                let endIndex=response.data[attributeName.current].length-1
-                if(dataLength===0){
-                    if(response.data[attributeName.current].length>numberOfItemsInPage){
-                        numberOfSpare=response.data[attributeName.current].length-numberOfItemsInPage
+            if(!saving){
+                updateLoading(true)
+            }
+            axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current}).then(response=>{
+                if(response.status===200){
+                    let endIndex=response.data[attributeName.current].length-1
+                    if(dataLength===0){
+                        if(response.data[attributeName.current].length>numberOfItemsInPage){
+                            numberOfSpare=response.data[attributeName.current].length-numberOfItemsInPage
+                        }
+                        else{
+                            numberOfSpare=0
+                        }
+                    }
+                    if(numberOfSpare>0){
+                        endIndex=numberOfItemsInPage-1
+                        spareData.current=response.data[attributeName.current].slice(response.data[attributeName.current].length-numberOfSpare,response.data[attributeName.current].length)
                     }
                     else{
-                        numberOfSpare=0
+                        spareData.current=[]
                     }
-                }
-                if(numberOfSpare>0){
-                    endIndex=numberOfItemsInPage-1
-                    spareData.current=response.data[attributeName.current].slice(response.data[attributeName.current].length-numberOfSpare,response.data[attributeName.current].length)
+                    updateData(response.data[attributeName.current].slice(0,endIndex+1))
+                    updateDataLength(response.data.size)
+                    dataToShowEndIndex.current=end-numberOfSpare
+                    updateLoading(false)
                 }
                 else{
-                    spareData.current=[]
+                    history("/error")
                 }
-                updateData(response.data[attributeName.current].slice(0,endIndex+1))
-                updateDataLength(response.data.size)
-                dataToShowEndIndex.current=end-numberOfSpare
-            }
-            else{
-                history("/error")
-            }
-
-            // else{
-            //     let newProjects=projectsArr.slice(startIndex,end+1)
-            //     let endIndex=newProjects.length-1
-            //     if(numberOfSpare>0){
-            //         endIndex=numberOfItemsInPage-1
-            //         spareData.current=newProjects.slice(newProjects.length-numberOfSpare,newProjects.length)
-            //     }
-            //     else{
-            //         spareData.current=[]
-            //     }
-            //     updateData(newProjects.slice(0,endIndex+1))
-            //     updateDataLength(projectsArr.length)
-            //     dataToShowEndIndex.current=end
-            // }
-
-
-
+            })
         }
 
         function fetchSpareData(startIndex){
@@ -103,8 +92,7 @@ const withFetchData=(WrappedComponent)=>{
                     history("/error")
                 }
             })
-            // spareData.current=projectsArr.slice(startIndex,end+1)
-        }
+         }
 
         function deleteDataFromArray(index,route){
             updateSaving(true)
@@ -112,15 +100,16 @@ const withFetchData=(WrappedComponent)=>{
                 if(response.status===200){
                     let newDataArr=[...dataToShow]
                     newDataArr.splice(index,1)
-                    if(spareData.current.length>0){
+                    if(spareData.current.length>0){// if have spares
                         newDataArr.push(spareData.current[0])
                         spareData.current.splice(0,1)
+                        //if can fetch more spares and there are spares to fetch
+                        if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength-1){
+                            fetchSpareData(dataToShowEndIndex.current+1)
+                        }
                     }
-                    if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength-1){
-                        fetchSpareData(dataToShowEndIndex.current+1)
-                    }
-                    if(dataLength-1===numberOfItemsInPage && newDataArr.length===0){
-                        fetchProjectsFromServer(0)
+                    if(newDataArr.length===0 && dataLength-1>0){ //if deleted only element in last page
+                        fetchProjectsFromServer(dataLength-1-numberOfItemsInPage)
                     }
                     else{
                         updateData(newDataArr)
@@ -132,24 +121,6 @@ const withFetchData=(WrappedComponent)=>{
                 }
                 updateSaving(false)
             })
-
-            // let newDataArr=[...dataToShow]
-            // projectsArr.splice(0,1)
-            // updateDataLength(dataLength-1)
-            // newDataArr.splice(index,1)
-            // if(spareData.current.length>0){
-            //     newDataArr.push(spareData.current[0])
-            //     spareData.current.splice(0,1)
-            // }
-            // if(spareData.current.length===0 && dataToShowEndIndex.current<dataLength){
-            //     fetchSpareData(dataToShowEndIndex.current+1)
-            // }
-            // if(dataLength===numberOfItemsInPage && newDataArr.length===0){
-            //     fetchProjectsFromServer(0)
-            // }
-            // else{
-            //     updateData(newDataArr)
-            // }
         }
 
         function updateParametersToSendToServer(params=null){
@@ -179,13 +150,14 @@ const withFetchData=(WrappedComponent)=>{
 
         return(
             <div>
+                {loading && <LoadingSpinner/>}
             <WrappedComponent deleteData={deleteDataFromArray} updateServerParameters={updateParametersToSendToServer}
-            dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength}
+            dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength} draw={!loading}
             increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute} {...props}
             />
                 {saving && <SavingSpinner/>}
         {
-            numberOfItemsInPage<dataLength && <PaginationComponent fetchData={fetchProjectsFromServer} numberOfElements={dataLength}/>
+            numberOfItemsInPage<dataLength && <PaginationComponent draw={!loading} fetchData={fetchProjectsFromServer} numberOfElements={dataLength}/>
         }
             </div>
         )

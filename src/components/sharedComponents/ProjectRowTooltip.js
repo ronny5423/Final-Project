@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 export default function projectRowTooltip(props){
     return(
         <OverlayTrigger trigger={"hover"} placement={"top"} overlay={<Tooltip placement={"top"}>{props.message}</Tooltip>}>
-            <Button onClick={props.onClick}><FontAwesomeIcon icon={props.icon}/></Button>
+            <Button data-testid={props.testId} onClick={props.onClick}><FontAwesomeIcon icon={props.icon}/></Button>
         </OverlayTrigger>
     )
  }

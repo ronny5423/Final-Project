@@ -6,18 +6,16 @@ import ProjectRowTooltip from "../sharedComponents/ProjectRowTooltip";
 import withFetchData from "../sharedComponents/WithFetchData";
 import AdminDeleteUserModal from "../sharedComponents/AdminDeleteUserModal";
 import DeleteConfirmationModal from "../sharedComponents/DeleteConfirmationModal";
-import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
 function AdminAddRemoveUsers(props){
     let navigate=useNavigate()
     const [showDeleteModal,updateShowDeleteModal]=useState(false)
     const [showConfirmation,updateShowConfirmation]=useState(false)
-    const [loading,updateLoading]=useState(true)
     const clickedUser=useRef([])
 
     useEffect(_=>{
         props.updateFetchDataRoute(`/admin/getUsers`,"Users")
-        props.fetchDataFromServer(0).then(_=>updateLoading(false))
+        props.fetchDataFromServer(0)
     },[])
 
     function deleteUser(){
@@ -35,8 +33,8 @@ function AdminAddRemoveUsers(props){
 
     return(
         <div>
-            {loading ? <LoadingSpinner /> :
-                <div>
+            {props.draw &&
+                <div data-testid={"adminAddRemoveUsers"}>
                     <Table>
                         <thead>
                         <tr>
@@ -44,7 +42,7 @@ function AdminAddRemoveUsers(props){
                             <th>
                                 <div>
                                     <Button variant={"success"} onClick={_=>navigate(`/register`)}>Add user to system</Button>
-                                    {/*<Button variant={"danger"} onClick={_=>updateShowDeleteModal(true)}>Delete user</Button>*/}
+                                    {/*<Button data-testid={"deleteModalButton"} variant={"danger"} onClick={_=>updateShowDeleteModal(true)}>Delete user</Button>*/}
                                 </div>
                             </th>
                         </tr>
@@ -52,10 +50,10 @@ function AdminAddRemoveUsers(props){
                         <tbody>
                         {
                             props.dataToShow.map((user,index)=>
-                                <tr key={index}>
+                                <tr data-testid={"userRow"} key={index}>
                                     <td>{user}</td>
                                     <td>
-                                    {/*    <ProjectRowTooltip message={"Delete user"} icon={faTrash} onClick={_=>{*/}
+                                    {/*    <ProjectRowTooltip message={"Delete user"} testId={"deleteUser"} icon={faTrash} onClick={_=>{*/}
                                     {/*    clickedUser.current=[index, user]*/}
                                     {/*    updateShowConfirmation(true)*/}
                                     {/*}}/>*/}
@@ -65,8 +63,8 @@ function AdminAddRemoveUsers(props){
                         }
                         </tbody>
                     </Table>
-                    <AdminDeleteUserModal checkUser={checkUser} show={showDeleteModal} hide={_=>updateShowDeleteModal(false)}/>
-                    <DeleteConfirmationModal show={showConfirmation} deleteUser={deleteUser} hide={updateShowConfirmation}/>
+                    {/*<AdminDeleteUserModal checkUser={checkUser} show={showDeleteModal} hide={_=>updateShowDeleteModal(false)}/>*/}
+                    {/*<DeleteConfirmationModal show={showConfirmation} deleteUser={deleteUser} hide={updateShowConfirmation}/>*/}
                 </div>
             }
         </div>

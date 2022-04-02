@@ -11,16 +11,11 @@ function AdminDeleteUserModal(props){
 
     function deleteUser(){
         updateShowConfirmationModal(false)
-        if(user.length>0){
-            let existInArray=props.checkUser(user)
-            if(!existInArray){
-                let response=axios.delete(serverAddress+`/admin/deleteUser`,{data:{username:user}}).then(res=>{
-                    //check if username is invalid, show error modal and if not so delete is successful
-                })
-            }
-        }
-       else{
-           updateShowErrorModal(true)
+        let existInArray=props.checkUser(user)
+        if(!existInArray){
+            let response=axios.delete(serverAddress+`/admin/deleteUser`,{data:{username:user}}).then(res=>{
+                //check if username is invalid, show error modal and if not so delete is successful
+            })
         }
     }
 
@@ -33,12 +28,12 @@ function AdminDeleteUserModal(props){
             <Modal.Body>
                 <div style={{"display":"flex","flexDirection":"column"}}>
                     <Form.Label>Please type username to delete from system</Form.Label>
-                    <input type={"text"} value={user} onChange={event => updateUser(event.target.value)} placeholder={"username to delete from system"}/>
+                    <input data-testid={"nameInput"} type={"text"} value={user} onChange={event => updateUser(event.target.value)} placeholder={"username to delete from system"}/>
 
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={_=>updateShowConfirmationModal(true)} variant={"danger"}>Delete User</Button>
+                <Button data-testid={"deleteUserButton"} onClick={_=>user.length>0 ? updateShowConfirmationModal(true) : updateShowErrorModal(true)} variant={"danger"}>Delete User</Button>
             </Modal.Footer>
         </Modal>
     <DeleteConfirmationModal show={showConfirmationModal} deleteUser={deleteUser} hide={updateShowConfirmationModal}/>
