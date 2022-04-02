@@ -27,13 +27,13 @@ export default function EditorsTabs(props){
             case 3:
                 editorsID.current.nfrID=id
                 break
-
+            default:
+                break
         }
     }
 
     function changeMoveToOtherTabs(shouldMove){
         moveToOtherTabs.current=shouldMove
-        console.log("move", moveToOtherTabs.current)
     }
 
     function shouldMoveToOtherTabs(key){
@@ -47,7 +47,6 @@ export default function EditorsTabs(props){
     }
 
     function calculateAlgorithm(){
-        console.log(editorsID.current)
         if(editorsID.current.umlID && editorsID.current.sqlID && editorsID.current.nfrID){
             navigate('/algorithmResults/'+ projectId)
           }

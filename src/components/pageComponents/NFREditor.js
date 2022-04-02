@@ -1,12 +1,13 @@
 import React,{useState,useEffect,useRef} from "react"
 import axios from "axios"
-import {Button,Form, Table} from "react-bootstrap";
+import {Button, Form, Modal, Table} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 import SavingSpinner from "../sharedComponents/SavingSpinner";
+import EditorMatrix from "./EditorMatrix";
 
 export default function NFREditor(props){
     //console.log("nfr")
@@ -19,6 +20,7 @@ export default function NFREditor(props){
     const [id,updateId] = useState(props.id)
     const [loading,updateLoading]=useState(true)
     const [saving,updateSaving]=useState(false)
+    const [modalIsOpen, setIsOpen] = React.useState(false);
 
     useEffect(()=>{
         async function getDataFromServer(){
@@ -246,7 +248,8 @@ export default function NFREditor(props){
             let matrixData = {'type': 'UML', 'convertedData': convertedData}
             localStorage.setItem("matrixData", JSON.stringify(matrixData))
             //window.open("/MatrixEditor", "_blank")
-            navigate("/MatrixEditor")
+            //navigate("/MatrixEditor")
+            setIsOpen(true)
         })
 
     }
@@ -281,6 +284,27 @@ export default function NFREditor(props){
                         <Button id="MatrixButton" disabled={!id || editable} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                     </Form>
                         {saving && <SavingSpinner/>}
+
+
+                        <Modal
+                            show={modalIsOpen}
+                            onHide={()=>{setIsOpen(false)}}
+                            size="lg"
+                            aria-labelledby="contained-modal-title-vcenter"
+                            centered
+                        >
+                            <Modal.Header closeButton>
+                                <Modal.Title id="contained-modal-title-vcenter">
+                                    NFR Matrix
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <EditorMatrix></EditorMatrix>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button onClick={()=>{setIsOpen(false)}}>Close</Button>
+                            </Modal.Footer>
+                        </Modal>
                     </div>
         }
         </div>

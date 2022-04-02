@@ -35,14 +35,12 @@ export default function EditorMatrix(props){
 
     function loadData(){
         let stringifyData = localStorage.getItem("matrixData");
-        console.log(stringifyData)
         //localStorage.removeItem("matrixData");
 
         if (!stringifyData){
             return
         }
         let matrixData = JSON.parse(stringifyData);
-        console.log(matrixData)
 
         if(!('type' in matrixData) || !('convertedData' in matrixData)){
             return;
@@ -50,7 +48,6 @@ export default function EditorMatrix(props){
 
         //updateType(matrixData['type'])
         type = matrixData['type']
-        console.log(type)
         convertedData = matrixData['convertedData']
         if(type === 'UML' || type === 'SQL'){
             convertedData['classes'] = Object.values(convertedData['classes'])
@@ -121,9 +118,9 @@ export default function EditorMatrix(props){
     function mh(){
 
         var tds =
-            document.querySelectorAll("td");
+            document.querySelectorAll("#matrix td");
         var ths =
-            document.querySelectorAll("th");
+            document.querySelectorAll("#matrix th");
 
         var cells =
             Array.prototype.slice.call(tds)
@@ -132,7 +129,7 @@ export default function EditorMatrix(props){
                 );
 
         var rows =
-            document.querySelectorAll("tr");
+            document.querySelectorAll("#matrix tr");
 
 
         [].forEach.call(
@@ -145,9 +142,6 @@ export default function EditorMatrix(props){
                         var index = indexInParent(this);
                         if(index == 0 || this.parentNode.rowIndex == 0)
                             return;
-
-                        console.log("col " + index)
-                        console.log("row " + this.parentNode.rowIndex)
 
                         let thRowCells = rows[0].getElementsByTagName("th");
                         thRowCells[index]
@@ -213,9 +207,11 @@ export default function EditorMatrix(props){
 
     return(
         <Table onMouseOver={mh} id={"matrix"} responsive={true}>
-            {
-                createTable()
-            }
+            <tbody>
+                {
+                    createTable()
+                }
+            </tbody>
         </Table>
     );
 };

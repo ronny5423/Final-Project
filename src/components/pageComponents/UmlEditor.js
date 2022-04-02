@@ -2,18 +2,21 @@ import * as go from 'gojs';
 import { ReactDiagram, ReactPalette } from "gojs-react";
 import * as React from "react";
 import "../cssComponents/umlEditor.css";
-import {Button, Tooltip} from "react-bootstrap";
+import {Button, Modal, Tooltip} from "react-bootstrap";
 import val from "../../Utils/UmlValidationUtill";
 import ModalComponnent from '../sharedComponents/ModalComponnent';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faQuestion, faBookmark } from '@fortawesome/fontawesome-free-solid'
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
+import EditorMatrix from "./EditorMatrix";
 import {useNavigate} from "react-router-dom";
+import "../../Utils/TextEditorSelectBox";
+import LoadingSpinner from "../sharedComponents/LoadingSpinner";
+import SavingSpinner from "../sharedComponents/SavingSpinner";
 
 
 var umlJson={ "class": "GraphLinksModel",
@@ -45,7 +48,10 @@ export default function UmlEditor(props){
     let [myDiagram, updateDiagram] = useState({})
     const [editorID, updateEditorId]=useState(props.id)
     const [modalShow, setModalShow] = React.useState(false);
+    const [modalIsOpen, setIsOpen] = React.useState(false);
+    const [saving,updateSaving]=useState(false)
     let navigate = useNavigate()
+    let propertyTypes = []
 
     useEffect(()=>{
         async function fetchUmlFromServer() {
@@ -54,7 +60,6 @@ export default function UmlEditor(props){
                 return;
             try {
                 response = await axios.get(serverAddress+`/editors/loadEditor?ID=${editorID}`);
-                console.log(response);
             }catch (e){
                 console.log(e);
                 console.trace();
@@ -120,16 +125,52 @@ export default function UmlEditor(props){
             if (button) button.disabled = !myDiagram.isModified;
             if (loadButton) loadButton.disabled = !myDiagram.isModified;
             if (matrixButton) matrixButton.disabled = myDiagram.isModified;
+            // if (matrixButton){
+            //     console.log(editorID)
+            //     if(!editorID){
+            //         matrixButton.disabled = true;
+            //     }else {
+            //         matrixButton.disabled = myDiagram.isModified;
+            //     }
+            // }
             var idx = document.title.indexOf("*");
             //console.log("dis", myDiagram.isModified)
             if (myDiagram.isModified) {
                 if (idx < 0) document.title += "*";
                 //props.changeUmlStatus(false);
-                console.log("false")
             } else {
                 if (idx >= 0) document.title = document.title.substr(0, idx);
             }
         });
+
+        myDiagram.addModelChangedListener(function(evt) {
+            // ignore unimportant Transaction events
+            if (!evt.isTransactionFinished) return;
+            var txn = evt.object;  // a Transaction
+            if (txn === null) return;
+            // iterate over all of the actual ChangedEvents of the Transaction
+            txn.changes.each(function(e) {
+                // record node insertions and removals
+                let modelS = myDiagram.model.toJson();
+                let modelC = JSON.parse(modelS)
+                while(propertyTypes.length > 0) {
+                    propertyTypes.pop();
+                }
+                let constantTypes = ['Number', 'String', 'Boolean', 'Char', 'Data', 'Time']
+                propertyTypes.push(...constantTypes)
+                for(let i = 0; i < modelC["nodeDataArray"].length; i++){
+                    let className = modelC['nodeDataArray'][i]['name']
+                    if(className !== undefined)
+                        propertyTypes.push(className)
+                }
+                let len = propertyTypes.length
+                for(let i = 0; i < len; i++){
+                    let lst = "List<"+propertyTypes[i]+">"
+                    propertyTypes.push(lst)
+                }
+            });
+        });
+
 
         // Define a function for creating a "port" that is normally transparent.
         // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
@@ -250,6 +291,99 @@ export default function UmlEditor(props){
             ));
 
 
+        function CardinalValidation(textblock, oldstr, newstr){
+
+            function tockenValidate(str){
+                return str === '*' || (!isNaN(+str) && str.replace(/\s/g, "") !== '');
+            }
+
+            if(newstr.length == 0)
+                return false
+
+            if((newstr.match(/\s/g) || []).length > 0)
+                return false
+
+            let countDots = (newstr.match(/\./g) || []).length;
+            if(countDots !== 0 && countDots !== 2){
+                return false
+            }
+
+            if(countDots === 2 && newstr.includes("..")){
+                let cardArr = newstr.split("..")
+                let from = cardArr[0]
+                if(from === '*')
+                    return false
+                let to = cardArr[1]
+                if(tockenValidate(from) && tockenValidate(to))
+                    return true
+                else
+                    return false
+            }
+            else if(countDots === 2)
+                return false
+
+            return tockenValidate(newstr)
+        }
+
+        function CardinalErrorMsg(newstr){
+
+            function tockenValidate(str){
+                return str === '*' || (!isNaN(+str) && str.replace(/\s/g, "") !== '');
+            }
+
+            if(newstr.length == 0)
+                return "new string is empty"
+
+            if((newstr.match(/\s/g) || []).length > 0)
+                return "new string should not include whitespace"
+
+            let countDots = (newstr.match(/\./g) || []).length;
+            if(countDots !== 0 && countDots !== 2){
+                return "new string should either include no dots or 2 dots like this '..' "
+            }
+
+            if(countDots === 2 && newstr.includes("..")){
+                let cardArr = newstr.split("..")
+                let from = cardArr[0]
+                if(from === '*')
+                    return "Cardinal value cant have '*' as bottom range"
+                let to = cardArr[1]
+                if(tockenValidate(from) && tockenValidate(to))
+                    return true
+                else
+                    return "Cradinal bounds arent numbers or '*'"
+            }
+            else if(countDots === 2)
+                return "new string should either include no dots or 2 dots like this '..' "
+
+            let isVal = tockenValidate(newstr)
+            if(!isVal)
+                return "new string isnt a number or '*'"
+            return ''
+        }
+
+        function ValidationErrorRais(tool, olds, news){
+            // create and show tooltip about why editing failed for this textblock
+            var mgr = tool.diagram.toolManager;
+            mgr.hideToolTip();  // hide any currently showing tooltip
+            var node = tool.textBlock.part;
+            // create a GoJS tooltip, which is an Adornment
+            var errorMsg = CardinalErrorMsg(news)
+
+            var tt = $("ToolTip",
+                {
+                    "Border.fill": "pink",
+                    "Border.stroke": "red",
+                    "Border.strokeWidth": 2
+                },
+                $(go.TextBlock,
+                    "Unable to replace the string '" + olds + "' with '" + news +
+                    "' on Cardinal Link'" +
+                    "'\nbecause " + errorMsg));
+            mgr.showToolTip(tt, node);
+        }
+
+
         myDiagram.linkTemplate =
             $(go.Link,  // the whole link panel
                 { selectable: true, selectionAdornmentTemplate: linkSelectionAdornmentTemplate },
@@ -274,10 +408,17 @@ export default function UmlEditor(props){
                         segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "RoleTo").makeTwoWay()),
                 $(go.TextBlock,
                     { segmentIndex: 0, segmentOffset: new go.Point(NaN, 10),
-                        segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "MultiFrom").makeTwoWay()),
+                        segmentOrientation: go.Link.OrientUpright, editable: true,
+                        textValidation: CardinalValidation,
+                        errorFunction: ValidationErrorRais
+                    }, new go.Binding("text", "MultiFrom").makeTwoWay()),
                 $(go.TextBlock,
                     { segmentIndex: -1, segmentOffset: new go.Point(NaN, 10),
-                        segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "MultiTo").makeTwoWay())
+                        segmentOrientation: go.Link.OrientUpright, editable: true,
+                        textValidation: CardinalValidation,
+                        errorFunction: ValidationErrorRais}, new go.Binding("text", "MultiTo").makeTwoWay()),
+                $(go.TextBlock, { segmentIndex: 2, segmentFraction: 0.5, segmentOffset: new go.Point(NaN, 10), editable: true },  // centered multi-line text
+                    new go.Binding("text", "LinkName").makeTwoWay())
             );
 
         //load();  // load an initial diagram from some JSON text
@@ -352,12 +493,22 @@ export default function UmlEditor(props){
                         segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "RoleTo").makeTwoWay()),
                 $(go.TextBlock,
                     { segmentIndex: 0, segmentOffset: new go.Point(NaN, 10),
-                        segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "MultiFrom").makeTwoWay()),
+                        segmentOrientation: go.Link.OrientUpright, editable: true,
+                        textValidation: CardinalValidation,
+                        errorFunction: ValidationErrorRais
+                    }, new go.Binding("text", "MultiFrom").makeTwoWay()),
                 $(go.TextBlock,
                     { segmentIndex: -1, segmentOffset: new go.Point(NaN, 10),
-                        segmentOrientation: go.Link.OrientUpright, editable: true}, new go.Binding("text", "MultiTo").makeTwoWay())
+                        segmentOrientation: go.Link.OrientUpright, editable: true,
+                        textValidation: CardinalValidation,
+                        errorFunction: ValidationErrorRais}, new go.Binding("text", "MultiTo").makeTwoWay()),
+                $(go.TextBlock, { segmentIndex: 2, segmentFraction: 0.5, segmentOffset: new go.Point(NaN, 10), editable: true },  // centered multi-line text
+                    new go.Binding("text", "LinkName").makeTwoWay())
             ));
 
+        function typeChoises(textBlock, diagram, tool){
+            return propertyTypes
+        }
 
         // the item template for properties
         var propertyTemplate =
@@ -374,8 +525,12 @@ export default function UmlEditor(props){
                 // property type, if known
                 $(go.TextBlock, " "),
                 $(go.TextBlock, "Type",
-                    { isMultiline: false, editable: true },
-                    new go.Binding("text", "type").makeTwoWay()),
+                    { isMultiline: false, editable: true, textEditor: window.TextEditorSelectBox, // defined in textEditorRadioButtons.js
+                        // this specific TextBlock has its own choices:
+                        choices: typeChoises()},
+                    new go.Binding("text", "type").makeTwoWay(),
+                    new go.Binding("choices")
+                ),
                 // property default value, if any
                 $(go.TextBlock,
                     { isMultiline: false, editable: false },
@@ -486,7 +641,29 @@ export default function UmlEditor(props){
                         {
                             row: 0, columnSpan: 2, margin: 3, alignment: go.Spot.Center,
                             font: "bold 12pt sans-serif",
-                            isMultiline: false, editable: true
+                            isMultiline: false, editable: true,
+                            textValidation: function(tb, olds, news) {
+                                var regExp = /[a-zA-Z]/g;
+                                return regExp.test(news);  // new string must contain a letter
+                            },
+                            errorFunction: function(tool, olds, news) {
+                                // create and show tooltip about why editing failed for this textblock
+                                var mgr = tool.diagram.toolManager;
+                                mgr.hideToolTip();  // hide any currently showing tooltip
+                                var node = tool.textBlock.part;
+                                // create a GoJS tooltip, which is an Adornment
+                                var tt = $("ToolTip",
+                                    {
+                                        "Border.fill": "pink",
+                                        "Border.stroke": "red",
+                                        "Border.strokeWidth": 2
+                                    },
+                                    $(go.TextBlock,
+                                        "Unable to replace the string '" + olds + "' with '" + news +
+                                        "' on node '" + node.key +
+                                        "'\nbecause the new string does not contain a letter."));
+                                mgr.showToolTip(tt, node);
+                            }
                         },
                         new go.Binding("text", "name").makeTwoWay()),
                     // properties
@@ -541,11 +718,9 @@ export default function UmlEditor(props){
         //loadUml();
         //console.log(myDiagram.model);
         if(editorID === undefined){
-            console.log("here1")
             updateDiagram(myDiagram)
         }
         // updateDiagram(myDiagram)
-        console.log("here2")
 
         return myDiagram;
     }
@@ -609,7 +784,7 @@ export default function UmlEditor(props){
                     }
                 ], [
                     // the Palette also has a disconnected Link, which the user can drag-and-drop
-                    {category: "Linkble", name: "association", RoleFrom: "from", RoleTo: "to", MultiFrom: "0", MultiTo: "1", toArrow: "", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) },
+                    {category: "Linkble", name: "association", RoleFrom: "from", RoleTo: "to", MultiFrom: "0", MultiTo: "1", LinkName: "link name", toArrow: "", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) },
                     {name: "generalization", toArrow: "Triangle", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) },
                     {name: "associationClassLink", dashed: [5,5], toArrow: "", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) }
                 ])
@@ -800,6 +975,7 @@ export default function UmlEditor(props){
 
     function save() {
         let umlJ = JSON.parse(myDiagram.model.toJson());
+        updateSaving(true)
         let problems = val(umlJ);
         if (problems.length > 0) {
             for (let problemIdx in problems) {
@@ -822,13 +998,12 @@ export default function UmlEditor(props){
 
     async function saveUmlToServer(){
         let uml = JSON.parse(myDiagram.model.toJson());
-        console.log(uml)
         let url = undefined;
         try {
             if(editorID !== undefined){
                 url = serverAddress+`/editors/updateUMLEditor`;
                 let response = await axios.post(url, {'jsonFile': uml, 'EditorID': editorID});
-                console.log(response);
+                updateSaving(false)
                 if(response.status !== 400){
                     toast.success("UML was saved successfully", {position: toast.POSITION.TOP_CENTER})
                 }
@@ -836,7 +1011,7 @@ export default function UmlEditor(props){
             else{
                 url = serverAddress+`/editors/saveUMLEditor`;
                 let response = await axios.post(url, {'jsonFile': uml, 'projectID': props.projectId});
-                console.log(response);
+                updateSaving(false)
                 if(response.status === 200){
                     props.updateEditorId(response.data, 1)
                     updateEditorId(response.data)
@@ -846,6 +1021,7 @@ export default function UmlEditor(props){
             }
             
         }catch (e){
+            updateSaving(false)
             console.log(e);
             console.trace();
         }
@@ -931,13 +1107,13 @@ export default function UmlEditor(props){
         }
 
         getMatrixData().then((convertedData) => {
-            console.log(convertedData)
             convertedData['classes'] = JSON.parse(convertedData['classes'])
             convertedData['matrix_classes'] = JSON.parse(convertedData['matrix_classes'])
             let matrixData = {'type': 'UML', 'convertedData': convertedData}
             localStorage.setItem("matrixData", JSON.stringify(matrixData))
             //window.open("/MatrixEditor", "_blank")
-            navigate("/MatrixEditor")
+            //navigate("/MatrixEditor")
+            setIsOpen(true)
         })
 
     }
@@ -947,6 +1123,7 @@ export default function UmlEditor(props){
         <div id="wrapper">
             <script src="../../../uml_editor_resources/release/go.js"></script>
             <script src="../../../uml_editor_resources/extensions/Figures.js"></script>
+            <script src="../../Utils/TextEditorSelectBox.js"></script>
             <div id="editorDiv">
                 <ReactPalette
                     initPalette={initPalette}
@@ -967,7 +1144,7 @@ export default function UmlEditor(props){
                         <Button class="umlButtons" disabled={!editorID} id="MatrixButton" variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                         <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
                         {/* <button id="SaveButton" onClick={() => save()}>Save</button>
-                        <button onClick={() => load()}>Load</button> */}
+                            <button onClick={() => load()}>Load</button> */}
                     </div>
                     <textarea value={JSON.stringify(umlJson)} id="mySavedModel" style={{width: "500px", height: "300px"}}></textarea>
                 </div>
@@ -975,13 +1152,33 @@ export default function UmlEditor(props){
             </div>
 
             <div>
-            <ModalComponnent
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                text= {modalBody}
-                header = {modalHeader}
-            />
+                <ModalComponnent
+                    show={modalShow}
+                    onHide={() => setModalShow(false)}
+                    text= {modalBody}
+                    header = {modalHeader}
+                />
             </div>
+            {saving && <SavingSpinner/>}
+            <Modal
+                show={modalIsOpen}
+                onHide={()=>{setIsOpen(false)}}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        UML Matrix
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <EditorMatrix></EditorMatrix>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={()=>{setIsOpen(false)}}>Close</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

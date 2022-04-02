@@ -269,8 +269,11 @@ function parseWhereQuery(queryArr, idx, classAs) {
                 throw firstPart + " is unrecognised";
             }
         }
-
-        if(secondPart.includes(".") && !secondPart.includes("(")){
+        if(secondPart === undefined){
+            idx++;
+            continue;
+        }
+        else if(secondPart.includes(".") && !secondPart.includes("(")){
             parseClassAttributeWord(secondPart, classAs);
         }
         else if(secondPart.includes("(")){
@@ -500,30 +503,22 @@ function parseConnectQuery(queryArr) {
 }
 
 export function ValidateAllQueries(queries){
-    //  console.log(queries);
-    //  const obj = Object.fromEntries(queries);
-    //  console.log(obj);
-    //  const jo = JSON.stringify(obj);
-    //  console.log(jo);
-    //  const j = JSON.parse(jo);
-    // console.log(jo);
-    // for (let key in j){
-    //     console.log(j[key])
-    // }
-    // const a = new Map(Object.entries(j))
-    // console.log(a);
-    //
     let problems = {};
 
     for (let [key, queryObj] of queries) {
         if(!queryObj["selectable"])
             continue
         let query = queryObj["query"];
+        query = query.replace(/[+*\/-]/g, '=');
         query = query.replace(/\s\s+/g, ' ');
         query = query.replaceAll("( ", "(");
         query = query.replaceAll(" )", ")");
         query = query.replaceAll("= ", "=");
         query = query.replaceAll(" =", "=");
+        query = query.replaceAll("/=", "=");
+        query = query.replaceAll("+=", "=");
+        query = query.replaceAll("-=", "=");
+        query = query.replaceAll("*=", "=");
         //query = query.replaceAll("+ ", "+");
         //query = query.replaceAll(" +", "+");
         if(query.length === 0)
@@ -571,6 +566,7 @@ export function ValidateAllQueries(queries){
 
             }catch (e){
                 addProblem(problems, key, e);
+                console.log(e)
                 console.trace();
                 continue;
             }
@@ -584,6 +580,7 @@ export function ValidateAllQueries(queries){
 
             }catch (e) {
                 addProblem(problems, key, e);
+                console.log(e)
                 console.trace();
                 continue;
             }
@@ -594,6 +591,7 @@ export function ValidateAllQueries(queries){
 
             }catch (e) {
                 addProblem(problems, key, e);
+                console.log(e)
                 console.trace();
                 continue;
             }
@@ -603,7 +601,7 @@ export function ValidateAllQueries(queries){
                 parseDeleteQuery(queryArr);
 
             }catch (e) {
-                console.log(e.type)
+                console.log(e)
                 addProblem(problems, key, e);
                 console.trace();
                 continue;
