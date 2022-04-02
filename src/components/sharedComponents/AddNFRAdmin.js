@@ -52,10 +52,15 @@ export default function AddNFRAdmin(props){
     function deleteValue(selectName){
         let obj={...selectData}
         delete obj.values[selectName]
-        if(obj.defaultValue[0]===selectName && obj.defaultValue.length>0){
-            let keys=Object.keys(obj.values)
-            obj.defaultValue[0]=keys[0]
-            obj.defaultValue[1]=obj.values[keys[0]]
+        let keys=Object.keys(obj.values)
+        if(obj.defaultValue[0]===selectName){
+            if(keys.length>0){
+                obj.defaultValue[0]=keys[0]
+                obj.defaultValue[1]=obj.values[keys[0]]
+            }
+            else{
+                obj.defaultValue=[]
+            }
         }
         updateSelectData(obj)
     }
