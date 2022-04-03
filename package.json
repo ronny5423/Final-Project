@@ -39,7 +39,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "postbuild": "node postbuild.js",
+    "postbuild": "node postbuild.js && cd Server && python fixSubnet.py njsw27",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
