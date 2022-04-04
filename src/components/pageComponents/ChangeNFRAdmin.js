@@ -179,8 +179,8 @@ export default function ChangeNFRAdmin(){
                <Table>
                    <thead>
                         <tr>
-                            <th/>
-                            <th/>
+                            <th>Name</th>
+                            <th>Value</th>
                             <th><ProjectRowTooltip testId={"addSelect"} message={"add new value"} icon={faPlus} onClick={_=>addValue(nfrName,index)}/></th>
                         </tr>
                    </thead>
@@ -190,7 +190,7 @@ export default function ChangeNFRAdmin(){
                        data.values.map((obj,indexInSelect)=><tr className={"selectTableRow"}>
                            <td><input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/></td>
                             <td><input value={Object.values(obj)[0]} type={"number"} onChange={e=>changeSelectValue(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/> </td>
-                           <td><ProjectRowTooltip testId={"deleteSelect"} icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>
+                           {/*<td><ProjectRowTooltip testId={"deleteSelect"} icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>*/}
                        </tr>)
                    }
                    </tbody>
@@ -204,7 +204,7 @@ export default function ChangeNFRAdmin(){
                }
            </select></td>
            <td><input value={data.ahp} type={"number"} step={0.01} onChange={e=>changeAHP(nfrName,parseFloat(e.target.value),index)}/> </td>
-           <td><ProjectRowTooltip testId={"deleteNFR"} message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
+           {/*<td><ProjectRowTooltip testId={"deleteNFR"} message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>*/}
        </tr>
     }
 
@@ -229,9 +229,10 @@ export default function ChangeNFRAdmin(){
             </td>
             <td><input data-testid={"defaultValue"} value={data.defaultValue} type={"number"} step={0.01} onChange={e=>changeRangeDefaultValue(nfrName,parseFloat(e.target.value),index)}/> </td>
             <td><input value={data.ahp} type={"number"} step={0.01} onChange={e=>changeAHP(nfrName,parseFloat(e.target.value),index)}/> </td>
-            <td><ProjectRowTooltip testId={"deleteNFR"} message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>
+            {/*<td><ProjectRowTooltip testId={"deleteNFR"} message={"delete nfr"} icon={faTrash} onClick={_=>deleteNFR(index)}/> </td>*/}
         </tr>
     }
+
     function saveChanges(){
         let nfrNamesSet=new Set()
         errorMessage.current=[]

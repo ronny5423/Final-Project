@@ -53,7 +53,7 @@ function DashboardPage(props){
                             {props.dataToShow.length>0 ?
                                 props.dataToShow.map((project,index)=><ProjectRow key={project.ProjectID} projectId={project.ProjectID} projectOwner={project.Owner}
                                                                                   umlEditor={project.UMLEditorID} sqlEditor={project.SQLEditorID} nfrEditor={project.NFREditorID} projectDescription={project.Description}
-                                                                                  ahpWeights={project.Weights} projectName={project.name} deleteProject={props.deleteData} index={index}
+                                                                                  ahpWeights={project.Weights} projectName={project.name} deleteProject={props.deleteData} index={index} adminPage={props.isAdmin}
                                 />) :
                                 <tr>No projects. To add new project press on + button</tr>
                             }
