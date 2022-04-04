@@ -98,7 +98,7 @@ export default function ProjectRow(props){
                     <ProjectRowTooltip testId={"editProjectEditors"} message={"Edit project's editors"} icon={faEdit} onClick={moveToProjectsEditors}/>
                     <ProjectRowTooltip testId={"moveToAddRemoveUsers"} message={"Add/Remove users"} icon={faUserPlus} onClick={moveToAddRemoveUsers}/>
                     {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip testId={"algorithmResults"} message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>}
-                    <ProjectRowTooltip testId={"DeleteProject"} message={"Delete project"} icon={faTrash} onClick={()=>updateDeleteModal(true)}/>
+                    {props.adminPage===undefined && <ProjectRowTooltip testId={"DeleteProject"} message={"Delete project"} icon={faTrash} onClick={()=>updateDeleteModal(true)}/>}
                     <ProjectRowTooltip testId={"editProjectDescription"} message={"Edit project's name and description"} icon={faPen} onClick={()=>updateEditModal(true)}/>
                 </div>
             </td>

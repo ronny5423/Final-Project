@@ -100,13 +100,13 @@ describe("test input change",()=>{
         expect(modal.length).toBe(1)
     }
 
-    it("test no select",async()=>{
-        await deleteFunction("deleteSelect")
-    })
-
-    it("test no nfr",async()=>{
-        await deleteFunction("deleteNFR")
-    })
+    // it("test no select",async()=>{
+    //     await deleteFunction("deleteSelect")
+    // })
+    //
+    // it("test no nfr",async()=>{
+    //     await deleteFunction("deleteNFR")
+    // })
 
     it("test add select value",async()=>{
         await renderComponent()

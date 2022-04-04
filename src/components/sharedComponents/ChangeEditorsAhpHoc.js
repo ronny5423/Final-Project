@@ -72,6 +72,7 @@ import SavingSpinner from "./SavingSpinner";
                 <WrappedComponent updateWeights={updateState} {...props} updateSaveRoute={updateSaveRoute}/>
                 {saveRoute==="" ? <LoadingSpinner /> :
                     <div data-testid={"ahp"}>
+                        <h1>AHP</h1>
                         <Modal data-testid={"modal"} show={showModal} onHide={_=>updateShowModal(false)} centered>
                             <Modal.Header closeButton></Modal.Header>
                             <Modal.Body>
