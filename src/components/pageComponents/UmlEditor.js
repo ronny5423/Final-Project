@@ -981,6 +981,7 @@ export default function UmlEditor(props){
             for (let problemIdx in problems) {
                 toast.error("error: " + problems[problemIdx], {position: toast.POSITION.TOP_CENTER})
             }
+            updateSaving(false)
             return;
         }
         saveDiagramProperties();  // do this first, before writing to JSON
