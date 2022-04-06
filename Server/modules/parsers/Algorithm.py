@@ -7,7 +7,7 @@ from database import *
 
 
 def inverse(x):
-    return 1 - x
+    return abs(1 - x)
 
 
 def calculate_uml_or_sql_matrix(uml_or_sql):
