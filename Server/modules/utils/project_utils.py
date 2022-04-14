@@ -74,7 +74,7 @@ def updateProjectWeights(data):
         raise Exception('Logged User is not a member of the received project.')
 
 
-def calculateResults(projectID, N):
+def calculateResults(projectID):
     project = db.getOneProject({"ProjectID": projectID})
     editors = db.get_editors_project(projectID)
     calcResults = calculate_algorithm(project, editors)
