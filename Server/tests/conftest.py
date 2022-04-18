@@ -20,7 +20,7 @@ def client(application):
 @pytest.fixture
 def setup_auth_tests(client):
     credentials = {"Username": "test_user",
-                   "password": "12345"}
+                   "password": "Aa12345!"}
     mongo_client = pymongo.MongoClient(TestConfig.MONGO_URI)
     db = mongo_client[TestConfig.MONGO_DBNAME]
     if "Users" not in db.list_collection_names():
@@ -37,7 +37,7 @@ def setup_auth_tests(client):
 def setup_user_projects(application, client):
     credentials = {
         "Username": "some_user",
-        "password": "12345"
+        "password": "Aa12345!"
     }
 
     project = {

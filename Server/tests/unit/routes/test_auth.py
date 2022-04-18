@@ -20,7 +20,7 @@ def test_failed_login_incorrect_credentials(client):
 
 def test_successful_signup(client, setup_auth_tests):
     credentials = {"Username": "testing signup user",
-                   "Password": "12345"}
+                   "Password": "Aa12345!"}
 
     response = client.post("/auth/Signup", json=credentials)
 
@@ -35,7 +35,7 @@ def test_failed_signup_no_credentials_supplied(client, setup_auth_tests):
 
 def test_failed_username_already_exists_signup(client, setup_auth_tests):
     credentials = {"Username": "test_user",
-                   "password": "12345"}
+                   "password": "Aa12345!"}
     response = client.post("/auth/Signup", json=credentials)
 
     client.post("/auth/Signup", json=credentials)
