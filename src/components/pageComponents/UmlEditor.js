@@ -156,7 +156,7 @@ export default function UmlEditor(props){
                 while(propertyTypes.length > 0) {
                     propertyTypes.pop();
                 }
-                let constantTypes = ['Number', 'String', 'Boolean', 'Char', 'Data', 'Time']
+                let constantTypes = ['Number', 'String', 'Boolean', 'Char', 'Date', 'Time']
                 propertyTypes.push(...constantTypes)
                 for(let i = 0; i < modelC["nodeDataArray"].length; i++){
                     let className = modelC['nodeDataArray'][i]['name']
@@ -784,7 +784,7 @@ export default function UmlEditor(props){
                     }
                 ], [
                     // the Palette also has a disconnected Link, which the user can drag-and-drop
-                    {category: "Linkble", name: "association", RoleFrom: "from", RoleTo: "to", MultiFrom: "0", MultiTo: "1", LinkName: "link name", toArrow: "", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) },
+                    {category: "Linkble", name: "association", RoleFrom: "from", RoleTo: "to", MultiFrom: "*", MultiTo: "*", LinkName: "link name", toArrow: "", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) },
                     {name: "generalization", toArrow: "Triangle", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) },
                     {name: "associationClassLink", dashed: [5,5], toArrow: "", points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(40, 40), new go.Point(60, 40)]) }
                 ])
