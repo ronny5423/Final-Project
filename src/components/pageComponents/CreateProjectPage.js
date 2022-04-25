@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, FloatingLabel, Form} from "react-bootstrap";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
@@ -11,6 +11,12 @@ function CreateProjectPage(props){
     const[description,updateDescription]=useState("")
     const[save,updateSave]=useState(false)
     let history=useNavigate()
+
+    useEffect(()=>{
+        if(localStorage.getItem("username")===null){
+            history(`/login`)
+        }
+    },[])
 
    function createProject(event){
         event.preventDefault()
@@ -28,8 +34,6 @@ function CreateProjectPage(props){
                 history(`/editorsTabs/${response.data}`)
             }
         })
-
-
      }
 
     return(

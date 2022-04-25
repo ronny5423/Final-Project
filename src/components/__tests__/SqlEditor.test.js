@@ -8,6 +8,7 @@ import {setupServer} from "msw/node";
 import {serverAddress} from "../../Constants";
 import ValidateAllQueries from "../../Utils/SqlValidationUtils";
 import addUmlClasses from "../../Utils/SqlValidationUtils";
+import {BrowserRouter} from "react-router-dom";
 
 
 // jest.mock("../../Utils/SqlValidationUtils", ()=>({ValidateAllQueries: jest.fn(),
@@ -15,10 +16,11 @@ import addUmlClasses from "../../Utils/SqlValidationUtils";
 // }));
 
 
-function renderSqlEditor(){
-    render(<SqlEditor />)
+async function renderSqlEditor(){
+    render(<BrowserRouter><SqlEditor id={1} projectId={1} classes={{"Person A": ["Name"], "User": ["UserName", "Password"], "NamedModelElement": ["name"]}} updateEditorId={()=>{}} /></BrowserRouter>)
+    await screen.findByTestId("SqlEditor")
 }
-jest.setTimeout(15000);
+
 function mockData(addThirdAttribute){
     let map=new Map();
     map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": ""});
@@ -64,14 +66,14 @@ describe("test SqlEditor Component render",()=>{
     const server=createServer(false)
     prepareTests(server)
 
-    it("test Sql component render",()=>{
-        renderSqlEditor()
+    it("test Sql component render",async()=>{
+        await renderSqlEditor()
         const sqlComponent = screen.getByTestId('SqlEditor')
         expect(sqlComponent).toBeInTheDocument()
     })
 
     it("test disabled select box",async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton = await screen.findByText(/edit/i)
         const selectElement=document.getElementsByTagName("Form.Check")
         for(let item of selectElement){
@@ -80,7 +82,7 @@ describe("test SqlEditor Component render",()=>{
     })
 
     it("test disabled input",async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton = await screen.findByText(/edit/i)
         const inputElement=document.getElementsByTagName("input")
         for(let item of inputElement){
@@ -88,7 +90,7 @@ describe("test SqlEditor Component render",()=>{
         }
     })
     it("test all inputs change to not disabled and read write after click on edit button",async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton = await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const inputElements=document.getElementsByTagName("input")
@@ -99,7 +101,7 @@ describe("test SqlEditor Component render",()=>{
     })
 
     it("test Button save exist after click on edit",async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton = await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const saveButton = screen.getByText("Save")
@@ -107,7 +109,7 @@ describe("test SqlEditor Component render",()=>{
     })
 
     it("test Button cancel exist after click on edit",async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton = await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const cancelButton = screen.getByText("Cancel")
@@ -115,7 +117,7 @@ describe("test SqlEditor Component render",()=>{
     })
 
     it("test Button Add query exist after click on edit",async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton = await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const addButton = screen.getByText("Add Query")
@@ -131,9 +133,9 @@ describe("test data operations",()=>{
     prepareTests(server)
 
     async function testDataLoaded(){
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton=await screen.findByText(/edit/i)
-        const trs = await screen.findAllByDisplayValue("45");
+        const trs = await screen.findAllByText("45");
         expect(trs.length).toBe(3)
     }
 
@@ -143,7 +145,7 @@ describe("test data operations",()=>{
     })
 
     it("test add query and save", async ()=>{
-        renderSqlEditor()
+        await renderSqlEditor()
         const editButton=await screen.findByText(/edit/i)
         fireEvent.click(editButton)
         const addQueryButton = await screen.findByText(/Add Query/i)

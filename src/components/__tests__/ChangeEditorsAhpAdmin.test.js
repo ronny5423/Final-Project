@@ -65,4 +65,14 @@ describe("test input and button change",()=>{
         let editButton=await screen.findByText(/Edit/i)
         expect(editButton).toBeInTheDocument()
     })
+
+    it("test that the sum of weights is equal to 1",async()=>{
+        await renderComponent()
+        let inputs=document.getElementsByTagName("input")
+        fireEvent.change(inputs[0],{target:{value:"0.5"}})
+        fireEvent.change(inputs[1],{target:{value:"0.5"}})
+        fireEvent.change(inputs[2],{target:{value:"0.2"}})
+        fireEvent.click(screen.getByText(/Save/i))
+        expect(screen.getByTestId("modal")).toBeInTheDocument()
+    })
 })
