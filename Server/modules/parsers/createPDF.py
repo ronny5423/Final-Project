@@ -37,6 +37,8 @@ html_template = """<html>
 
 
 def create_html_matrix(matrix, classes, shape):
+    if not matrix or not classes or not shape:
+        return 'No Editor Data.'
     matrix_idx = 1
     classes_arr_col = [cls_arr[0] for cls_arr in classes]
     classes_arr_col = ["Class"] + classes_arr_col
@@ -78,7 +80,7 @@ def setProjectToHtml(project):
     return {
         'Owner': project.Owner,
         'Members': project.Members,
-        'Weights': project.Weights
+        'Weights': project.Weights if hasattr(project, 'Weights') else db.getNFRWeights()
     }
     
 

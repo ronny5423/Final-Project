@@ -23,7 +23,7 @@ export default function ProjectRow(props){
         updateSaving(true)
         axios.get(serverAddress+`/projects/report/${props.projectId}`).then(response=>{
             if(response.status===200){
-                saveAs(new Blob([response.data.html]),"report.html")
+                saveAs(new Blob([response.data]),"report.html")
             }
             updateSaving(false)
         })
@@ -101,7 +101,7 @@ export default function ProjectRow(props){
             <td>{props.projectOwner}</td>
             <td>
                 <div>
-                    <ProjectRowTooltip testId={"pdf"} message={"Download report on the project"} icon={faFilePdf} onClick={generatePDF}/>
+                    {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip testId={"pdf"} message={"Download report on the project"} icon={faFilePdf} onClick={generatePDF}/>}
                     <ProjectRowTooltip testId={"editProjectEditors"} message={"Edit project's editors"} icon={faEdit} onClick={moveToProjectsEditors}/>
                     <ProjectRowTooltip testId={"moveToAddRemoveUsers"} message={"Add/Remove users"} icon={faUserPlus} onClick={moveToAddRemoveUsers}/>
                     {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip testId={"algorithmResults"} message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>}
