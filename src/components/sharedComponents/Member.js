@@ -5,7 +5,7 @@ import { faFacebookF } from '@fortawesome/free-brands-svg-icons'
 import { faLinkedinIn } from '@fortawesome/free-brands-svg-icons'
 import '../cssComponents/About.css'
 
-export default function Member({img, name, job, description}) {
+export default function Member({img, name, job, linkedin}) {
     return (
         <div class="col-lg-4">
             <div class="team-member">
@@ -15,7 +15,7 @@ export default function Member({img, name, job, description}) {
                 {/*<p class="text-muted">{description}</p>*/}
                 {/*<a class="btn btn-dark btn-social mx-2" href="#!"><FontAwesomeIcon icon={faTwitter} /></a>*/}
                 {/*<a class="btn btn-dark btn-social mx-2" href="#!"><FontAwesomeIcon icon={faFacebookF} /></a>*/}
-                {/*<a class="btn btn-dark btn-social mx-2" href="#!"><FontAwesomeIcon icon={faLinkedinIn} /></a>*/}
+                <a class="btn btn-dark btn-social mx-2" href={linkedin}><FontAwesomeIcon icon={faLinkedinIn} /></a>
             </div>
         </div>
     )

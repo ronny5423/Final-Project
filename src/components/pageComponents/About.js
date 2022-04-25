@@ -1,7 +1,6 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import Member from '../sharedComponents/Member'
-import ron from "../../Pictures/Ron.jpg"
 
 export default function About() {
     let img = "https://www.freeiconspng.com/uploads/person-icon-8.png";
@@ -27,10 +26,10 @@ export default function About() {
             </div>
             <h3>Developers</h3>
             <div class="row">
-                <Member img={img} name={"Eran German"} job={"BackEnd Developer"} />
-                <Member img={img} name={"Illi Shmidt"} job={"BackEnd Developer"}/>
-                <Member img={ron} name={"Ron Tyntarev"} job={"FrontEnd Developer"}/>
-                <Member img={img} name={"Yotam Komp"} job={"BackEnd And FrontEnd Developer"}/>
+                <Member img={"https://media-exp1.licdn.com/dms/image/C4D03AQF_xafRrBhMHQ/profile-displayphoto-shrink_200_200/0/1582663858227?e=1656547200&v=beta&t=YctXl30TuE2k7XRf2na-evdPv-Ffl0jAk2geRjB6kv8"} name={"Eran German"} job={"Software Engineer"} linkedin={"https://www.linkedin.com/in/eaert/"} />
+                <Member img={"https://media-exp1.licdn.com/dms/image/C4D03AQECz-O4q-Wm-A/profile-displayphoto-shrink_200_200/0/1634534002919?e=1656547200&v=beta&t=Z7B_bhUjc6hvwIIAq9MYbULo3diQ8agnrvytcEW2Edc"} name={"Illi Shmidt"} job={"Software Engineer"} linkedin={"https://www.linkedin.com/in/ili-shmidt/"}/>
+                <Member img={"https://media-exp1.licdn.com/dms/image/C4D03AQHqwZnapzu0SQ/profile-displayphoto-shrink_800_800/0/1598021325900?e=1656547200&v=beta&t=W_SLQWLcbJLpHlBHK1xEBid_JyY-9UcPGUpctbl8mYg"} name={"Ron Tyntarev"} job={"Software Engineer"} linkedin={"https://www.linkedin.com/in/rontyntarev/"}/>
+                <Member img={img} name={"Yotam Komp"} job={"Software Engineer"} linkedin={""}/>
             </div>
         </div>
     )
