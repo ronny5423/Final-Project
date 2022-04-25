@@ -37,6 +37,7 @@ export default function Login() {
           Username or password is incorrect
         </Modal.Body>
       </Modal>
+      <h1>Login</h1>
       <Form onSubmit={handleSubmit(submit)}>
         <Form.Group size="lg" controlId="username">
           <Form.Label>Username</Form.Label>

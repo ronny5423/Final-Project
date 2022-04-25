@@ -173,7 +173,8 @@ export default function ChangeNFRAdmin(){
     function createSelectBoxRow(nfrName,data,index){
        return <tr className={"nfrRow"} key={index}>
            <td>{index+1}</td>
-           <td><input value={nfrName} type={"text"} onChange={e=>changeNFRName(nfrName,e.target.value,index)}/></td>
+           {/*<td><input value={nfrName} type={"text"} onChange={e=>changeNFRName(nfrName,e.target.value,index)}/></td>*/}
+           <td>{nfrName}</td>
            <td>select box</td>
            <td>
                <Table>
@@ -188,7 +189,8 @@ export default function ChangeNFRAdmin(){
                    {/*{createSelectBoxValuesTable(data.values,nfrName,index)}*/}
                    {
                        data.values.map((obj,indexInSelect)=><tr className={"selectTableRow"}>
-                           <td><input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/></td>
+                           {/*<td><input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/></td>*/}
+                           <td>{Object.keys(obj)[0]}</td>
                             <td><input value={Object.values(obj)[0]} type={"number"} onChange={e=>changeSelectValue(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/> </td>
                            {/*<td><ProjectRowTooltip testId={"deleteSelect"} icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>*/}
                        </tr>)
@@ -211,7 +213,8 @@ export default function ChangeNFRAdmin(){
     function createRangeRow(nfrName,data,index){
         return <tr className={"nfrRow"}>
             <td>{index+1}</td>
-            <td><input value={nfrName} type={"text"} onChange={e=>changeNFRName(nfrName,e.target.value,index)}/></td>
+            {/*<td><input value={nfrName} type={"text"} onChange={e=>changeNFRName(nfrName,e.target.value,index)}/></td>*/}
+            <td>{nfrName}</td>
             <td>range</td>
             <td>
                 <Table >
@@ -369,6 +372,7 @@ export default function ChangeNFRAdmin(){
         <div>
             {loading ? <LoadingSpinner/> :
                 <div data-testid={"nfrAdmin"}>
+                    <h1>NFR Admin</h1>
                     <Table>
                         <thead>
                         <tr>

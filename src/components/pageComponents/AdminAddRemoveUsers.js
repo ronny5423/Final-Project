@@ -35,6 +35,7 @@ function AdminAddRemoveUsers(props){
         <div>
             {props.draw &&
                 <div data-testid={"adminAddRemoveUsers"}>
+                    <h1>All Users</h1>
                     <Table>
                         <thead>
                         <tr>

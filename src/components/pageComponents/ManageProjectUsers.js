@@ -3,12 +3,10 @@ import {useParams} from "react-router-dom";
 import {Button, Table} from "react-bootstrap";
 import AddUserToProject from "../sharedComponents/AddUserToProject";
 import withFetchData from "../sharedComponents/WithFetchData";
-import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 
  function ManageProjectUsers(props){
     let {projectId,projectOwner}=useParams()
     const[showAddUser,updateAddUser]=useState(false)
-     const[loading,updateLoading]=useState(true)
 
     useEffect(()=>{
         props.updateFetchDataRoute(`/projects/getMembers/${projectId}`,"Members")
@@ -23,6 +21,7 @@ import LoadingSpinner from "../sharedComponents/LoadingSpinner";
         <div>
             {props.draw &&
                 <div>
+                    <h1>Manage Users</h1>
                     <Table data-testid={"manageProjectUsers"}>
                         <thead>
                         <tr>
