@@ -4,14 +4,13 @@ ProjectsID = 1
 
 class Project:
     def __init__(self, ProjectID, name, Description='', UMLEditorID=None, SQLEditorID=None, 
-                NFREditorID=None, AHPEditorID=None, Owner=None, Members=[]):
+                NFREditorID=None, Owner=None, Members=[]):
         self.ProjectID = ProjectID
         self.name = name
         self.Description = Description
         self.UMLEditorID = UMLEditorID
         self.SQLEditorID = SQLEditorID
         self.NFREditorID = NFREditorID
-        self.AHPEditorID = AHPEditorID
         self.Owner = Owner
         self.Members = Members
     
@@ -22,7 +21,6 @@ class Project:
         self.UMLEditorID = data.get('UMLEditorID')
         self.SQLEditorID = data.get('SQLEditorID')
         self.NFREditorID = data.get('NFREditorID')
-        self.AHPEditorID = data.get('AHPEditorID')
         self.Owner = data.get('Owner')
         if data.get('Members') is not None:
             self.Members = data.get('Members')

@@ -8,6 +8,7 @@ import axios from "axios";
 import {Button, Form, Modal} from "react-bootstrap";
 import {serverAddress} from "../../Constants";
 import SavingSpinner from "./SavingSpinner";
+import {saveAs} from "file-saver"
 
 export default function ProjectRow(props){
     let history=useNavigate()
@@ -19,7 +20,13 @@ export default function ProjectRow(props){
     const [saving,updateSaving]=useState(false)
 
     function generatePDF(){
-    //todo
+        updateSaving(true)
+        axios.get(serverAddress+`/projects/report/${props.projectId}`).then(response=>{
+            if(response.status===200){
+                saveAs(new Blob([response.data]),"report.html")
+            }
+            updateSaving(false)
+        })
     }
 
     function moveToProjectsEditors(){
@@ -94,7 +101,7 @@ export default function ProjectRow(props){
             <td>{props.projectOwner}</td>
             <td>
                 <div>
-                    <ProjectRowTooltip testId={"pdf"} message={"Get report on the project"} icon={faFilePdf} onClick={generatePDF}/>
+                    {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip testId={"pdf"} message={"Download report on the project"} icon={faFilePdf} onClick={generatePDF}/>}
                     <ProjectRowTooltip testId={"editProjectEditors"} message={"Edit project's editors"} icon={faEdit} onClick={moveToProjectsEditors}/>
                     <ProjectRowTooltip testId={"moveToAddRemoveUsers"} message={"Add/Remove users"} icon={faUserPlus} onClick={moveToAddRemoveUsers}/>
                     {(props.nfrEditor && props.sqlEditor && props.umlEditor) && <ProjectRowTooltip testId={"algorithmResults"} message={"View algorithm results"} icon={faPoll} onClick={moveToResults}/>}
@@ -114,6 +121,7 @@ export default function ProjectRow(props){
                 </Modal>
 
                 <Modal show={showEditNameAndDescriptionModal} centered backdrop={"static"}>
+                    <Modal.Header><h2>Edit Project's Details</h2></Modal.Header>
                     <Modal.Body>
                         <Form data-testid={"editForm"}>
                             <Form.Group className="mb-3" >

@@ -30,6 +30,7 @@ function DashboardPage(props){
             <div>
                 {props.draw &&
                     <div data-testid={"dashboard"}>
+                        <h1>Dashboard</h1>
                         <div id={"searchDiv"} data-testid={"searchDiv"}>
                             <input disabled={props.dataLength===0} value={searchQuery} placeholder={"Filter projects by name"} onChange={event => updateSearchQuery(event.target.value)}/>
                             <Button disabled={props.dataToShow.length===0} variant={"primary"} onClick={_=>{

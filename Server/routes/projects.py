@@ -111,3 +111,12 @@ def update_weights():
         return Response(status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@projects.route("/report/<projectID>", methods=['GET'])
+@login_required
+def get_report(projectID):
+    try:
+        report = createReport(int(projectID))
+        return Response(report, status=200)
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
