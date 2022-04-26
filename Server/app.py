@@ -10,42 +10,38 @@ from routes.editors import editors
 from routes.projects import projects
 from routes.users import users
 
-app = Flask(__name__, static_url_path='')
-app.config["MONGO_URI"] = "mongodb://localhost:27017/DBSelection"
-app.config['SECRET_KEY'] = 'some-very-strong-confidential-mosad-bibi-netanyahu-secret-key'
-app.config['SERVR_NAME'] = 'https://rps.ise.bgu.ac.il/njsw27'
 
-CORS(app, supports_credentials=True)
-app.config['CORS_HEADERS'] = 'Content-Type'
+def get_app_with_config(config):
+    app = Flask(__name__, static_url_path='')
 
-db.initMongoDB(app)
+    app.config.from_object(config)
+    app.config['SECRET_KEY'] = 'some-very-strong-confidential-mosad-bibi-netanyahu-secret-key'
+    app.config['SERVR_NAME'] = 'https://rps.ise.bgu.ac.il/njsw27'
 
-login_manager = LoginManager()
-login_manager.init_app(app)
+    CORS(app, supports_credentials=True)
+    app.config['CORS_HEADERS'] = 'Content-Type'
 
+    db.initMongoDB(app)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User(user_id, None, None)
+    login_manager = LoginManager()
+    login_manager.init_app(app)
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User(user_id, None, None)
 
-app.register_blueprint(auth, url_prefix='/auth')
+    app.register_blueprint(auth, url_prefix='/auth')
+    app.register_blueprint(editors, url_prefix='/editors')
+    app.register_blueprint(projects, url_prefix='/projects')
+    app.register_blueprint(users, url_prefix='/users')
+    app.register_blueprint(admin, url_prefix='/admin')
 
-app.register_blueprint(editors, url_prefix='/editors')
-app.register_blueprint(projects, url_prefix='/projects')
-app.register_blueprint(users, url_prefix='/users')
-app.register_blueprint(admin, url_prefix='/admin')
+    @app.route("/")
+    def default():
+        return app.send_static_file('index.html')
 
+    @app.route("/testArea")
+    def testArea():
+        return "This is a Test Area."
 
-@app.route("/")
-def default():
-    return app.send_static_file('index.html')
-
-
-@app.route("/testArea")
-def testArea():
-    return "This is a Test Area."
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=443, ssl_context='adhoc')
+    return app

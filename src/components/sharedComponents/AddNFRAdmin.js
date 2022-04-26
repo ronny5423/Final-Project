@@ -183,7 +183,7 @@ export default function AddNFRAdmin(props){
     return(
         <div>
         <Modal show={props.show} centered onHide={props.hide}>
-            <Modal.Header closeButton>Add New NFR</Modal.Header>
+            <Modal.Header closeButton><h2>Add New NFR</h2></Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicEmail">

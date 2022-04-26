@@ -3,7 +3,6 @@ import {Route,Routes } from "react-router-dom";
 import Login from "../components/sharedComponents/Login";
 import About from "../components/pageComponents/About";
 import ContactForm from "../components/pageComponents/ContactUs";
-import UmlEditor from "../components/pageComponents/UmlEditor";
 import CreateProjectPage from "../components/pageComponents/CreateProjectPage";
 import EditorsTabs from "../components/pageComponents/EditorsTabs";
 import HomePage from "../components/pageComponents/HomePage";
@@ -13,7 +12,6 @@ import SignUp from "../components/pageComponents/SignUp";
 import DashboardPage from "../components/pageComponents/DashboardPage";
 import ManageProjectUsers from "../components/pageComponents/ManageProjectUsers";
 import EditorMatrix from "../components/pageComponents/EditorMatrix";
-import NFREditor from "../components/pageComponents/NFREditor";
 import AdminAddRemoveUsers from "../components/pageComponents/AdminAddRemoveUsers";
 import ChangeNFRAdmin from "../components/pageComponents/ChangeNFRAdmin";
 import ChangeDBProfiles from "../components/pageComponents/ChangeDBProfiles";
@@ -31,8 +29,6 @@ export default function Switches(){
             <Route path={"/about"} element={<About/>}/>
 
             <Route path={"/contact"} element={<ContactForm/>}/>
-
-            <Route path={"/UmlEditor"} element={<UmlEditor/>}/>
 
             <Route path={"/createProject"} element={<CreateProjectPage/>}/>
 

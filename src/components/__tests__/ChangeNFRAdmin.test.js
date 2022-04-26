@@ -52,12 +52,12 @@ describe("test input change",()=>{
     const server=setupServer(...[getNFRAdmin,updateNFRAdmin])
     preapareTests(server)
 
-    it("test change input in input tag",async()=>{
-        await renderComponent()
-        const inputs=document.getElementsByTagName("input")
-        fireEvent.change(inputs[0],{target:{value:"abcd"}})
-        expect(inputs[0].value).toBe("abcd")
-    })
+    // it("test change input in input tag",async()=>{
+    //     await renderComponent()
+    //     const inputs=document.getElementsByTagName("input")
+    //     fireEvent.change(inputs[0],{target:{value:"abcd"}})
+    //     expect(inputs[0].value).toBe("abcd")
+    // })
 
     it("test select value change",async()=>{
         await renderComponent()

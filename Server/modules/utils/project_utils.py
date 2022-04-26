@@ -4,6 +4,7 @@ from flask_login import current_user
 from database import *
 from modules.Project import *
 from modules.parsers.Algorithm import calculate_algorithm
+from modules.parsers.createPDF import createHtmlReport
 
 
 def saveProject(data):
@@ -74,7 +75,7 @@ def updateProjectWeights(data):
         raise Exception('Logged User is not a member of the received project.')
 
 
-def calculateResults(projectID, N):
+def calculateResults(projectID):
     project = db.getOneProject({"ProjectID": projectID})
     editors = db.get_editors_project(projectID)
     calcResults = calculate_algorithm(project, editors)
@@ -84,3 +85,11 @@ def calculateResults(projectID, N):
 
 def getResults(projectID):
     return db.getCalcResults(projectID)
+
+
+def createReport(projectID):
+    project = db.getOneProject({"ProjectID": projectID})
+    if current_user.Username in project.Members or session['admin']:
+        return createHtmlReport(project)
+    else:
+        raise Exception('Logged User is not a member of the received project.')
