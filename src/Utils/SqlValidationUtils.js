@@ -505,10 +505,18 @@ function parseConnectQuery(queryArr) {
 export function ValidateAllQueries(queries){
     let problems = {};
 
+    function checkSubjectInQuery(query, querySubject) {
+        return query.includes(querySubject);
+    }
+
     for (let [key, queryObj] of queries) {
         if(!queryObj["selectable"])
             continue
         let query = queryObj["query"];
+        let subject_in = checkSubjectInQuery(query, queryObj["subject"])
+        if (!subject_in){
+            addProblem(problems, key, "query subject isn't included in query")
+        }
         query = query.replace(/[+*\/-]/g, '=');
         query = query.replace(/\s\s+/g, ' ');
         query = query.replaceAll("( ", "(");

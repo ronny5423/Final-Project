@@ -137,7 +137,7 @@ export default function UmlEditor(props){
             //console.log("dis", myDiagram.isModified)
             if (myDiagram.isModified) {
                 if (idx < 0) document.title += "*";
-                //props.changeUmlStatus(false);
+                props.changeUmlStatus(false);
             } else {
                 if (idx >= 0) document.title = document.title.substr(0, idx);
             }
