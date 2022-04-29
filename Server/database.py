@@ -294,6 +294,29 @@ class DataBase:
             }
         })
 
+    
+    def update_nfr_editor_undecipheredJson(self, editor):
+        self.db.db.Editors.update_one({'EditorID': editor['EditorID']}, {
+            '$set': {
+                'undecipheredJson': editor['undecipheredJson']
+            }
+        })
+    
+    def get_all_nfr_editors(self):
+        filter={
+            'type': 'NFR'
+        }
+        project={
+            'undecipheredJson': 1, 
+            'EditorID': 1, 
+            '_id': 0
+        }
+
+        nfr_editors = self.db.db.Editors.find(
+            filter=filter,
+            projection=project
+        )
+        return nfr_editors
 
 # Helper Functions
 def EditorsSwitchCase(objectFromDB):

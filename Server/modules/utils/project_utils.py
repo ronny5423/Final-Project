@@ -5,6 +5,7 @@ from database import *
 from modules.Project import *
 from modules.parsers.Algorithm import calculate_algorithm
 from modules.parsers.createPDF import createHtmlReport
+from modules.parsers.Transformations import transformation_document, transformation_graph
 
 
 def saveProject(data):
@@ -91,5 +92,21 @@ def createReport(projectID):
     project = db.getOneProject({"ProjectID": projectID})
     if current_user.Username in project.Members or session['admin']:
         return createHtmlReport(project)
+    else:
+        raise Exception('Logged User is not a member of the received project.')
+
+
+def getTrans(projectID, trans):
+    project = db.getOneProject({"ProjectID": projectID})
+    if current_user.Username in project.Members or session['admin']:
+        if trans == 'document':
+            data = transformation_document(project)
+            data["final_clusters"] = getResults(projectID)
+        elif trans == 'graph':
+            data = transformation_graph(project)
+            data["final_clusters"] = getResults(projectID)
+        else:
+            raise Exception('Transformation type does not supported.')
+        return data
     else:
         raise Exception('Logged User is not a member of the received project.')

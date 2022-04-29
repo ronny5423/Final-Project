@@ -45,7 +45,7 @@ def update_details():
 def calculate_results():
     try:
         data = request.json
-        clacResults = calculateResults(data.get('projectID'), data.get('number'))
+        clacResults = calculateResults(data.get('projectID'))
         return Response(json.dumps(clacResults), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
@@ -118,5 +118,14 @@ def get_report(projectID):
     try:
         report = createReport(int(projectID))
         return Response(report, status=200)
+    except Exception as e:
+        return Response(json.dumps(str(e)), status=400, mimetype='application/json')
+    
+@projects.route("/transformation/<projectID>/<trans>", methods=['GET'])
+@login_required
+def get_trans(projectID, trans):
+    try:
+        projectTrans = getTrans(int(projectID), trans)
+        return Response(json.dumps(projectTrans), status=200, mimetype='application/json')
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')

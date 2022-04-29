@@ -40,7 +40,7 @@ let modalHeader = <h3>How to use SQL EDITOR?</h3>
 export default function SqlEditor(props){
     //console.log("sql")
     let initMap = new Map();
-    initMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""});
+    initMap.set(0,{"name":"query","tpm": 45, "subject": '', "selectable": true, "query": ""});
     const[queries,updateQueries] = useState(initMap)
     const[currentRowIndex,updateRowIndex]=useState(0)
     const edit=useRef(true)
@@ -52,19 +52,21 @@ export default function SqlEditor(props){
     const [saving,updateSaving]=useState(false)
     let navigate = useNavigate()
     const [modalIsOpen, setIsOpen] = React.useState(false);
+    const [umlClasses, updateUmlClasses] = useState([])
 
     useEffect(()=>{
         async function fetchSQLQueriesFromServer() {
             let response = undefined;
             //let classesDict = {"Class": ["Name"], "Class1": ["UserName", "Password"], "NamedModelElement": ["name"]};
+            updateUmlClasses(Object.keys(props.classes))
             try {
                 if(id){
                     response = await axios.get(serverAddress+`/editors/loadEditor?ID=${id}`);
                 }
             }catch (e){
                 let map=new Map();
-                map.set(0,{"name":"abc","tpm": 45, "selectable": true, "query": ""});
-                map.set(1,{"name":"def","tpm": 15, "selectable": false, "query": ""});
+                map.set(0,{"name":"abc","tpm": 45, "subject": umlClasses[0], "selectable": true, "query": ""});
+                map.set(1,{"name":"def","tpm": 15, "subject": umlClasses[0], "selectable": false, "query": ""});
                 response={
                     data:{
                         undecipheredJson: Object.fromEntries(map),
@@ -79,6 +81,9 @@ export default function SqlEditor(props){
                 let convertMapKeys = new Map();
                 for (let [key, value] of response.data.undecipheredJson){
                     let newKey = parseInt(key, 10);
+                    if(!("subject" in value)){
+                        value["subject"] = umlClasses[0]
+                    }
                     convertMapKeys.set(newKey, value)
                 }
                 updateQueries(convertMapKeys)
@@ -92,6 +97,14 @@ export default function SqlEditor(props){
 
 
 
+    function createSelectItems() {
+        let items = [];
+        for (let i = 0; i < umlClasses.length; i++) {
+            items.push(<option key={umlClasses[i]} value={umlClasses[i]}>{umlClasses[i]}</option>);
+        }
+        return items;
+    }
+
     function createQuery(index){
         let query = queries.get(index);
         return(
@@ -102,6 +115,11 @@ export default function SqlEditor(props){
                     <Form.Range disabled={disabled} value={query["tpm"]} min={0} max={60} step={1} onChange={e=>changeValue(index,"tpm",e.target.value)}></Form.Range>
                     {query["tpm"]}
                 </div></td>
+                <td>
+                    <select value={query["subject"]} disabled={disabled} onChange={e=>changeValue(index,"subject",e.target.value)}>
+                        {createSelectItems()}
+                    </select>
+                </td>
                 <td><Form.Check disabled={disabled} checked={query["selectable"]} onChange={e=>changeValue(index,"selectable",e.target.value)}></Form.Check></td>
                 <td><Button disabled={disabled} variant={"danger"} onClick={_=>deleteRow(index)}><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></Button></td>
             </tr>
@@ -119,7 +137,7 @@ export default function SqlEditor(props){
         }
         updateQueries(newQueriesMap)
         if(newQueriesMap.size===0){
-            newQueriesMap.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""})
+            newQueriesMap.set(0,{"name":"query","tpm": 45, "subject": umlClasses[0], "selectable": true, "query": ""})
             updateQueries(newQueriesMap)
         }
         // if(currentRowIndex===rowIndex && currentRowIndex===newQueriesMap.size){
@@ -155,6 +173,9 @@ export default function SqlEditor(props){
             case "query":
                 values["query"]=newValue;
                 break
+            case "subject":
+                values["subject"]=newValue;
+                break
         }
         newQueriesMap.delete(key)
         newQueriesMap.set(key,values)
@@ -163,7 +184,7 @@ export default function SqlEditor(props){
 
     function addQuery(){
         let newQueriesMap=new Map(queries)
-        newQueriesMap.set(newQueriesMap.size,{"name":"query","tpm": 45, "selectable": true, "query": ""})
+        newQueriesMap.set(newQueriesMap.size,{"name":"query","tpm": 45, "subject": umlClasses[0], "selectable": true, "query": ""})
         updateQueries(newQueriesMap)
     }
 
@@ -171,7 +192,7 @@ export default function SqlEditor(props){
         edit.current=false
         updateDisabled(true)
         if(previousState.current.size === 0){
-            previousState.current.set(0,{"name":"query","tpm": 45, "selectable": true, "query": ""})
+            previousState.current.set(0,{"name":"query","tpm": 45, "subject": umlClasses[0], "selectable": true, "query": ""})
         }
         if(currentRowIndex >= previousState.current.size){
             updateRowIndex(previousState.current.size - 1);
@@ -299,6 +320,7 @@ export default function SqlEditor(props){
                                     <th>#</th>
                                     <th>Query name</th>
                                     <th>Query tpm</th>
+                                    <th>Query subject</th>
                                     <th>Select</th>
                                     <th>Delete</th>
                                 </tr>
