@@ -16,6 +16,7 @@ export default function ChangeNFRAdmin(){
     const errorMessage=useRef([])
     const [showAddNFR,updateShowAddNFR]=useState(false)
     const nfrNamesSet=useRef(new Set())
+    const selectNames=useRef({})
     const[loading,updateLoading]=useState(true)
     const[save,updateSave]=useState(false)
     let navigate=useNavigate()
@@ -118,6 +119,10 @@ export default function ChangeNFRAdmin(){
         let clonedNfrObject=JSON.parse(JSON.stringify(nfr))
         let obj={"":""}
         clonedNfrObject[index][nfrName].values.push(obj)
+        if(!(nfrName in selectNames.current)){
+            selectNames.current[nfrName]=new Set()
+        }
+        selectNames.current[nfrName].add(clonedNfrObject[index][nfrName].values.length-1)
         updateNfr(clonedNfrObject)
     }
 
@@ -190,7 +195,9 @@ export default function ChangeNFRAdmin(){
                    {
                        data.values.map((obj,indexInSelect)=><tr className={"selectTableRow"}>
                            {/*<td><input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/></td>*/}
-                           <td>{Object.keys(obj)[0]}</td>
+                           <td>{(nfrName in selectNames.current && selectNames.current[nfrName].has(indexInSelect)) ? <input value={Object.keys(obj)[0]} type={"text"} onChange={e=>changeSelectValueName(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/>
+                               : <span>{Object.keys(obj)[0]}</span>
+                           }</td>
                             <td><input value={Object.values(obj)[0]} type={"number"} onChange={e=>changeSelectValue(nfrName,Object.keys(obj)[0],e.target.value,index,indexInSelect)}/> </td>
                            {/*<td><ProjectRowTooltip testId={"deleteSelect"} icon={faTrash} message={"delete value"} onClick={_=>deleteValue(nfrName,index,indexInSelect,Object.keys(obj)[0])}/></td>*/}
                        </tr>)
