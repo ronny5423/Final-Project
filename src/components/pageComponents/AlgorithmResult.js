@@ -1,14 +1,17 @@
 import React, {useEffect, useState} from "react";
-import {Button, Table, Tooltip} from "react-bootstrap";
+import {Button, Table, Tooltip, Collapse} from "react-bootstrap";
 import axios from "axios";
 import {serverAddress} from "../../Constants";
 import {useNavigate, useParams} from "react-router-dom";
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
+import TransformationComponent from "../sharedComponents/TransformationComponent";
 
 export default function AlgorithmResult(){
     const[algorithmResult, updateAlgorithmResult] = useState({})
     let {projectId} = useParams()
     const[loading,updateLoading]=useState(true)
+    const [openDoc, updateDoc] = useState(false)
+    const [openGraph, updateGraph] = useState(false)
 
     useEffect(()=>{
         async function fetchAlgorithmResult(){
@@ -115,6 +118,16 @@ export default function AlgorithmResult(){
     }
 
 
+    function documentTransformation() {
+        updateGraph(false)
+        updateDoc(!openDoc)
+    }
+
+    function graphTransformation() {
+        updateDoc(false)
+        updateGraph(!openGraph)
+    }
+
     return(
         <div>
             {loading ? <LoadingSpinner /> :
@@ -139,6 +152,20 @@ export default function AlgorithmResult(){
             }
                 </tbody>
                 </Table>
+
+                    <Button onClick={documentTransformation}>Document Transformation</Button>
+                    <Button onClick={graphTransformation}>Graph Transformation</Button>
+
+                    <Collapse in={openDoc}>
+                        <div>
+                            {!loading ? <TransformationComponent projectId={projectId} transformationType={"document"} /> : ''}
+                        </div>
+                    </Collapse>
+                    <Collapse in={openGraph}>
+                        <div>
+                            {!loading ? <TransformationComponent projectId={projectId} transformationType={"graph"} /> : ''}
+                        </div>
+                    </Collapse>
                 </div>
             }
         </div>

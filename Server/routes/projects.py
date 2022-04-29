@@ -121,7 +121,7 @@ def get_report(projectID):
     except Exception as e:
         return Response(json.dumps(str(e)), status=400, mimetype='application/json')
     
-@projects.route("/trans/<projectID>/<trans>", methods=['GET'])
+@projects.route("/transformation/<projectID>/<trans>", methods=['GET'])
 @login_required
 def get_trans(projectID, trans):
     try:
