@@ -140,6 +140,7 @@ export default function UmlEditor(props){
                 props.changeUmlStatus(false);
             } else {
                 if (idx >= 0) document.title = document.title.substr(0, idx);
+                props.changeUmlStatus(true);
             }
         });
 

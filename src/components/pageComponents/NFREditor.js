@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 import SavingSpinner from "../sharedComponents/SavingSpinner";
 import EditorMatrix from "./EditorMatrix";
+import "../cssComponents/NFRcss.css"
 
 export default function NFREditor(props){
     //console.log("nfr")
@@ -255,7 +256,7 @@ export default function NFREditor(props){
     }
 
     return(
-        <div>
+        <div id={"NFR-DIV"}>
         {loading ? <LoadingSpinner/> :
                     <div>
                     <Form data-testid={"NFREditor"} onSubmit={sendNFRToServer}>
@@ -279,7 +280,7 @@ export default function NFREditor(props){
                                 <Button variant={"success"} type={"submit"}>Save</Button>
                                 { !createNfr.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button>}
                             </div>:
-                            <Button variant={"info"} onClick={editDetails}>Edit</Button>
+                            <Button id={"editButtons"} variant={"success"} onClick={editDetails}>Edit</Button>
                         }
                         <Button id="MatrixButton" disabled={!id || editable} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                     </Form>

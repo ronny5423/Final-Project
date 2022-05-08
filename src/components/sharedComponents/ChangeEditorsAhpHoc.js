@@ -4,6 +4,7 @@ import {Button, Col, Form, Modal, Row} from "react-bootstrap";
 import LoadingSpinner from "./LoadingSpinner";
 import ButtonWithSpinner from "./ButtonWithSpinner";
 import SavingSpinner from "./SavingSpinner";
+import "../cssComponents/EditorsAhpCss.css";
 
  const changeEditorsAhpHoc=(WrappedComponent)=>{
     function ChangeEditorsAhpHoc(props){
@@ -68,31 +69,31 @@ import SavingSpinner from "./SavingSpinner";
         }
 
         return(
-            <div>
+            <div id={"AHP-DIV"}>
                 <WrappedComponent updateWeights={updateState} {...props} updateSaveRoute={updateSaveRoute}/>
                 {saveRoute==="" ? <LoadingSpinner /> :
                     <div data-testid={"ahp"}>
-                        <h1>AHP</h1>
+                        <h1><b>AHP</b></h1>
                         <Modal data-testid={"modal"} show={showModal} onHide={_=>updateShowModal(false)} centered>
                             <Modal.Header closeButton></Modal.Header>
                             <Modal.Body>
                                 <p>sum of weights must be equal to 1</p>
                             </Modal.Body>
                         </Modal>
-                        <Form>
+                        <Form id={"ahp-form"}>
                             <Row>
-                                <Col sm={2}>UML Weight:</Col>
-                                <Col sm={4}><input required readOnly={disabled} type={"number"} min={0} max={1} value={weights.UML} step={0.001} onChange={e=>changeValue(e.target.value,1)}/></Col>
+                                <Col >UML Weight:</Col>
+                                <Col ><input required readOnly={disabled} type={"number"} min={0} max={1} value={weights.UML} step={0.001} onChange={e=>changeValue(e.target.value,1)}/></Col>
                             </Row>
                             <br/>
                             <Row>
-                                <Col sm={2}>Queries Weight:</Col>
-                                <Col sm={4}><input required readOnly={disabled} type={"number"} min={0} max={1} step={0.001} value={weights.SQL} onChange={e=>changeValue(e.target.value,2)}/></Col>
+                                <Col >Queries Weight:</Col>
+                                <Col ><input required readOnly={disabled} type={"number"} min={0} max={1} step={0.001} value={weights.SQL} onChange={e=>changeValue(e.target.value,2)}/></Col>
                             </Row>
                             <br/>
                             <Row>
-                                <Col sm={2}>NFR Weight:</Col>
-                                <Col sm={4}><input required readOnly={disabled} type={"number"} min={0} max={1} value={weights.NFR} step={0.001} onChange={e=>changeValue(e.target.value,3)}/> </Col>
+                                <Col >NFR Weight:</Col>
+                                <Col ><input required readOnly={disabled} type={"number"} min={0} max={1} value={weights.NFR} step={0.001} onChange={e=>changeValue(e.target.value,3)}/> </Col>
                             </Row>
                             {
                                 !disabled ? <Button onClick={submit} variant={"success"}>Save</Button> :

@@ -309,12 +309,12 @@ export default function SqlEditor(props){
 
 
     return (
-        <div>
+        <div id={"sqlDiv"}>
             {loading ? <LoadingSpinner/> :
                 <div>
                     <Form data-testid={"SqlEditor"} style={{width:"100%"}} onSubmit={handleSubmit}>
                         <div id={"tableAndTextAreaDiv"}>
-                            <Table selectable responsive>
+                            <Table selectable responsive id={"sql-table"}>
                                 <thead>
                                 <tr>
                                     <th>#</th>
@@ -341,7 +341,7 @@ export default function SqlEditor(props){
                             />
                         </div>
                         {
-                            disabled ? <div>
+                            disabled ? <div id={"buttonsDiv"}>
                                     <Button variant={"success"} onClick={editDetails}>Edit</Button>
                                     <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
                                 </div>

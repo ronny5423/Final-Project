@@ -8,27 +8,47 @@
     height: 400px;
 }
 
-#index{
+#sqlDiv #index{
     cursor: pointer;
     color: blue;
 }
 
-textarea{
+#sqlDiv textarea{
     margin-left: 5%;
-    height: 200px;
+    height: 320px;
     margin-top: 20px;
 }
 
-#buttonsDiv{
+#sqlDiv #buttonsDiv{
     width: 20%;
     margin: 0px 40%;
 }
 
-.selected {
+#sqlDiv .selected {
     background: #5bc0de;
-    border: 2px solid rgb(0, 17, 255);
+    /*border: 2px solid rgb(0, 17, 255);*/
   }
 
-  #helpButton{
+#sqlDiv #helpButton{
     float: right;
   }
+
+#sqlDiv #sql-table{
+    border: 2px solid black;
+}
+
+
+#sql-table thead {
+    border-top: 2px solid black;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: white;
+}
+#sql-table tbody {
+    overflow: visible !important;
+}
+
+#sqlDiv #buttonsDiv Button{
+    margin: 1px 1%;
+}

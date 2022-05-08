@@ -1,0 +1,32 @@
+
+#results-div{
+    font-family: inherit;
+}
+
+#results-div #results-table{
+    width: 90%;
+    margin: 5px 5%;
+}
+
+#results-div h1{
+    margin: 0px;
+    padding: 20px;
+}
+
+#results-div #results-table thead #head{
+    background-color: #3dd5f3;
+}
+
+#results-div #results-table thead td{
+    font-size: larger;
+}
+
+#results-div #results-table td{
+    border-right: 1px solid;
+}
+
+#results-div Button{
+    width: 30%;
+    margin: 10px 5%;
+    font-size: larger;
+}
