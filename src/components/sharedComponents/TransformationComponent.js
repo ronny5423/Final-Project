@@ -89,7 +89,7 @@ export default function TransformationComponent(props){
         if (transformationType === "document"){
             embeddedClasses = createEmbeddedClasses(classObj)
         }
-        return <div style={{margin: '1% 2%', float: 'left', border: '1px solid red'}}>
+        return <div style={{margin: '1% 1%', float: 'left', border: '1px solid red', padding: '5px'}}>
                     {className}
                     <h5><b><u>Properties:</u></b></h5>
                     {properties}
@@ -130,7 +130,7 @@ export default function TransformationComponent(props){
         let cluster_to = class_to in clusters ? clusters[class_to] : undefined
         let color_to = cluster_to === undefined ? 'black' : clusterColor[cluster_to]
 
-        return <div style={{margin: '1% 2%', float: 'left', border: '1px solid red'}}>
+        return <div style={{margin: '1% 1%', float: 'left', border: '1px solid red', padding: '5px'}}>
             <h3><span style={{color: color_from}}>{class_from}</span> --> <span style={{color: color_to}}>{class_to}</span></h3>
             <h6>Edge Name : {edge_name}</h6>
             <h6>Cardinal at {class_from} : {cardinal_from}</h6>
@@ -153,12 +153,12 @@ export default function TransformationComponent(props){
 
 
     return (
-        <div style={{margin: '3% 0px'}}>
+        <div style={{margin: '3% 0px', fontFamily: "inherit"}}>
             {transformationType === "document" ? <h1>Classes:</h1> : <h1>Nodes:</h1>}
-            <div style={{display: 'flex', 'flex-flow': 'wrap'}}>{createNodes()}</div>
+            <div style={{display: 'flex', 'flex-flow': 'wrap', 'margin-left': '5%', 'margin-right': '5%'}}>{createNodes()}</div>
 
             {transformationType === "graph" ? <h1>Edges:</h1> : ''}
-            {transformationType === "graph" ? <div style={{display: 'flex', 'flex-flow': 'wrap'}}>{createEdges()}</div> : ''}
+            {transformationType === "graph" ? <div style={{display: 'flex', 'flex-flow': 'wrap', 'margin-left': '5%', 'margin-right': '5%'}}>{createEdges()}</div> : ''}
             {/*{!load && transformationType === "document" ? <TransformationDocumentNodes nodes={transformationResults}/> : <div>aaaa</div>}*/}
             {/*{JSON.stringify(transformationResults.nodes, null, 6)}*/}
         </div>

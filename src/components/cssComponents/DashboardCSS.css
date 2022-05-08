@@ -1,0 +1,64 @@
+html{
+    background-color: ghostwhite;
+}
+
+#dashboard{
+    background-color: ghostwhite;
+    font-family: inherit;
+    padding-bottom: 100px;
+}
+
+/*#dashboard #table-dash{*/
+/*    border: 2px solid;*/
+/*}*/
+
+#dashboard h1{
+    background-color: ghostwhite;
+    margin: 0px;
+    padding: 20px 10px;
+    font-family: system-ui;
+}
+
+#dashboard #table-dash{
+    width: 80%;
+    margin: 0px 10%;
+}
+
+#dashboard thead{
+    background-color: deepskyblue;
+
+}
+
+#dashboard #table-dash th{
+    font-size: larger;
+}
+
+#dashboard #table-dash td{
+    font-size: larger;
+}
+
+/*#dashboard #table-dash th, #dashboard #table-dash td{*/
+/*    border-right: 2px solid black;*/
+/*}*/
+
+#dashboard #table-dash button{
+    margin: 0px 1px;
+    background-color: black;
+}
+
+#dashboard #table-dash button:hover {
+    color: #fff;
+    background-color: #0d6efd;
+}
+
+#dashboard tbody tr:hover{
+    background-color: rgba(0, 153, 203,0.5)
+}
+
+/*#dashboard tr:nth-child(even){*/
+/*    background-color: rgba(0, 153, 203,0.5)*/
+/*}*/
+
+/*#dashboard tr:nth-child(odd){*/
+/*    background-color: rgba(0, 100, 203,0.3)*/
+/*}*/

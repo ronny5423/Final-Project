@@ -84,7 +84,7 @@ export default function EditorsTabs(props){
                 </Tab>
                 <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
                     <ChangeMatrixWeights id={parseInt(projectId)} umlAhp={umlAHP===undefined ? umlAHP : parseFloat(umlAHP)} sqlAhp={sqlAHP===undefined ? sqlAHP : parseFloat(sqlAHP)} nfrAhp={nfrAHP===undefined ? nfrAHP : parseFloat(nfrAHP)} />
-                    <Button variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>
+                    <Button style={{width: '30%'}} variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>
                 </Tab>
             </Tabs>
 

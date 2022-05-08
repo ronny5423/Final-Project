@@ -5,6 +5,7 @@ import {serverAddress} from "../../Constants";
 import {useNavigate, useParams} from "react-router-dom";
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 import TransformationComponent from "../sharedComponents/TransformationComponent";
+import "../cssComponents/ResultsCss.css"
 
 export default function AlgorithmResult(){
     const[algorithmResult, updateAlgorithmResult] = useState({})
@@ -129,13 +130,13 @@ export default function AlgorithmResult(){
     }
 
     return(
-        <div>
+        <div id={"results-div"}>
             {loading ? <LoadingSpinner /> :
                 <div>
                 <h1>Results</h1>
-                <Table responsive>
+                <Table responsive id={"results-table"}>
                 <thead>
-                <tr>
+                <tr id={"head"}>
             {
                 createTableHead()
             }
