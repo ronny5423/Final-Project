@@ -14,9 +14,12 @@ export default function About() {
 
     return (
         <div>
-            <h1>DB Selection</h1>
+            <h1 style={{padding: '20px 0px', fontFamily: 'inherit'}}>DB Selection</h1>
             <div>
-                <Card>
+                <Card style={{margin: '20px 10%',
+                    'font-size': 'larger',
+                    width: '80%',
+                    'font-family': 'monospace'}}>
 
                     {/*<Card.Subtitle>Something Something</Card.Subtitle>*/}
                     <Card.Text>{projectDescription}</Card.Text>
@@ -24,7 +27,7 @@ export default function About() {
                 {/*<h1>DB Selection</h1>*/}
                 {/*<p>{projectDescription}</p>*/}
             </div>
-            <h3>Developers</h3>
+            <h3 style={{padding: '20px 0px', fontFamily: 'inherit'}}>Developers</h3>
             <div class="row">
                 <Member img={"https://media-exp1.licdn.com/dms/image/C4D03AQF_xafRrBhMHQ/profile-displayphoto-shrink_200_200/0/1582663858227?e=1656547200&v=beta&t=YctXl30TuE2k7XRf2na-evdPv-Ffl0jAk2geRjB6kv8"} name={"Eran German"} job={"Software Engineer"} linkedin={"https://www.linkedin.com/in/eaert/"} />
                 <Member img={"https://media-exp1.licdn.com/dms/image/C4D03AQECz-O4q-Wm-A/profile-displayphoto-shrink_200_200/0/1634534002919?e=1656547200&v=beta&t=Z7B_bhUjc6hvwIIAq9MYbULo3diQ8agnrvytcEW2Edc"} name={"Illi Shmidt"} job={"Software Engineer"} linkedin={"https://www.linkedin.com/in/ili-shmidt/"}/>

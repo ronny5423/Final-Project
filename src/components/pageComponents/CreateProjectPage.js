@@ -5,6 +5,7 @@ import {serverAddress} from "../../Constants";
 import {useNavigate} from "react-router-dom";
 import ButtonWithSpinner from "../sharedComponents/ButtonWithSpinner";
 import SavingSpinner from "../sharedComponents/SavingSpinner";
+import "../cssComponents/CreateProject.css"
 
 function CreateProjectPage(props){
     const[name,updateName]=useState("")
@@ -37,17 +38,16 @@ function CreateProjectPage(props){
      }
 
     return(
-        <Form data-testid={"createProjectPage"}>
-            <h1>Project Creation</h1>
-            <br/>
+        <Form id ={"createProject"} data-testid={"createProjectPage"}>
+            <h1>Create new project</h1>
             <div id={"projectNameInput"}>
                 <p>Please enter project name:</p>
                 <input required type={"text"} onChange={event=>updateName(event.target.value)}/>
             </div>
-            <div>
-                <p>Please enter project's description</p>
+            <div id={"projectDescriptionInput"}>
+                <p>Please enter project's description:</p>
                 <FloatingLabel controlId="floatingTextarea" label="Description" className="mb-3">
-                    <Form.Control data-testid={"textarea"} onChange={event=>updateDescription(event.target.value)} as="textarea" placeholder="Description" style={{height:"50px"}} />
+                    <Form.Control data-testid={"textarea"} onChange={event=>updateDescription(event.target.value)} as="textarea" placeholder="Description" />
                 </FloatingLabel>
             </div>
             <div>

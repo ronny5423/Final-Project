@@ -1,0 +1,31 @@
+
+#createProject{
+    width: 80%;
+    margin: 0px 10%;
+    font-family: inherit;
+    font-size: larger;
+}
+
+#createProject h1{
+    font-family: inherit;
+    padding: 20px 0px;
+}
+
+#createProject p{
+    text-align: start;
+}
+
+#createProject #projectDescriptionInput, #projectNameInput{
+    width: 50%;
+    margin: 20px 25%;
+}
+
+#projectNameInput input{
+    width: 100%;
+}
+
+#createProject Button{
+    margin: 5px 10px;
+    width: 50%;
+}
+
