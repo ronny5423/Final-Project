@@ -603,6 +603,9 @@ def rule_g2(sql, transformation_nodes, transformation_edges):
 
                 split_edge_g2(edge_to_split, transformation_edges, transformation_nodes)
                 edges_to_delete.append(edge_to_split)
+    for edge_to_delete in edges_to_delete:
+        if edge_to_delete in transformation_edges:
+            del transformation_edges[edge_to_delete]
 
 
 def get_counter_per_links_pair_classes(transformation_edges):

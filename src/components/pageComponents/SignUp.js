@@ -49,8 +49,8 @@ function SignUp(){
                     </Modal.Body>
                 </Modal>
 
-        <h1>Register</h1>
-            <Form data-testid={"register"} onSubmit={handleSubmit(submit)}>
+        <h1 style={{margin: '0px 20%', paddingTop: '20px', fontFamily: 'inherit'}}>Register</h1>
+            <Form id={"register"} data-testid={"register"} onSubmit={handleSubmit(submit)}>
             <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Username</Form.Label>
                 <Form.Control name="Username" {...register("Username",{required:true})} type="text" placeholder="Enter username"  />

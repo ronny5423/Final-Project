@@ -53,7 +53,7 @@ export default function Login() {
         </Form.Group>
         {loggingIn ? <ButtonWithSpinner variant={"primary"} label={"Login"}/> : <Button block size="lg" type="submit">Login</Button>}
       </Form>
-      <p>Don't have an account ?</p>
+      <p style={{margin: '0px'}}>Don't have an account ?</p>
       <Link to={"/register"}>Sign Up</Link>
     </div>
   );
