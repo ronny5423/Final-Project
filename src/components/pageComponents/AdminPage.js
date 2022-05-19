@@ -1,11 +1,12 @@
 import React from "react";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {Link,Outlet} from "react-router-dom";
+import "../cssComponents/AdminPage.css"
 
 export default function AdminPage(){
     return(
         <div>
-        <Navbar bg={"dark"} variant={"dark"}>
+        <Navbar className={'adminNavbar'}>
             <Container>
                 <Navbar.Brand>Admin</Navbar.Brand>
                 <Nav className={"me-auto"}>

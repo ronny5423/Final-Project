@@ -16,7 +16,7 @@ export default function About() {
         <div>
             <h1 style={{padding: '20px 0px', fontFamily: 'inherit'}}>DB Selection</h1>
             <div>
-                <Card style={{margin: '20px 10%',
+                <Card className={'aboutCard'} style={{margin: '20px 10%',
                     'font-size': 'larger',
                     width: '80%',
                     'font-family': 'monospace'}}>

@@ -5,6 +5,8 @@ import {numberOfItemsInPage, serverAddress} from "../../Constants";
 import PaginationComponent from "./PaginationComponent";
 import SavingSpinner from "./SavingSpinner";
 import LoadingSpinner from "./LoadingSpinner";
+import {Modal, ModalBody} from "react-bootstrap";
+import ModalHeader from "react-bootstrap/ModalHeader";
 
 const spareDataNumber=5
 
@@ -20,6 +22,7 @@ const withFetchData=(WrappedComponent)=>{
         const attributeName=useRef("")
         const[saving,updateSaving]=useState(false)
         const [loading,updateLoading]=useState(false)
+        const [adminError,updateAdminError] = useState(false)
 
         async function fetchProjectsFromServer(startIndex){
             let end
@@ -46,31 +49,34 @@ const withFetchData=(WrappedComponent)=>{
                 updateLoading(true)
             }
             axios.get(serverAddress+fetchDataRoute.current,{params:otherParametersToSendToServer.current}).then(response=>{
-                if(response.status===200){
-                    let endIndex=response.data[attributeName.current].length-1
-                    if(dataLength===0){
-                        if(response.data[attributeName.current].length>numberOfItemsInPage){
-                            numberOfSpare=response.data[attributeName.current].length-numberOfItemsInPage
-                        }
-                        else{
-                            numberOfSpare=0
-                        }
-                    }
-                    if(numberOfSpare>0){
-                        endIndex=numberOfItemsInPage-1
-                        spareData.current=response.data[attributeName.current].slice(response.data[attributeName.current].length-numberOfSpare,response.data[attributeName.current].length)
+                let endIndex=response.data[attributeName.current].length-1
+                if(dataLength===0){
+                    if(response.data[attributeName.current].length>numberOfItemsInPage){
+                        numberOfSpare=response.data[attributeName.current].length-numberOfItemsInPage
                     }
                     else{
-                        spareData.current=[]
+                        numberOfSpare=0
                     }
-                    updateData(response.data[attributeName.current].slice(0,endIndex+1))
-                    updateDataLength(response.data.size)
-                    dataToShowEndIndex.current=end-numberOfSpare
-                    updateLoading(false)
+                }
+                if(numberOfSpare>0){
+                    endIndex=numberOfItemsInPage-1
+                    spareData.current=response.data[attributeName.current].slice(response.data[attributeName.current].length-numberOfSpare,response.data[attributeName.current].length)
+                }
+                else{
+                    spareData.current=[]
+                }
+                updateData(response.data[attributeName.current].slice(0,endIndex+1))
+                updateDataLength(response.data.size)
+                dataToShowEndIndex.current=end-numberOfSpare
+                updateLoading(false)
+            }).catch(error =>{
+                if(error.response.status === 409){
+                    updateAdminError(true)
                 }
                 else{
                     history("/error")
                 }
+                updateLoading(false)
             })
         }
 
@@ -152,9 +158,15 @@ const withFetchData=(WrappedComponent)=>{
             <div>
                 {loading && <LoadingSpinner/>}
             <WrappedComponent deleteData={deleteDataFromArray} updateServerParameters={updateParametersToSendToServer}
-            dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength} draw={!loading}
-            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute} {...props}
-            />
+            dataToShow={dataToShow} fetchDataFromServer={fetchProjectsFromServer} dataLength={dataLength} draw={!loading && !adminError}
+            increaseDataLength={increaseDataLength} updateFetchDataRoute={updateFetchDataRoute} {...props}/>
+                <Modal show={adminError}>
+                    <ModalHeader closeButton onHide={_=> {
+                        updateAdminError(false)
+                        history("/dashboard")
+                    }}/>
+                    <ModalBody>Please logout and re-login as admin in order to access admin module</ModalBody>
+                </Modal>
                 {saving && <SavingSpinner/>}
         {
             numberOfItemsInPage<dataLength && <PaginationComponent draw={!loading} fetchData={fetchProjectsFromServer} numberOfElements={dataLength}/>

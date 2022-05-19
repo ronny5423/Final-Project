@@ -4,7 +4,9 @@
 }
 
 .UserDiv {
-    float: right;
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 10px;
     margin-right: 1%;
 }
 
@@ -15,4 +17,8 @@
 
 .UsernameDisplay {
     padding-right: 10px;
+}
+
+.userButton {
+    /*margin: 10px;*/
 }

@@ -32,7 +32,7 @@ export default function UserMenu() {
             { localStorage.getItem("username")!== null
                 ?
                 <Dropdown>
-                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                    <Dropdown.Toggle className={"userButton"} variant="success" id="dropdown-basic">
                         {localStorage.getItem("username")}
                     </Dropdown.Toggle>
 

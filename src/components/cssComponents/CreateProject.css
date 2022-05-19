@@ -9,6 +9,7 @@
 #createProject h1{
     font-family: inherit;
     padding: 20px 0px;
+    font-weight: bold;
 }
 
 #createProject p{

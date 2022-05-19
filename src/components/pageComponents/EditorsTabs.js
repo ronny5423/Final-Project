@@ -69,7 +69,7 @@ export default function EditorsTabs(props){
                         :<p>You must create and save Uml before moving to other editors or using the algorithm</p>}
                 </Modal.Body>
             </Modal>
-            <Tabs defaultActiveKey={"Uml"}  activeKey={key} onSelect={(key)=>shouldMoveToOtherTabs(key)}>
+            <Tabs defaultActiveKey={"Uml"}  activeKey={key} onSelect={(key)=>shouldMoveToOtherTabs(key)} style={styles.header}>
                 <Tab title={"Uml"} id={"uml"} eventKey={"Uml"}>
 
 
@@ -90,4 +90,11 @@ export default function EditorsTabs(props){
 
         </div>
     )
+}
+
+const styles = {
+    header: {
+        justifyContent: 'space-around'
+
+}
 }
