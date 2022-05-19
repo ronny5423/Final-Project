@@ -5,7 +5,7 @@ import ProjectRowTooltip from "../sharedComponents/ProjectRowTooltip";
 import {faPlus} from "@fortawesome/fontawesome-free-solid";
 import ProjectRow from "../sharedComponents/ProjectRow";
 import withFetchData from "../sharedComponents/WithFetchData";
-import DashboardCSS from "../cssComponents/DashboardCSS.css";
+import "../cssComponents/DashboardCSS.css";
 
 function DashboardPage(props){
     let history=useNavigate()
@@ -31,7 +31,7 @@ function DashboardPage(props){
             <div id={"dashboard"}>
                 {props.draw &&
                     <div data-testid={"dashboard"}>
-                        <h1>Dashboard</h1>
+                        <h1 className={"heading"}>Projects</h1>
                         {/*<div id={"searchDiv"} data-testid={"searchDiv"}>*/}
                         {/*    <input disabled={props.dataLength===0} value={searchQuery} placeholder={"Filter projects by name"} onChange={event => updateSearchQuery(event.target.value)}/>*/}
                         {/*    <Button disabled={props.dataToShow.length===0} variant={"primary"} onClick={_=>{*/}

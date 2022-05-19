@@ -9,6 +9,7 @@ import AddNFRAdmin from "../sharedComponents/AddNFRAdmin";
 import LoadingSpinner from "../sharedComponents/LoadingSpinner";
 import Spinner from "react-bootstrap/Spinner";
 import SavingSpinner from "../sharedComponents/SavingSpinner";
+import "../cssComponents/AdminPage.css"
 
 export default function ChangeNFRAdmin(){
     const [nfr,updateNfr]=useState([])
@@ -379,7 +380,7 @@ export default function ChangeNFRAdmin(){
         <div>
             {loading ? <LoadingSpinner/> :
                 <div data-testid={"nfrAdmin"}>
-                    <h1>NFR Admin</h1>
+                    <h1 className={'heading'}>NFR Admin</h1>
                     <Table>
                         <thead>
                         <tr>

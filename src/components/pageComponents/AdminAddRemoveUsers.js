@@ -8,6 +8,8 @@ import AdminDeleteUserModal from "../sharedComponents/AdminDeleteUserModal";
 import DeleteConfirmationModal from "../sharedComponents/DeleteConfirmationModal";
 import ModalHeader from "react-bootstrap/ModalHeader";
 
+import '../cssComponents/AdminPage.css'
+
 function AdminAddRemoveUsers(props){
     let navigate=useNavigate()
     const [showDeleteModal,updateShowDeleteModal]=useState(false)
@@ -36,7 +38,7 @@ function AdminAddRemoveUsers(props){
         <div>
             {props.draw &&
                 <div data-testid={"adminAddRemoveUsers"}>
-                    <h1>All Users</h1>
+                    <h1 className={'heading'}>All Users</h1>
                     <Table>
                         <thead>
                         <tr>
