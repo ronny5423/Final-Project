@@ -1,0 +1,10 @@
+flask
+flask-cors
+flask-login
+pymongo
+flask-pymongo
+numpy
+pandas
+sklearn
+json2html
+cryptography
