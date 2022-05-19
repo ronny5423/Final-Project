@@ -1,11 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Button, Table} from "react-bootstrap";
+import {Button, Modal, ModalBody, Table} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 import {faTrash} from "@fortawesome/fontawesome-free-solid";
 import ProjectRowTooltip from "../sharedComponents/ProjectRowTooltip";
 import withFetchData from "../sharedComponents/WithFetchData";
 import AdminDeleteUserModal from "../sharedComponents/AdminDeleteUserModal";
 import DeleteConfirmationModal from "../sharedComponents/DeleteConfirmationModal";
+import ModalHeader from "react-bootstrap/ModalHeader";
 
 function AdminAddRemoveUsers(props){
     let navigate=useNavigate()
@@ -68,7 +69,7 @@ function AdminAddRemoveUsers(props){
                     {/*<DeleteConfirmationModal show={showConfirmation} deleteUser={deleteUser} hide={updateShowConfirmation}/>*/}
                 </div>
             }
-        </div>
+            </div>
     )
 }
 
