@@ -1,6 +1,7 @@
 from json2html import *
 from database import *
 import json
+import copy
 
 import pandas as pd
 import numpy as np
@@ -20,10 +21,18 @@ html_template = """<html>
 <h2>NFR Editor</h2> 
 {}
 <h2>Results</h2> 
+<p>Clusters</p>
+{}
+<p>Distances</p>
 {}
 </body>
 </html>
 """
+
+html_results_template = """<div> 
+<h2>{}</h2>
+{}
+</div>"""
 
 # uml_or_sql - the object of a uml or sql editor from mongo
 # shape = uml_or_sql['convertedData']['shape']
@@ -60,8 +69,21 @@ def create_html_matrix(matrix, classes, shape):
 def createHtmlReport(project):
     projectName = project.name
     projectDescription = project.Description
-    results = db.getCalcResults(project.ProjectID)
-    html_results = to_html(results) if results else 'No Results'
+    results = db.getCalcResults(project.ProjectID)['Results']
+    # print(resultsToHtml(json.loads(results['Results'])))
+    db_dist = json.loads(results['DB_distance']) if results else {}
+    
+    new_db_dist = {}
+    for clus_key, clust_dist in db_dist.items():
+        deepcopy_dist = copy.deepcopy(clust_dist)
+        new_dist = {}
+        for i in range(len(clust_dist)):
+            new_dist[min(deepcopy_dist, key=deepcopy_dist.get)] = str(round(min(deepcopy_dist.values()), 2))
+            del deepcopy_dist[min(deepcopy_dist, key=deepcopy_dist.get)]
+        new_db_dist[clus_key] = new_dist
+    html_results_1 = to_html(results['final_clusters']) if results else 'No Results'
+    # html_results_2 = to_html(results['DB_distance']) if results else 'No Results'
+    html_results_2 = to_html(new_db_dist) if results else 'No Results'
     projectDetails = to_html(setProjectToHtml(project))
     uml = db.getOneEditor({'EditorID': project.UMLEditorID})
     sql = db.getOneEditor({'EditorID': project.SQLEditorID})
@@ -70,7 +92,7 @@ def createHtmlReport(project):
                                 create_html_matrix(json.loads(uml.convertedData['matrix_classes']), json.loads(uml.convertedData['classes']).values(), uml.convertedData['shape']),
                                 create_html_matrix(json.loads(sql.convertedData['matrix_classes']), json.loads(sql.convertedData['classes']).values(), sql.convertedData['shape']),
                                 create_html_matrix(json.loads(nfr.convertedData['matrix_classes']), nfr.convertedData['classes'], nfr.convertedData['shape']),
-                                html_results)
+                                html_results_1, html_results_2)
     
         
 def to_html(json_doc):
@@ -82,5 +104,15 @@ def setProjectToHtml(project):
         'Members': project.Members,
         'Weights': project.Weights if hasattr(project, 'Weights') else db.getNFRWeights()
     }
+    
+def resultsToHtml(results):
+    if not results:
+        return 'No Results'
+    else:
+        divHolder = """<div>{}</div>"""
+        clusters = []
+        for key in results.DB_distance:
+            clusters.append(html_results_template.format('Cluster' + str(key), results.DB_distance.key))
+        return divHolder.format(clusters)
     
 
