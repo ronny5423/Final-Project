@@ -37,7 +37,7 @@ let modalBody = <div>
         <br></br>
         <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> Double click on any of the text in the diagram in order to edit it
         <br></br>
-        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> In order to connect association class link to a normal association link, double click the normal link and then connect the other link to the blue dot
+        <FontAwesomeIcon icon={faBookmark}></FontAwesomeIcon> In order to connect association class link to a regular association link, double click on the regular link and then connect the association link to the blue dot
     </p>
 </div>
 

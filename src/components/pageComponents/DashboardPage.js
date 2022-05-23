@@ -48,7 +48,7 @@ function DashboardPage(props){
                                 <th>Project Name</th>
                                 <th>Project Description</th>
                                 <th>Project Owner</th>
-                                <th><ProjectRowTooltip message={"Create new Project"} icon={faPlus} onClick={_ => history("/createProject")}/></th>
+                                <th><ProjectRowTooltip message={"Create New Project"} icon={faPlus} onClick={_ => history("/createProject")}/></th>
                             </tr>
                             </thead>
                             <tbody id={"body"}>

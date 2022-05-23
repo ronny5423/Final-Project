@@ -673,6 +673,7 @@ def rule_g3(sql, transformation_nodes, transformation_edges, hierarchy_dict):
     query_to_class_list_hrr = convert_query_to_class_list_for_hierarchy(query_to_class_list, hierarchy_dict)
     queries = sql.undecipheredJson
     limited_attributes_obj, limited_attributes_set = get_limited_value_attributes(transformation_nodes)
+    att_to_del_obj = {}  # {att_name: [classes list to del from]}
     for query_key, query_obj in queries.items():
         if not query_obj['selectable']:
             continue
@@ -686,6 +687,7 @@ def rule_g3(sql, transformation_nodes, transformation_edges, hierarchy_dict):
                     new_cls_name = att_name if att_name not in transformation_nodes else att_name + '_att'
                     att_obj = limited_attributes_set[att_name]
                     transformation_nodes[new_cls_name] = {"Properties": [att_obj]}
+                    att_to_del_obj[att_name] = shared_classes_list
                     for cls in shared_classes_list:
                         edge_new_key = max(max(transformation_edges.keys(), default=0), 0)
                         transformation_edges[edge_new_key + 1] = {
@@ -696,6 +698,15 @@ def rule_g3(sql, transformation_nodes, transformation_edges, hierarchy_dict):
                             "Cardinal_To": '1',
                             "Properties": []
                         }
+
+    for att_to_del, att_classes in att_to_del_obj.items():
+        for att_cls in att_classes:
+            if att_cls in transformation_nodes:
+                for i, prop in enumerate(transformation_nodes[att_cls]['Properties']):
+                    if prop['name'] == att_to_del:
+                        del transformation_nodes[att_cls]['Properties'][i]
+                        break
+
 
 
 def get_classes_amount_per_query(sql, uml, key):

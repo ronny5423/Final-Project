@@ -152,7 +152,8 @@ export default function NFREditor(props){
 
     function createRestOfTable(){// create row with class and inputs
         let restOfTable=[];
-        weightsValues.forEach((value,key)=>{
+        let mapAsc = new Map([...weightsValues.entries()].sort());
+        mapAsc.forEach((value,key)=>{
             restOfTable.push(<tr key={key}>
                 <td>{key}</td>
                 {

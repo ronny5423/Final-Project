@@ -344,15 +344,16 @@ export default function SqlEditor(props){
                             disabled ? <div id={"buttonsDiv"}>
                                     <Button variant={"success"} onClick={editDetails}>Edit</Button>
                                     <Button id="MatrixButton" disabled={!id} variant={"success"} onClick={redirectToMatrixPage}>Show Matrix</Button>
+                                    <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
                                 </div>
                                  :
                                 <div id={"buttonsDiv"}>
                                     <Button variant={"info"} onClick={addQuery}>Add Query</Button>
                                     <Button type={"submit"} variant={"success"} >Save</Button>
                                     {edit.current && <Button variant={"danger"} onClick={cancelChanges}>Cancel</Button> }
+                                    <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
                                 </div>
                         }
-                        <Button id="helpButton" onClick={() => setModalShow(true)} variant='warning'><FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon></Button>
                     </Form>
                     {saving && <SavingSpinner/>}
 

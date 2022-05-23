@@ -70,7 +70,7 @@ export default function EditorsTabs(props){
                 </Modal.Body>
             </Modal>
             <Tabs defaultActiveKey={"Uml"}  activeKey={key} onSelect={(key)=>shouldMoveToOtherTabs(key)} style={styles.header}>
-                <Tab title={"Uml"} id={"uml"} eventKey={"Uml"}>
+                <Tab title={"UML"} id={"uml"} eventKey={"Uml"}>
 
 
                     <UmlEditor id={(umlEditorId===undefined || umlEditorId===null) ? undefined : parseInt(umlEditorId)} changeUmlStatus={changeMoveToOtherTabs} projectId={parseInt(projectId)} updateClasses={updateClasses} updateEditorId={updateEditorId}/>
@@ -78,11 +78,11 @@ export default function EditorsTabs(props){
                 <Tab title={"Queries"} eventKey={"Queries"} id={"queries"}>
                     <SqlEditor id={(editorsID.current.sqlID===undefined || editorsID.current.sqlID===null) ? undefined : parseInt(editorsID.current.sqlID)} projectId={parseInt(projectId)} classes={classes.current} updateEditorId={updateEditorId}/>
                 </Tab>
-                <Tab title={"Nfr"} eventKey={"Nfr"} id={"nfr"}>
+                <Tab title={"NFR"} eventKey={"Nfr"} id={"nfr"}>
                     <NFREditor id={(editorsID.current.nfrID===undefined || editorsID.current.nfrID===null) ? undefined : parseInt(editorsID.current.nfrID)} projectId={parseInt(projectId)} editable={(editorsID.current.nfrID===undefined || editorsID.current.nfrID===null)} classes={Object.keys(classes.current)} updateEditorId={updateEditorId}/>
 
                 </Tab>
-                <Tab title={"changeWeights"} eventKey={"changeWeights"} id={"changeWeights"}>
+                <Tab title={"Change Weights"} eventKey={"changeWeights"} id={"changeWeights"}>
                     <ChangeMatrixWeights id={parseInt(projectId)} umlAhp={umlAHP===undefined ? umlAHP : parseFloat(umlAHP)} sqlAhp={sqlAHP===undefined ? sqlAHP : parseFloat(sqlAHP)} nfrAhp={nfrAHP===undefined ? nfrAHP : parseFloat(nfrAHP)} />
                     <Button style={{width: '30%'}} variant={"success"} onClick={calculateAlgorithm}>Calculate</Button>
                 </Tab>

@@ -22,6 +22,7 @@
 #sqlDiv #buttonsDiv{
     width: 20%;
     margin: 0px 40%;
+    /*display: contents;*/
 }
 
 #sqlDiv .selected {
@@ -30,7 +31,8 @@
   }
 
 #sqlDiv #helpButton{
-    float: right;
+    /*float: right;*/
+    margin: 0px 20px 0px 0px;
   }
 
 #sqlDiv #sql-table{
@@ -50,5 +52,5 @@
 }
 
 #sqlDiv #buttonsDiv Button{
-    margin: 1px 1%;
+    margin: 1px 5px 10px;
 }
