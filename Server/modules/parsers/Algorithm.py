@@ -88,7 +88,7 @@ def assign_cluster(final_matrix):
 
 def get_nfr_value(nfr_att_val):
     if type(nfr_att_val) is list:
-        return nfr_att_val[1]
+        return int(nfr_att_val[1])
     else:
         return nfr_att_val
 

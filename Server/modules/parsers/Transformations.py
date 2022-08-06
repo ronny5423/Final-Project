@@ -35,7 +35,9 @@ def convert_classes_queries_for_hierarchy(classes_queries, hierarchy_dict):
     def add_class_to_obj(cls_name, qrs_arr):
         if cls_name in classes_queries_converted:
             dup_list = classes_queries_converted[cls_name].extend(qrs_arr)
-            classes_queries_converted[cls_name] = remove_list_duplicates(dup_list)
+            # classes_queries_converted[cls_name] = remove_list_duplicates(dup_list)
+            classes_queries_converted[cls_name] = remove_list_duplicates(classes_queries_converted[cls_name])
+
         else:
             classes_queries_converted[cls_name] = qrs_arr
 
@@ -97,8 +99,8 @@ def add_association_class_in_graph(transformation_edges, uml, edge_to_edge_dict)
         ass_cls = find_object_by_key_in_list(nodes_data_arr, ass_cls_key)
         # if ass_cls['name'] not in cluster_classes:
         #     continue
-        transformation_edges[curr_e_key]['Properties'] = ass_cls['properties']
-        transformation_edges[curr_e_key]['Edge_Name'] = ass_cls['name']
+        transformation_edges[edge_to_edge_dict[curr_e_key][0]]['Properties'] = ass_cls['properties']
+        transformation_edges[edge_to_edge_dict[curr_e_key][0]]['Edge_Name'] = ass_cls['name']
 
 
 def convert_hierarchy_value_to_obj_list(hierarchy_dict_value, uml):

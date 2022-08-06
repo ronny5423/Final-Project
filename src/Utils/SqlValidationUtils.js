@@ -140,8 +140,8 @@ function parseOperation(queryArr, idx, classAs){
     if(operationArr[operationArr.length -1] === ""){
         operationArr.splice(operationArr.length -1, 1);
     }
-    if (operationArr.length > 2)
-        throw queryArr[idx] + " Unsupported operation";
+    // if (operationArr.length > 2)
+    //     throw queryArr[idx] + " Unsupported operation";
     let operation = operationArr[0].toLowerCase();
     if(!savedOperation.has(operation)){
         throw operation + " operation is not supported";
